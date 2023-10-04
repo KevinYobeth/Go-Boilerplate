@@ -1,31 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"orders-api/application"
 )
 
 func main() {
-	router := chi.NewRouter()
+	app := application.New()
 
-	router.Use(middleware.Logger)
-
-	router.Get("/hello", basicHandler)
-
-	server := &http.Server{
-		Addr:    ":8080",
-		Handler: router,
-	}
-
-	err := server.ListenAndServe()
+	err := app.Start(context.TODO())
 	if err != nil {
-		fmt.Println("Failed to listen to server", err)
+		fmt.Println("failed to start app:", err)
 	}
-}
-
-func basicHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World"))
 }
