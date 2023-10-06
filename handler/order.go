@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,8 +16,16 @@ import (
 	"github.com/google/uuid"
 )
 
+type Repo interface {
+	Insert(ctx context.Context, order model.Order) error
+	FindById(ctx context.Context, orderId uint64) (model.Order, error)
+	DeleteById(ctx context.Context, orderId uint64) error
+	Update(ctx context.Context, order model.Order) error
+	FindAll(ctx context.Context, page order.FindAllPage) (order.FindResult, error)
+}
+
 type Order struct {
-	Repo *order.RedisRepo
+	Repo Repo
 }
 
 func (h *Order) Create(w http.ResponseWriter, r *http.Request) {
@@ -96,11 +105,12 @@ func (h *Order) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(data)
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
 }
 
 func (h *Order) GetById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	idParam := chi.URLParam(r, "id")
 
 	const base = 10
