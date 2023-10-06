@@ -1,4 +1,4 @@
-package handler
+package order
 
 import (
 	"context"
@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"orders-api/model"
-	"orders-api/repository/order"
 	"strconv"
 	"time"
 
@@ -17,21 +15,22 @@ import (
 )
 
 type Repo interface {
-	Insert(ctx context.Context, order model.Order) error
-	FindById(ctx context.Context, orderId uint64) (model.Order, error)
+	Insert(ctx context.Context, order Order) error
+	FindById(ctx context.Context, orderId uint64) (Order, error)
 	DeleteById(ctx context.Context, orderId uint64) error
-	Update(ctx context.Context, order model.Order) error
-	FindAll(ctx context.Context, page order.FindAllPage) (order.FindResult, error)
+	Update(ctx context.Context, order Order) error
+	FindAll(ctx context.Context, page FindAllPage) (FindResult, error)
 }
 
-type Order struct {
+type OrderInterface struct {
 	Repo Repo
 }
 
-func (h *Order) Create(w http.ResponseWriter, r *http.Request) {
+func (h *OrderInterface) Create(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var body struct {
-		CustomerID uuid.UUID        `json:"customer_id"`
-		LineItems  []model.LineItem `json:"line_items"`
+		CustomerID uuid.UUID  `json:"customer_id"`
+		LineItems  []LineItem `json:"line_items"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -41,7 +40,7 @@ func (h *Order) Create(w http.ResponseWriter, r *http.Request) {
 
 	now := time.Now().UTC()
 
-	order := model.Order{
+	order := Order{
 		OrderId:    rand.Uint64(),
 		CustomerId: body.CustomerID,
 		LineItems:  body.LineItems,
@@ -66,7 +65,9 @@ func (h *Order) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *Order) List(w http.ResponseWriter, r *http.Request) {
+func (h *OrderInterface) List(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	cursorStr := r.URL.Query().Get("cursor")
 	if cursorStr == "" {
 		cursorStr = "0"
@@ -81,7 +82,7 @@ func (h *Order) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	const size = 50
-	res, err := h.Repo.FindAll(r.Context(), order.FindAllPage{
+	res, err := h.Repo.FindAll(r.Context(), FindAllPage{
 		Offset: cursor,
 		Size:   size,
 	})
@@ -92,8 +93,8 @@ func (h *Order) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var response struct {
-		Items []model.Order `json:"items"`
-		Next  uint64        `json:"next,omitempty"`
+		Items []Order `json:"items"`
+		Next  uint64  `json:"next,omitempty"`
 	}
 	response.Items = res.Orders
 	response.Next = res.Cursor
@@ -105,11 +106,10 @@ func (h *Order) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
 }
 
-func (h *Order) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *OrderInterface) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	idParam := chi.URLParam(r, "id")
 
@@ -123,7 +123,7 @@ func (h *Order) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	o, err := h.Repo.FindById(r.Context(), orderID)
-	if errors.Is(err, order.ErrNotExist) {
+	if errors.Is(err, ErrNotExist) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	} else if err != nil {
@@ -139,7 +139,8 @@ func (h *Order) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Order) UpdateById(w http.ResponseWriter, r *http.Request) {
+func (h *OrderInterface) UpdateById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var body struct {
 		Status string `json:"status"`
 	}
@@ -161,7 +162,7 @@ func (h *Order) UpdateById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	theOrder, err := h.Repo.FindById(r.Context(), orderId)
-	if errors.Is(err, order.ErrNotExist) {
+	if errors.Is(err, ErrNotExist) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	} else if err != nil {
@@ -206,7 +207,8 @@ func (h *Order) UpdateById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Order) DeleteById(w http.ResponseWriter, r *http.Request) {
+func (h *OrderInterface) DeleteById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	idParam := chi.URLParam(r, "id")
 
 	const base = 10
@@ -219,7 +221,7 @@ func (h *Order) DeleteById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Repo.DeleteById(r.Context(), orderID)
-	if errors.Is(err, order.ErrNotExist) {
+	if errors.Is(err, ErrNotExist) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	} else if err != nil {
