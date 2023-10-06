@@ -12,11 +12,16 @@ import (
 type App struct {
 	router http.Handler
 	rdb    *redis.Client
+	config Config
 }
 
-func New() *App {
+func New(config Config) *App {
+	fmt.Println("Config", config)
 	app := &App{
-		rdb: redis.NewClient(&redis.Options{}),
+		rdb: redis.NewClient(&redis.Options{
+			Addr: config.RedisAddress,
+		}),
+		config: config,
 	}
 
 	app.loadRoutes()
@@ -26,9 +31,11 @@ func New() *App {
 
 func (a *App) Start(ctx context.Context) error {
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%d", a.config.ServerPort),
 		Handler: a.router,
 	}
+
+	fmt.Println("Server listening on port", a.config.ServerPort)
 
 	err := a.rdb.Ping(ctx).Err()
 	if err != nil {
@@ -40,8 +47,6 @@ func (a *App) Start(ctx context.Context) error {
 			fmt.Println("failed to close redis", err)
 		}
 	}()
-
-	fmt.Println("Starting server")
 
 	ch := make(chan error, 1)
 
@@ -62,6 +67,4 @@ func (a *App) Start(ctx context.Context) error {
 
 		return server.Shutdown(timeout)
 	}
-
-	return nil
 }
