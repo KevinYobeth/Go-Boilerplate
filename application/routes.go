@@ -1,8 +1,8 @@
 package application
 
 import (
+	"library/domain/order"
 	"net/http"
-	"orders-api/domain/order"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -23,10 +23,13 @@ func (a *App) loadRoutes() {
 }
 
 func (a *App) loadOrderRoutes(router chi.Router) {
+	// orderHandler := &order.OrderInterface{
+	// 	Repo: &order.RedisRepo{
+	// 		Client: a.rdb,
+	// 	},
+	// }
 	orderHandler := &order.OrderInterface{
-		Repo: &order.RedisRepo{
-			Client: a.rdb,
-		},
+		Repo: &order.PostgresRepo{},
 	}
 
 	router.Post("/", orderHandler.Create)

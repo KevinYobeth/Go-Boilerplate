@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/signal"
 
-	"orders-api/application"
+	"library/application"
 )
 
 func main() {

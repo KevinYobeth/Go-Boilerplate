@@ -1,20 +1,21 @@
 package application
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 )
 
 type Config struct {
-	RedisAddress string
-	ServerPort   uint16
+	RedisAddress    string
+	PostgresAddress string
+	ServerPort      uint16
 }
 
 func LoadConfig() Config {
 	cfg := Config{
-		RedisAddress: "localhost:6379",
-		ServerPort:   8080,
+		RedisAddress:    "localhost:6379",
+		PostgresAddress: "postgres://postgres:postgres@localhost/orders?sslmode=disable",
+		ServerPort:      8080,
 	}
 
 	if redisAddr, exists := os.LookupEnv("REDIS_ADDR"); exists {
@@ -27,6 +28,5 @@ func LoadConfig() Config {
 		}
 	}
 
-	fmt.Println("CONFIG", cfg)
 	return cfg
 }

@@ -3,24 +3,29 @@ package application
 import (
 	"context"
 	"fmt"
+	"library/domain/order"
 	"net/http"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
 type App struct {
 	router http.Handler
 	rdb    *redis.Client
+	pgdb   *gorm.DB
 	config Config
 }
 
 func New(config Config) *App {
-	fmt.Println("Config", config)
+	pgdb := GetPostgresDB()
+
 	app := &App{
 		rdb: redis.NewClient(&redis.Options{
 			Addr: config.RedisAddress,
 		}),
+		pgdb:   pgdb,
 		config: config,
 	}
 
@@ -41,6 +46,8 @@ func (a *App) Start(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to redis :%w", err)
 	}
+
+	a.pgdb.AutoMigrate(&order.Order{}, &order.LineItem{})
 
 	defer func() {
 		if err := a.rdb.Close(); err != nil {
