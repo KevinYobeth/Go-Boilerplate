@@ -14,7 +14,7 @@ type Config struct {
 func LoadConfig() Config {
 	cfg := Config{
 		RedisAddress:    "localhost:6379",
-		PostgresAddress: "postgres://postgres:postgres@localhost/orders?sslmode=disable",
+		PostgresAddress: "postgres://postgres:postgres@localhost/library?sslmode=disable",
 		ServerPort:      8080,
 	}
 

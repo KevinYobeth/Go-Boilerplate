@@ -3,7 +3,6 @@ package application
 import (
 	"context"
 	"fmt"
-	"library/domain/order"
 	"net/http"
 	"time"
 
@@ -46,8 +45,6 @@ func (a *App) Start(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to redis :%w", err)
 	}
-
-	a.pgdb.AutoMigrate(&order.Order{}, &order.LineItem{})
 
 	defer func() {
 		if err := a.rdb.Close(); err != nil {
