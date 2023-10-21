@@ -2,7 +2,7 @@ package book
 
 import (
 	"context"
-	helper "library/utils"
+	"library/shared"
 )
 
 type GetAllBookReturn struct {
@@ -15,5 +15,5 @@ type Repo interface {
 	GetById(ctx context.Context, bookId string) (Book, error)
 	DeleteById(ctx context.Context, bookId string) error
 	Update(ctx context.Context, bookId string, book Book) error
-	GetAll(ctx context.Context, pagination helper.LimitPagination) (GetAllBookReturn, error)
+	GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error)
 }
