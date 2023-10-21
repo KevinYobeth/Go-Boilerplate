@@ -48,6 +48,9 @@ func (a *App) loadAuthorRoutes(router chi.Router) {
 		},
 	}
 
+	router.Put("/{id}", authorHandler.Update)
+	router.Delete("/{id}", authorHandler.DeleteById)
+	router.Get("/{id}", authorHandler.GetById)
 	router.Get("/", authorHandler.List)
 	router.Post("/", authorHandler.Create)
 }

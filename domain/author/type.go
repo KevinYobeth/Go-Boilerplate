@@ -2,7 +2,7 @@ package author
 
 import (
 	"context"
-	helper "library/utils"
+	"library/shared"
 )
 
 type GetAllAuthorReturn struct {
@@ -15,9 +15,9 @@ type Repo interface {
 	GetById(ctx context.Context, authorId string) (Author, error)
 	DeleteById(ctx context.Context, authorId string) error
 	Update(ctx context.Context, authorId string, author Author) error
-	GetAll(ctx context.Context, pagination helper.LimitPagination) (GetAllAuthorReturn, error)
+	GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllAuthorReturn, error)
 }
 
-type CreateAuthorEntity struct {
+type UpsertAuthorEntity struct {
 	Name string `json:"name"`
 }
