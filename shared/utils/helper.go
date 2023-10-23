@@ -4,14 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"library/shared"
 	"net/http"
 )
-
-type jsonResponse struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-}
 
 func ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // 1MB
@@ -32,7 +27,7 @@ func ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	return nil
 }
 
-func WriteJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
+func WriteJSON(w http.ResponseWriter, status int, data shared.ResponseObject, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -61,9 +56,11 @@ func ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 		statusCode = status[0]
 	}
 
-	var payload jsonResponse
-	payload.Error = true
-	payload.Message = err.Error()
-
-	return WriteJSON(w, statusCode, payload)
+	return WriteJSON(w, statusCode, shared.ResponseObject{
+		Data:    nil,
+		Message: err.Error(),
+		Metadata: shared.ResponseMetadataObject{
+			IsError: true,
+		},
+	})
 }

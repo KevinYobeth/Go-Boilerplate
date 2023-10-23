@@ -3,7 +3,7 @@ package author
 import (
 	"fmt"
 	"library/shared"
-	helper "library/utils"
+	helper "library/shared/utils"
 	"net/http"
 	"strconv"
 	"time"
@@ -42,16 +42,14 @@ func (i *AuthorInterface) Create(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	err = helper.WriteJSON(w, http.StatusCreated, author)
+	err = helper.WriteJSON(w, http.StatusCreated, shared.ResponseObject{
+		Data:     author,
+		Message:  "success create author",
+		Metadata: shared.ResponseMetadataObject{},
+	})
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
-		return
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
 	}
-
 }
 
 func (i *AuthorInterface) List(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +84,19 @@ func (i *AuthorInterface) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helper.WriteJSON(w, http.StatusOK, authors)
+	err = helper.WriteJSON(w, http.StatusOK, shared.ResponseObject{
+		Data: authors,
+		Metadata: shared.ResponseMetadataObject{
+			Pagination: &shared.LimitPagination{
+				Page:  page,
+				Limit: limit,
+			},
+		},
+		Message: "success get authors",
+	})
+	if err != nil {
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
+	}
 }
 
 func (i *AuthorInterface) GetById(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +112,13 @@ func (i *AuthorInterface) GetById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helper.WriteJSON(w, http.StatusOK, author)
+	err = helper.WriteJSON(w, http.StatusOK, shared.ResponseObject{
+		Data:    author,
+		Message: "success get author",
+	})
+	if err != nil {
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
+	}
 }
 
 func (i *AuthorInterface) Update(w http.ResponseWriter, r *http.Request) {
@@ -142,6 +158,14 @@ func (i *AuthorInterface) Update(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	err = helper.WriteJSON(w, http.StatusOK, shared.ResponseObject{
+		Data:    author,
+		Message: "success update author",
+	})
+	if err != nil {
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
+	}
 }
 
 func (i *AuthorInterface) DeleteById(w http.ResponseWriter, r *http.Request) {
@@ -155,5 +179,12 @@ func (i *AuthorInterface) DeleteById(w http.ResponseWriter, r *http.Request) {
 			Data:    nil,
 		})
 		return
+	}
+
+	err = helper.WriteJSON(w, http.StatusOK, shared.ResponseObject{
+		Message: "success delete author",
+	})
+	if err != nil {
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
 	}
 }
