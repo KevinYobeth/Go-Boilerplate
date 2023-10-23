@@ -2,7 +2,6 @@ package application
 
 import (
 	"library/domain/author"
-	"library/domain/order"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -18,27 +17,9 @@ func (a *App) loadRoutes() {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	router.Route("/orders", a.loadOrderRoutes)
 	router.Route("/authors", a.loadAuthorRoutes)
 
 	a.router = router
-}
-
-func (a *App) loadOrderRoutes(router chi.Router) {
-	// orderHandler := &order.OrderInterface{
-	// 	Repo: &order.RedisRepo{
-	// 		Client: a.rdb,
-	// 	},
-	// }
-	orderHandler := &order.OrderInterface{
-		Repo: &order.PostgresRepo{},
-	}
-
-	router.Post("/", orderHandler.Create)
-	router.Get("/", orderHandler.List)
-	router.Get("/{id}", orderHandler.GetById)
-	router.Put("/{id}", orderHandler.UpdateById)
-	router.Delete("/{id}", orderHandler.DeleteById)
 }
 
 func (a *App) loadAuthorRoutes(router chi.Router) {
