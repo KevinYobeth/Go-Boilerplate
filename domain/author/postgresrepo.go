@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"library/shared"
+	helper "library/shared/utils"
 
 	"gorm.io/gorm"
 )
@@ -57,7 +58,10 @@ func (r *PostgresRepo) Update(ctx context.Context, authorId string, author Autho
 func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllAuthorReturn, error) {
 	var authors []Author
 
-	result := r.Client.Limit(int(pagination.Limit)).Offset(int(pagination.Limit)*int(pagination.Page) - int(pagination.Limit)).Find(&authors)
+	var limit = pagination.Limit
+	var page = pagination.Page
+
+	result := r.Client.Limit(limit).Offset(helper.CalculateLimitPaginationOffset(limit, page)).Find(&authors)
 
 	if result.Error != nil {
 		return GetAllAuthorReturn{}, fmt.Errorf("failed to add to database: %w", result.Error)
@@ -65,6 +69,5 @@ func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagina
 
 	return GetAllAuthorReturn{
 		Authors: authors,
-		Cursor:  0,
 	}, nil
 }

@@ -6,8 +6,7 @@ import (
 )
 
 type GetAllBookReturn struct {
-	Books  []Book
-	Cursor uint64
+	Books []Book `json:"books"`
 }
 
 type Repo interface {
@@ -16,4 +15,9 @@ type Repo interface {
 	DeleteById(ctx context.Context, bookId string) error
 	Update(ctx context.Context, bookId string, book Book) error
 	GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error)
+}
+
+type UpsertBookEntity struct {
+	Title    string `json:"title"`
+	AuthorId string `json:"authorId"`
 }

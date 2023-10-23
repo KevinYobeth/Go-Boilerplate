@@ -2,6 +2,7 @@ package application
 
 import (
 	"library/domain/author"
+	"library/domain/book"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -18,6 +19,7 @@ func (a *App) loadRoutes() {
 	})
 
 	router.Route("/authors", a.loadAuthorRoutes)
+	router.Route("/books", a.loadBookRoutes)
 
 	a.router = router
 }
@@ -34,4 +36,18 @@ func (a *App) loadAuthorRoutes(router chi.Router) {
 	router.Get("/{id}", authorHandler.GetById)
 	router.Get("/", authorHandler.List)
 	router.Post("/", authorHandler.Create)
+}
+
+func (a *App) loadBookRoutes(router chi.Router) {
+	bookHandler := &book.BookInterface{
+		Repo: &book.PostgresRepo{
+			Client: a.pgdb,
+		},
+	}
+
+	router.Put("/{id}", bookHandler.Update)
+	router.Delete("/{id}", bookHandler.DeleteById)
+	router.Get("/{id}", bookHandler.GetById)
+	router.Get("/", bookHandler.List)
+	router.Post("/", bookHandler.Create)
 }

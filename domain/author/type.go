@@ -7,7 +7,6 @@ import (
 
 type GetAllAuthorReturn struct {
 	Authors []Author `json:"authors"`
-	Cursor  uint64   `json:"cursor"`
 }
 
 type Repo interface {
