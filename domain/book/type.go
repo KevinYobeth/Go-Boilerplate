@@ -3,6 +3,8 @@ package book
 import (
 	"context"
 	"library/shared"
+
+	"github.com/google/uuid"
 )
 
 type GetAllBookReturn struct {
@@ -18,6 +20,6 @@ type Repo interface {
 }
 
 type UpsertBookEntity struct {
-	Title    string `json:"title"`
-	AuthorId string `json:"authorId"`
+	Title    string    `json:"title"`
+	AuthorId uuid.UUID `json:"authorId"`
 }

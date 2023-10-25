@@ -31,11 +31,11 @@ func (a *App) loadAuthorRoutes(router chi.Router) {
 		},
 	}
 
+	router.Get("/", authorHandler.List)
+	router.Post("/", authorHandler.Create)
 	router.Put("/{id}", authorHandler.Update)
 	router.Delete("/{id}", authorHandler.DeleteById)
 	router.Get("/{id}", authorHandler.GetById)
-	router.Get("/", authorHandler.List)
-	router.Post("/", authorHandler.Create)
 }
 
 func (a *App) loadBookRoutes(router chi.Router) {
@@ -43,11 +43,14 @@ func (a *App) loadBookRoutes(router chi.Router) {
 		Repo: &book.PostgresRepo{
 			Client: a.pgdb,
 		},
+		AuthorRepo: &author.PostgresRepo{
+			Client: a.pgdb,
+		},
 	}
 
+	router.Get("/", bookHandler.List)
+	router.Post("/", bookHandler.Create)
 	router.Put("/{id}", bookHandler.Update)
 	router.Delete("/{id}", bookHandler.DeleteById)
 	router.Get("/{id}", bookHandler.GetById)
-	router.Get("/", bookHandler.List)
-	router.Post("/", bookHandler.Create)
 }

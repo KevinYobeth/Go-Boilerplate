@@ -2,6 +2,7 @@ package book
 
 import (
 	"fmt"
+	"library/domain/author"
 	"library/shared"
 	helper "library/shared/utils"
 	"net/http"
@@ -13,7 +14,8 @@ import (
 )
 
 type BookInterface struct {
-	Repo Repo
+	Repo       Repo
+	AuthorRepo author.Repo
 }
 
 func (i *BookInterface) Create(w http.ResponseWriter, r *http.Request) {
@@ -26,10 +28,16 @@ func (i *BookInterface) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	author, err := i.AuthorRepo.GetById(r.Context(), body.AuthorId.String())
+	if err != nil {
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
+		return
+	}
+
 	book := Book{
 		Id:        uuid.New(),
 		Title:     body.Title,
-		AuthorId:  uuid.MustParse(body.AuthorId),
+		AuthorId:  author.Id,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -145,8 +153,14 @@ func (i *BookInterface) Update(w http.ResponseWriter, r *http.Request) {
 
 	var authorId uuid.UUID
 
-	if body.AuthorId != "" {
-		authorId = uuid.MustParse(body.AuthorId)
+	if body.AuthorId != uuid.Nil {
+		author, err := i.AuthorRepo.GetById(r.Context(), body.AuthorId.String())
+		if err != nil {
+			helper.ErrorJSON(w, err, http.StatusBadRequest)
+			return
+		}
+
+		authorId = author.Id
 	} else {
 		authorId = bookFromDB.AuthorId
 	}

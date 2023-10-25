@@ -61,7 +61,11 @@ func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagina
 	var limit = pagination.Limit
 	var page = pagination.Page
 
-	result := r.Client.Limit(limit).Offset(helper.CalculateLimitPaginationOffset(limit, page)).Find(&books)
+	result := r.Client.Model(&Book{}).
+		Limit(limit).
+		Offset(helper.CalculateLimitPaginationOffset(limit, page)).
+		Preload("Author").
+		Find(&books)
 
 	if result.Error != nil {
 		return GetAllBookReturn{}, fmt.Errorf("failed to add to database: %w", result.Error)
