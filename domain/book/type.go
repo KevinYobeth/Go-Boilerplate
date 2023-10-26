@@ -11,6 +11,7 @@ import (
 
 type GetAllBookReturn struct {
 	Books []model.Book `json:"books"`
+	Count int64        `json:"-"`
 }
 
 type Handler struct {

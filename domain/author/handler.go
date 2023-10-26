@@ -28,8 +28,9 @@ func (i *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 		Data: authors,
 		Metadata: shared.ResponseMetadataObject{
 			Pagination: &shared.LimitPagination{
-				Page:  page,
-				Limit: limit,
+				Page:       page,
+				Limit:      limit,
+				TotalItems: authors.Count,
 			},
 		},
 		Message: "success get authors",

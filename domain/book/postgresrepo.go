@@ -23,6 +23,7 @@ func NewBookPostgresRepo(client *gorm.DB) *PostgresRepo {
 
 func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error) {
 	var books []model.Book
+	var count int64
 
 	var limit = pagination.Limit
 	var page = pagination.Page
@@ -31,14 +32,16 @@ func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagina
 		Limit(limit).
 		Offset(helper.CalculateLimitPaginationOffset(limit, page)).
 		Preload("Author").
-		Find(&books)
+		Find(&books).
+		Count(&count)
 
 	if result.Error != nil {
-		return GetAllBookReturn{}, fmt.Errorf("failed to add to database: %w", result.Error)
+		return GetAllBookReturn{}, fmt.Errorf("failed to get items: %w", result.Error)
 	}
 
 	return GetAllBookReturn{
 		Books: books,
+		Count: count,
 	}, nil
 }
 
@@ -48,7 +51,7 @@ func (r *PostgresRepo) GetById(ctx context.Context, bookId uuid.UUID) (model.Boo
 	result := r.Client.First(&book, "id = ?", bookId)
 
 	if result.Error != nil {
-		return model.Book{}, fmt.Errorf("failed to add to database: %w", result.Error)
+		return model.Book{}, fmt.Errorf("failed to get item: %w", result.Error)
 	}
 
 	return book, nil
@@ -58,7 +61,7 @@ func (r *PostgresRepo) Create(ctx context.Context, book model.Book) error {
 	result := r.Client.Create(book)
 
 	if result.Error != nil {
-		return fmt.Errorf("failed to add to database: %w", result.Error)
+		return fmt.Errorf("failed to add: %w", result.Error)
 	}
 
 	return nil

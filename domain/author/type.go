@@ -10,6 +10,7 @@ import (
 
 type GetAllAuthorReturn struct {
 	Authors []model.Author `json:"authors"`
+	Count   int64          `json:"-"`
 }
 
 type Handler struct {

@@ -12,6 +12,7 @@ type ResponseMetadataObject struct {
 }
 
 type LimitPagination struct {
-	Page  int `json:"page,omitempty"`
-	Limit int `json:"limit,omitempty"`
+	Page       int   `json:"page,omitempty"`
+	Limit      int   `json:"limit,omitempty"`
+	TotalItems int64 `json:"totalItems,omitempty"`
 }
