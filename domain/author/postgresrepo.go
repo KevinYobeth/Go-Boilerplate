@@ -7,11 +7,18 @@ import (
 	model "library/shared/models"
 	helper "library/shared/utils"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type PostgresRepo struct {
 	Client *gorm.DB
+}
+
+func NewAuthorPostgresRepo(client *gorm.DB) *PostgresRepo {
+	return &PostgresRepo{
+		Client: client,
+	}
 }
 
 func (r *PostgresRepo) Insert(ctx context.Context, author model.Author) error {
@@ -24,7 +31,7 @@ func (r *PostgresRepo) Insert(ctx context.Context, author model.Author) error {
 	return nil
 }
 
-func (r *PostgresRepo) GetById(ctx context.Context, authorId string) (model.Author, error) {
+func (r *PostgresRepo) GetById(ctx context.Context, authorId uuid.UUID) (model.Author, error) {
 	var author model.Author
 
 	result := r.Client.First(&author, "id = ?", authorId)
@@ -36,7 +43,7 @@ func (r *PostgresRepo) GetById(ctx context.Context, authorId string) (model.Auth
 	return author, nil
 }
 
-func (r *PostgresRepo) DeleteById(ctx context.Context, authorId string) error {
+func (r *PostgresRepo) DeleteById(ctx context.Context, authorId uuid.UUID) error {
 	result := r.Client.Delete(&model.Author{}, "id = ?", authorId)
 
 	if result.Error != nil {
@@ -46,7 +53,7 @@ func (r *PostgresRepo) DeleteById(ctx context.Context, authorId string) error {
 	return nil
 }
 
-func (r *PostgresRepo) Update(ctx context.Context, authorId string, author model.Author) error {
+func (r *PostgresRepo) Update(ctx context.Context, authorId uuid.UUID, author model.Author) error {
 	result := r.Client.Save(&author)
 
 	if result.Error != nil {
@@ -62,7 +69,8 @@ func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagina
 	var limit = pagination.Limit
 	var page = pagination.Page
 
-	result := r.Client.Limit(limit).
+	result := r.Client.
+		Limit(limit).
 		Offset(helper.CalculateLimitPaginationOffset(limit, page)).
 		Preload("Books").
 		Find(&authors)

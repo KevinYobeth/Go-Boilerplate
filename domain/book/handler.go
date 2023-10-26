@@ -2,24 +2,22 @@ package book
 
 import (
 	"fmt"
-	"library/domain/author"
 	"library/shared"
-	model "library/shared/models"
 	helper "library/shared/utils"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
-type BookInterface struct {
-	Repo       Repo
-	AuthorRepo author.Repo
+func NewBookHandler(useCase UseCase) *Handler {
+	return &Handler{
+		UseCase: useCase,
+	}
 }
 
-func (i *BookInterface) Create(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var body UpsertBookEntity
 
 	err := helper.ReadJSON(w, r, &body)
@@ -29,21 +27,8 @@ func (i *BookInterface) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	author, err := i.AuthorRepo.GetById(r.Context(), body.AuthorId.String())
-	if err != nil {
-		helper.ErrorJSON(w, err, http.StatusInternalServerError)
-		return
-	}
+	book, err := i.UseCase.Create(r.Context(), body)
 
-	book := model.Book{
-		Id:        uuid.New(),
-		Title:     body.Title,
-		AuthorId:  author.Id,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	err = i.Repo.Insert(r.Context(), book)
 	if err != nil {
 		fmt.Println("failed to insert: ", err)
 		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
@@ -62,7 +47,7 @@ func (i *BookInterface) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *BookInterface) List(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) List(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	var page int = 1
 	var limit int = 10
@@ -83,14 +68,9 @@ func (i *BookInterface) List(w http.ResponseWriter, r *http.Request) {
 		limit = convertedLimit
 	}
 
-	books, err := i.Repo.GetAll(r.Context(), shared.LimitPagination{Page: page, Limit: limit})
-
+	books, err := i.UseCase.List(r.Context(), shared.LimitPagination{Page: page, Limit: limit})
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 
@@ -109,16 +89,12 @@ func (i *BookInterface) List(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *BookInterface) GetById(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) GetById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	book, err := i.Repo.GetById(r.Context(), id)
+	book, err := i.UseCase.GetById(r.Context(), uuid.MustParse(id))
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 
@@ -131,56 +107,20 @@ func (i *BookInterface) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *BookInterface) Update(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var body UpsertBookEntity
 
-	bookFromDB, err := i.Repo.GetById(r.Context(), id)
-	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
-		return
-	}
-
-	err = helper.ReadJSON(w, r, &body)
+	err := helper.ReadJSON(w, r, &body)
 	if err != nil {
 		fmt.Println("failed to read JSON", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	var authorId uuid.UUID
-
-	if body.AuthorId != uuid.Nil {
-		author, err := i.AuthorRepo.GetById(r.Context(), body.AuthorId.String())
-		if err != nil {
-			helper.ErrorJSON(w, err, http.StatusBadRequest)
-			return
-		}
-
-		authorId = author.Id
-	} else {
-		authorId = bookFromDB.AuthorId
-	}
-
-	book := model.Book{
-		Id:        bookFromDB.Id,
-		Title:     body.Title,
-		AuthorId:  authorId,
-		CreatedAt: bookFromDB.CreatedAt,
-		UpdatedAt: time.Now(),
-	}
-
-	err = i.Repo.Update(r.Context(), id, book)
+	book, err := i.UseCase.Update(r.Context(), uuid.MustParse(id), body)
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 
@@ -193,16 +133,12 @@ func (i *BookInterface) Update(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *BookInterface) DeleteById(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) DeleteById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	err := i.Repo.DeleteById(r.Context(), id)
+	err := i.UseCase.DeleteById(r.Context(), uuid.MustParse(id))
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 

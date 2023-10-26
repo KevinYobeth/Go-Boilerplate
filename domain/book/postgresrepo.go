@@ -7,11 +7,18 @@ import (
 	model "library/shared/models"
 	helper "library/shared/utils"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type PostgresRepo struct {
 	Client *gorm.DB
+}
+
+func NewBookPostgresRepo(client *gorm.DB) *PostgresRepo {
+	return &PostgresRepo{
+		Client: client,
+	}
 }
 
 func (r *PostgresRepo) Insert(ctx context.Context, book model.Book) error {
@@ -24,7 +31,7 @@ func (r *PostgresRepo) Insert(ctx context.Context, book model.Book) error {
 	return nil
 }
 
-func (r *PostgresRepo) GetById(ctx context.Context, bookId string) (model.Book, error) {
+func (r *PostgresRepo) GetById(ctx context.Context, bookId uuid.UUID) (model.Book, error) {
 	var book model.Book
 
 	result := r.Client.First(&book, "id = ?", bookId)
@@ -36,7 +43,7 @@ func (r *PostgresRepo) GetById(ctx context.Context, bookId string) (model.Book, 
 	return book, nil
 }
 
-func (r *PostgresRepo) DeleteById(ctx context.Context, bookId string) error {
+func (r *PostgresRepo) DeleteById(ctx context.Context, bookId uuid.UUID) error {
 	result := r.Client.Delete(&model.Book{}, "id = ?", bookId)
 
 	if result.Error != nil {
@@ -46,7 +53,7 @@ func (r *PostgresRepo) DeleteById(ctx context.Context, bookId string) error {
 	return nil
 }
 
-func (r *PostgresRepo) Update(ctx context.Context, authorId string, book model.Book) error {
+func (r *PostgresRepo) Update(ctx context.Context, authorId uuid.UUID, book model.Book) error {
 	result := r.Client.Save(&book)
 
 	if result.Error != nil {

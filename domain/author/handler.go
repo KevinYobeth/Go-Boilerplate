@@ -13,34 +13,25 @@ import (
 	"github.com/google/uuid"
 )
 
-type AuthorInterface struct {
-	Repo Repo
+func NewAuthorHandler(useCase UseCase) *Handler {
+	return &Handler{
+		UseCase: useCase,
+	}
 }
 
-func (i *AuthorInterface) Create(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var body UpsertAuthorEntity
 
 	err := helper.ReadJSON(w, r, &body)
 	if err != nil {
-		fmt.Println("failed to read JSON", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	author := model.Author{
-		Id:        uuid.New(),
-		Name:      body.Name,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	err = i.Repo.Insert(r.Context(), author)
+	author, err := i.UseCase.Create(r.Context(), body)
 	if err != nil {
-		fmt.Println("failed to insert: ", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
+		return
 	}
 
 	err = helper.WriteJSON(w, http.StatusCreated, shared.ResponseObject{
@@ -53,7 +44,7 @@ func (i *AuthorInterface) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *AuthorInterface) List(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) List(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	var page int = 1
 	var limit int = 10
@@ -74,14 +65,9 @@ func (i *AuthorInterface) List(w http.ResponseWriter, r *http.Request) {
 		limit = convertedLimit
 	}
 
-	authors, err := i.Repo.GetAll(r.Context(), shared.LimitPagination{Page: page, Limit: limit})
-
+	authors, err := i.UseCase.Repo.GetAll(r.Context(), shared.LimitPagination{Page: page, Limit: limit})
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 
@@ -100,16 +86,12 @@ func (i *AuthorInterface) List(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *AuthorInterface) GetById(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) GetById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	author, err := i.Repo.GetById(r.Context(), id)
+	author, err := i.UseCase.GetById(r.Context(), uuid.MustParse(id))
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 
@@ -122,11 +104,11 @@ func (i *AuthorInterface) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *AuthorInterface) Update(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var body UpsertAuthorEntity
 
-	authorFromDB, err := i.Repo.GetById(r.Context(), id)
+	authorFromDB, err := i.UseCase.GetById(r.Context(), uuid.MustParse(id))
 	if err != nil {
 		fmt.Println("something went wrong", err)
 		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
@@ -150,7 +132,7 @@ func (i *AuthorInterface) Update(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: time.Now(),
 	}
 
-	err = i.Repo.Update(r.Context(), id, author)
+	author, err = i.UseCase.Update(r.Context(), uuid.MustParse(id), body)
 	if err != nil {
 		fmt.Println("something went wrong", err)
 		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
@@ -169,16 +151,12 @@ func (i *AuthorInterface) Update(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (i *AuthorInterface) DeleteById(w http.ResponseWriter, r *http.Request) {
+func (i *Handler) DeleteById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	err := i.Repo.DeleteById(r.Context(), id)
+	err := i.UseCase.DeleteById(r.Context(), uuid.MustParse(id))
 	if err != nil {
-		fmt.Println("something went wrong", err)
-		helper.WriteJSON(w, http.StatusInternalServerError, shared.ResponseObject{
-			Message: "something went wrong",
-			Data:    nil,
-		})
+		helper.ErrorJSON(w, err)
 		return
 	}
 

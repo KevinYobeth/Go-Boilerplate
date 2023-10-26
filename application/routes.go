@@ -25,11 +25,9 @@ func (a *App) loadRoutes() {
 }
 
 func (a *App) loadAuthorRoutes(router chi.Router) {
-	authorHandler := &author.AuthorInterface{
-		Repo: &author.PostgresRepo{
-			Client: a.pgdb,
-		},
-	}
+	authorRepository := author.NewAuthorPostgresRepo(a.pgdb)
+	authorUseCase := author.NewAuthorUseCase(authorRepository)
+	authorHandler := author.NewAuthorHandler(*authorUseCase)
 
 	router.Get("/", authorHandler.List)
 	router.Post("/", authorHandler.Create)
@@ -39,14 +37,12 @@ func (a *App) loadAuthorRoutes(router chi.Router) {
 }
 
 func (a *App) loadBookRoutes(router chi.Router) {
-	bookHandler := &book.BookInterface{
-		Repo: &book.PostgresRepo{
-			Client: a.pgdb,
-		},
-		AuthorRepo: &author.PostgresRepo{
-			Client: a.pgdb,
-		},
-	}
+	authorRepository := author.NewAuthorPostgresRepo(a.pgdb)
+	authorUseCase := author.NewAuthorUseCase(authorRepository)
+
+	bookRepository := book.NewBookPostgresRepo(a.pgdb)
+	bookUseCase := book.NewBookUseCase(bookRepository, *authorUseCase)
+	bookHandler := book.NewBookHandler(*bookUseCase)
 
 	router.Get("/", bookHandler.List)
 	router.Post("/", bookHandler.Create)
