@@ -21,48 +21,6 @@ func NewBookPostgresRepo(client *gorm.DB) *PostgresRepo {
 	}
 }
 
-func (r *PostgresRepo) Insert(ctx context.Context, book model.Book) error {
-	result := r.Client.Create(book)
-
-	if result.Error != nil {
-		return fmt.Errorf("failed to add to database: %w", result.Error)
-	}
-
-	return nil
-}
-
-func (r *PostgresRepo) GetById(ctx context.Context, bookId uuid.UUID) (model.Book, error) {
-	var book model.Book
-
-	result := r.Client.First(&book, "id = ?", bookId)
-
-	if result.Error != nil {
-		return model.Book{}, fmt.Errorf("failed to add to database: %w", result.Error)
-	}
-
-	return book, nil
-}
-
-func (r *PostgresRepo) DeleteById(ctx context.Context, bookId uuid.UUID) error {
-	result := r.Client.Delete(&model.Book{}, "id = ?", bookId)
-
-	if result.Error != nil {
-		return fmt.Errorf("failed to delete: %w", result.Error)
-	}
-
-	return nil
-}
-
-func (r *PostgresRepo) Update(ctx context.Context, authorId uuid.UUID, book model.Book) error {
-	result := r.Client.Save(&book)
-
-	if result.Error != nil {
-		return fmt.Errorf("failed to update: %w", result.Error)
-	}
-
-	return nil
-}
-
 func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error) {
 	var books []model.Book
 
@@ -82,4 +40,46 @@ func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagina
 	return GetAllBookReturn{
 		Books: books,
 	}, nil
+}
+
+func (r *PostgresRepo) GetById(ctx context.Context, bookId uuid.UUID) (model.Book, error) {
+	var book model.Book
+
+	result := r.Client.First(&book, "id = ?", bookId)
+
+	if result.Error != nil {
+		return model.Book{}, fmt.Errorf("failed to add to database: %w", result.Error)
+	}
+
+	return book, nil
+}
+
+func (r *PostgresRepo) Create(ctx context.Context, book model.Book) error {
+	result := r.Client.Create(book)
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to add to database: %w", result.Error)
+	}
+
+	return nil
+}
+
+func (r *PostgresRepo) DeleteById(ctx context.Context, bookId uuid.UUID) error {
+	result := r.Client.Delete(&model.Book{}, "id = ?", bookId)
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to delete: %w", result.Error)
+	}
+
+	return nil
+}
+
+func (r *PostgresRepo) UpdateById(ctx context.Context, authorId uuid.UUID, book model.Book) error {
+	result := r.Client.Save(&book)
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to update: %w", result.Error)
+	}
+
+	return nil
 }

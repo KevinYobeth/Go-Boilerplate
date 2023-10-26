@@ -17,26 +17,7 @@ func NewBookUseCase(repo Repo, authorUseCase author.UseCase) *UseCase {
 	}
 }
 
-func (uc *UseCase) Create(ctx context.Context, payload UpsertBookEntity) (model.Book, error) {
-	author, err := uc.GetById(ctx, payload.AuthorId)
-	if err != nil {
-		return model.Book{}, err
-	}
-
-	// TODO: Add author check
-
-	book := model.Book{
-		Id:        uuid.New(),
-		Title:     payload.Title,
-		AuthorId:  author.Id,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	return book, nil
-}
-
-func (uc *UseCase) List(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error) {
+func (uc *UseCase) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error) {
 	books, err := uc.Repo.GetAll(ctx, pagination)
 	if err != nil {
 		return GetAllBookReturn{}, err
@@ -54,7 +35,29 @@ func (uc *UseCase) GetById(ctx context.Context, bookId uuid.UUID) (model.Book, e
 	return book, nil
 }
 
-func (uc *UseCase) Update(ctx context.Context, bookId uuid.UUID, payload UpsertBookEntity) (model.Book, error) {
+func (uc *UseCase) Create(ctx context.Context, payload UpsertBookEntity) (model.Book, error) {
+	author, err := uc.AuthorUseCase.GetById(ctx, payload.AuthorId)
+	if err != nil {
+		return model.Book{}, err
+	}
+
+	book := model.Book{
+		Id:        uuid.New(),
+		Title:     payload.Title,
+		AuthorId:  author.Id,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	err = uc.Repo.Create(ctx, book)
+	if err != nil {
+		return model.Book{}, err
+	}
+
+	return book, nil
+}
+
+func (uc *UseCase) UpdateById(ctx context.Context, bookId uuid.UUID, payload UpsertBookEntity) (model.Book, error) {
 	bookFromDB, err := uc.Repo.GetById(ctx, bookId)
 	if err != nil {
 		return model.Book{}, err
@@ -81,7 +84,7 @@ func (uc *UseCase) Update(ctx context.Context, bookId uuid.UUID, payload UpsertB
 		UpdatedAt: time.Now(),
 	}
 
-	err = uc.Repo.Update(ctx, bookId, book)
+	err = uc.Repo.UpdateById(ctx, bookId, book)
 	if err != nil {
 		return model.Book{}, err
 	}

@@ -29,9 +29,9 @@ func (a *App) loadAuthorRoutes(router chi.Router) {
 	authorUseCase := author.NewAuthorUseCase(authorRepository)
 	authorHandler := author.NewAuthorHandler(*authorUseCase)
 
-	router.Get("/", authorHandler.List)
+	router.Get("/", authorHandler.GetAll)
 	router.Post("/", authorHandler.Create)
-	router.Put("/{id}", authorHandler.Update)
+	router.Put("/{id}", authorHandler.UpdateById)
 	router.Delete("/{id}", authorHandler.DeleteById)
 	router.Get("/{id}", authorHandler.GetById)
 }
@@ -44,9 +44,9 @@ func (a *App) loadBookRoutes(router chi.Router) {
 	bookUseCase := book.NewBookUseCase(bookRepository, *authorUseCase)
 	bookHandler := book.NewBookHandler(*bookUseCase)
 
-	router.Get("/", bookHandler.List)
+	router.Get("/", bookHandler.GetAll)
 	router.Post("/", bookHandler.Create)
-	router.Put("/{id}", bookHandler.Update)
+	router.Put("/{id}", bookHandler.UpdateById)
 	router.Delete("/{id}", bookHandler.DeleteById)
 	router.Get("/{id}", bookHandler.GetById)
 }

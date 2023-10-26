@@ -23,7 +23,7 @@ func (uc *UseCase) Create(ctx context.Context, payload UpsertAuthorEntity) (mode
 		UpdatedAt: time.Now(),
 	}
 
-	err := uc.Repo.Insert(ctx, author)
+	err := uc.Repo.Create(ctx, author)
 	if err != nil {
 		return model.Author{}, err
 	}
@@ -50,8 +50,24 @@ func (uc *UseCase) GetById(ctx context.Context, authorId uuid.UUID) (model.Autho
 }
 
 func (uc *UseCase) Update(ctx context.Context, authorId uuid.UUID, payload UpsertAuthorEntity) (model.Author, error) {
-	// TODO
-	return model.Author{}, nil
+	authorFromDb, err := uc.GetById(ctx, authorId)
+	if err != nil {
+		return model.Author{}, err
+	}
+
+	author := model.Author{
+		Id:        authorFromDb.Id,
+		Name:      payload.Name,
+		CreatedAt: authorFromDb.CreatedAt,
+		UpdatedAt: time.Now(),
+	}
+
+	err = uc.Repo.UpdateById(ctx, authorId, author)
+	if err != nil {
+		return model.Author{}, err
+	}
+
+	return author, nil
 }
 
 func (uc *UseCase) DeleteById(ctx context.Context, authorId uuid.UUID) error {

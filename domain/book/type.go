@@ -23,11 +23,11 @@ type UseCase struct {
 }
 
 type Repo interface {
-	Insert(ctx context.Context, book model.Book) error
-	GetById(ctx context.Context, bookId uuid.UUID) (model.Book, error)
-	DeleteById(ctx context.Context, bookId uuid.UUID) error
-	Update(ctx context.Context, bookId uuid.UUID, book model.Book) error
 	GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error)
+	GetById(ctx context.Context, bookId uuid.UUID) (model.Book, error)
+	Create(ctx context.Context, book model.Book) error
+	UpdateById(ctx context.Context, bookId uuid.UUID, book model.Book) error
+	DeleteById(ctx context.Context, bookId uuid.UUID) error
 }
 
 type UpsertBookEntity struct {

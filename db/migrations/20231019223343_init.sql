@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE authors (
   id text NOT NULL PRIMARY KEY,
-  name text,
+  name text UNIQUE NOT NULL,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -10,7 +10,7 @@ CREATE TABLE authors (
 CREATE TABLE books (
   id text NOT NULL PRIMARY KEY,
   title text ,
-  author_id text REFERENCES authors(id),
+  author_id text NOT NULL REFERENCES authors(id),
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

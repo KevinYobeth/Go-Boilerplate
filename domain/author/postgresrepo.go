@@ -21,14 +21,25 @@ func NewAuthorPostgresRepo(client *gorm.DB) *PostgresRepo {
 	}
 }
 
-func (r *PostgresRepo) Insert(ctx context.Context, author model.Author) error {
-	result := r.Client.Create(author)
+func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllAuthorReturn, error) {
+	var authors []model.Author
+
+	var limit = pagination.Limit
+	var page = pagination.Page
+
+	result := r.Client.Model(&model.Author{}).
+		Limit(limit).
+		Offset(helper.CalculateLimitPaginationOffset(limit, page)).
+		Preload("Books").
+		Find(&authors)
 
 	if result.Error != nil {
-		return fmt.Errorf("failed to add to database: %w", result.Error)
+		return GetAllAuthorReturn{}, fmt.Errorf("failed to add to database: %w", result.Error)
 	}
 
-	return nil
+	return GetAllAuthorReturn{
+		Authors: authors,
+	}, nil
 }
 
 func (r *PostgresRepo) GetById(ctx context.Context, authorId uuid.UUID) (model.Author, error) {
@@ -43,17 +54,17 @@ func (r *PostgresRepo) GetById(ctx context.Context, authorId uuid.UUID) (model.A
 	return author, nil
 }
 
-func (r *PostgresRepo) DeleteById(ctx context.Context, authorId uuid.UUID) error {
-	result := r.Client.Delete(&model.Author{}, "id = ?", authorId)
+func (r *PostgresRepo) Create(ctx context.Context, author model.Author) error {
+	result := r.Client.Create(author)
 
 	if result.Error != nil {
-		return fmt.Errorf("failed to delete: %w", result.Error)
+		return fmt.Errorf("failed to add to database: %w", result.Error)
 	}
 
 	return nil
 }
 
-func (r *PostgresRepo) Update(ctx context.Context, authorId uuid.UUID, author model.Author) error {
+func (r *PostgresRepo) UpdateById(ctx context.Context, authorId uuid.UUID, author model.Author) error {
 	result := r.Client.Save(&author)
 
 	if result.Error != nil {
@@ -63,23 +74,12 @@ func (r *PostgresRepo) Update(ctx context.Context, authorId uuid.UUID, author mo
 	return nil
 }
 
-func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllAuthorReturn, error) {
-	var authors []model.Author
-
-	var limit = pagination.Limit
-	var page = pagination.Page
-
-	result := r.Client.
-		Limit(limit).
-		Offset(helper.CalculateLimitPaginationOffset(limit, page)).
-		Preload("Books").
-		Find(&authors)
+func (r *PostgresRepo) DeleteById(ctx context.Context, authorId uuid.UUID) error {
+	result := r.Client.Delete(&model.Author{}, "id = ?", authorId)
 
 	if result.Error != nil {
-		return GetAllAuthorReturn{}, fmt.Errorf("failed to add to database: %w", result.Error)
+		return fmt.Errorf("failed to delete: %w", result.Error)
 	}
 
-	return GetAllAuthorReturn{
-		Authors: authors,
-	}, nil
+	return nil
 }
