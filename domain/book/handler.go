@@ -1,7 +1,6 @@
 package book
 
 import (
-	"fmt"
 	"library/shared"
 	helper "library/shared/utils"
 	"net/http"
@@ -44,7 +43,13 @@ func (i *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 func (i *Handler) GetById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	book, err := i.UseCase.GetById(r.Context(), uuid.MustParse(id))
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		helper.ErrorJSON(w, err)
+		return
+	}
+
+	book, err := i.UseCase.GetById(r.Context(), uuid)
 	if err != nil {
 		helper.ErrorJSON(w, err)
 		return
@@ -88,14 +93,19 @@ func (i *Handler) UpdateById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var body UpsertBookEntity
 
-	err := helper.ReadJSON(w, r, &body)
+	uuid, err := uuid.Parse(id)
 	if err != nil {
-		fmt.Println("failed to read JSON", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		helper.ErrorJSON(w, err)
 		return
 	}
 
-	book, err := i.UseCase.UpdateById(r.Context(), uuid.MustParse(id), body)
+	err = helper.ReadJSON(w, r, &body)
+	if err != nil {
+		helper.ErrorJSON(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	book, err := i.UseCase.UpdateById(r.Context(), uuid, body)
 	if err != nil {
 		helper.ErrorJSON(w, err)
 		return
@@ -113,7 +123,13 @@ func (i *Handler) UpdateById(w http.ResponseWriter, r *http.Request) {
 func (i *Handler) DeleteById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	err := i.UseCase.DeleteById(r.Context(), uuid.MustParse(id))
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		helper.ErrorJSON(w, err)
+		return
+	}
+
+	err = i.UseCase.DeleteById(r.Context(), uuid)
 	if err != nil {
 		helper.ErrorJSON(w, err)
 		return

@@ -36,7 +36,7 @@ func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagina
 		Count(&count)
 
 	if result.Error != nil {
-		return GetAllAuthorReturn{}, fmt.Errorf("failed to get items: %w", result.Error)
+		return GetAllAuthorReturn{}, fmt.Errorf("failed to get authors: %w", result.Error)
 	}
 
 	return GetAllAuthorReturn{
@@ -51,7 +51,7 @@ func (r *PostgresRepo) GetById(ctx context.Context, authorId uuid.UUID) (model.A
 	result := r.Client.First(&author, "id = ?", authorId)
 
 	if result.Error != nil {
-		return model.Author{}, fmt.Errorf("failed to get item: %w", result.Error)
+		return model.Author{}, fmt.Errorf("failed to get author: %w", result.Error)
 	}
 
 	return author, nil
@@ -61,7 +61,7 @@ func (r *PostgresRepo) Create(ctx context.Context, author model.Author) error {
 	result := r.Client.Create(author)
 
 	if result.Error != nil {
-		return fmt.Errorf("failed to add: %w", result.Error)
+		return fmt.Errorf("failed to add author: %w", result.Error)
 	}
 
 	return nil
@@ -71,7 +71,7 @@ func (r *PostgresRepo) UpdateById(ctx context.Context, authorId uuid.UUID, autho
 	result := r.Client.Save(&author)
 
 	if result.Error != nil {
-		return fmt.Errorf("failed to update: %w", result.Error)
+		return fmt.Errorf("failed to update author: %w", result.Error)
 	}
 
 	return nil
@@ -81,7 +81,7 @@ func (r *PostgresRepo) DeleteById(ctx context.Context, authorId uuid.UUID) error
 	result := r.Client.Delete(&model.Author{}, "id = ?", authorId)
 
 	if result.Error != nil {
-		return fmt.Errorf("failed to delete: %w", result.Error)
+		return fmt.Errorf("failed to delete author: %w", result.Error)
 	}
 
 	return nil

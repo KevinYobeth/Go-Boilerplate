@@ -43,7 +43,13 @@ func (i *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 func (i *Handler) GetById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	author, err := i.UseCase.GetById(r.Context(), uuid.MustParse(id))
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		helper.ErrorJSON(w, err)
+		return
+	}
+
+	author, err := i.UseCase.GetById(r.Context(), uuid)
 	if err != nil {
 		helper.ErrorJSON(w, err)
 		return
@@ -87,13 +93,19 @@ func (i *Handler) UpdateById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var body UpsertAuthorEntity
 
-	err := helper.ReadJSON(w, r, &body)
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		helper.ErrorJSON(w, err)
+		return
+	}
+
+	err = helper.ReadJSON(w, r, &body)
 	if err != nil {
 		helper.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	author, err := i.UseCase.Update(r.Context(), uuid.MustParse(id), body)
+	author, err := i.UseCase.Update(r.Context(), uuid, body)
 	if err != nil {
 		helper.ErrorJSON(w, err)
 		return
@@ -111,7 +123,13 @@ func (i *Handler) UpdateById(w http.ResponseWriter, r *http.Request) {
 func (i *Handler) DeleteById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	err := i.UseCase.DeleteById(r.Context(), uuid.MustParse(id))
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		helper.ErrorJSON(w, err)
+		return
+	}
+
+	err = i.UseCase.DeleteById(r.Context(), uuid)
 	if err != nil {
 		helper.ErrorJSON(w, err)
 		return
