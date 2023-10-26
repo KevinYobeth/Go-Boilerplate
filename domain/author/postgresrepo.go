@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"library/shared"
+	model "library/shared/models"
 	helper "library/shared/utils"
 
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ type PostgresRepo struct {
 	Client *gorm.DB
 }
 
-func (r *PostgresRepo) Insert(ctx context.Context, author Author) error {
+func (r *PostgresRepo) Insert(ctx context.Context, author model.Author) error {
 	result := r.Client.Create(author)
 
 	if result.Error != nil {
@@ -23,20 +24,20 @@ func (r *PostgresRepo) Insert(ctx context.Context, author Author) error {
 	return nil
 }
 
-func (r *PostgresRepo) GetById(ctx context.Context, authorId string) (Author, error) {
-	var author Author
+func (r *PostgresRepo) GetById(ctx context.Context, authorId string) (model.Author, error) {
+	var author model.Author
 
 	result := r.Client.First(&author, "id = ?", authorId)
 
 	if result.Error != nil {
-		return Author{}, fmt.Errorf("failed to add to database: %w", result.Error)
+		return model.Author{}, fmt.Errorf("failed to add to database: %w", result.Error)
 	}
 
 	return author, nil
 }
 
 func (r *PostgresRepo) DeleteById(ctx context.Context, authorId string) error {
-	result := r.Client.Delete(&Author{}, "id = ?", authorId)
+	result := r.Client.Delete(&model.Author{}, "id = ?", authorId)
 
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete: %w", result.Error)
@@ -45,7 +46,7 @@ func (r *PostgresRepo) DeleteById(ctx context.Context, authorId string) error {
 	return nil
 }
 
-func (r *PostgresRepo) Update(ctx context.Context, authorId string, author Author) error {
+func (r *PostgresRepo) Update(ctx context.Context, authorId string, author model.Author) error {
 	result := r.Client.Save(&author)
 
 	if result.Error != nil {
@@ -56,7 +57,7 @@ func (r *PostgresRepo) Update(ctx context.Context, authorId string, author Autho
 }
 
 func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllAuthorReturn, error) {
-	var authors []Author
+	var authors []model.Author
 
 	var limit = pagination.Limit
 	var page = pagination.Page

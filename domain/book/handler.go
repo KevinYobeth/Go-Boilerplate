@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"library/domain/author"
 	"library/shared"
+	model "library/shared/models"
 	helper "library/shared/utils"
 	"net/http"
 	"strconv"
@@ -34,7 +35,7 @@ func (i *BookInterface) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book := Book{
+	book := model.Book{
 		Id:        uuid.New(),
 		Title:     body.Title,
 		AuthorId:  author.Id,
@@ -165,7 +166,7 @@ func (i *BookInterface) Update(w http.ResponseWriter, r *http.Request) {
 		authorId = bookFromDB.AuthorId
 	}
 
-	book := Book{
+	book := model.Book{
 		Id:        bookFromDB.Id,
 		Title:     body.Title,
 		AuthorId:  authorId,

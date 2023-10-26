@@ -3,6 +3,7 @@ package author
 import (
 	"fmt"
 	"library/shared"
+	model "library/shared/models"
 	helper "library/shared/utils"
 	"net/http"
 	"strconv"
@@ -26,7 +27,7 @@ func (i *AuthorInterface) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	author := Author{
+	author := model.Author{
 		Id:        uuid.New(),
 		Name:      body.Name,
 		CreatedAt: time.Now(),
@@ -142,7 +143,7 @@ func (i *AuthorInterface) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	author := Author{
+	author := model.Author{
 		Id:        authorFromDB.Id,
 		Name:      body.Name,
 		CreatedAt: authorFromDB.CreatedAt,

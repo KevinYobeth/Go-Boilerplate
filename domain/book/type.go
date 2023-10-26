@@ -3,19 +3,20 @@ package book
 import (
 	"context"
 	"library/shared"
+	model "library/shared/models"
 
 	"github.com/google/uuid"
 )
 
 type GetAllBookReturn struct {
-	Books []Book `json:"books"`
+	Books []model.Book `json:"books"`
 }
 
 type Repo interface {
-	Insert(ctx context.Context, book Book) error
-	GetById(ctx context.Context, bookId string) (Book, error)
+	Insert(ctx context.Context, book model.Book) error
+	GetById(ctx context.Context, bookId string) (model.Book, error)
 	DeleteById(ctx context.Context, bookId string) error
-	Update(ctx context.Context, bookId string, book Book) error
+	Update(ctx context.Context, bookId string, book model.Book) error
 	GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error)
 }
 

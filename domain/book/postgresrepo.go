@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"library/shared"
+	model "library/shared/models"
 	helper "library/shared/utils"
 
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ type PostgresRepo struct {
 	Client *gorm.DB
 }
 
-func (r *PostgresRepo) Insert(ctx context.Context, book Book) error {
+func (r *PostgresRepo) Insert(ctx context.Context, book model.Book) error {
 	result := r.Client.Create(book)
 
 	if result.Error != nil {
@@ -23,20 +24,20 @@ func (r *PostgresRepo) Insert(ctx context.Context, book Book) error {
 	return nil
 }
 
-func (r *PostgresRepo) GetById(ctx context.Context, bookId string) (Book, error) {
-	var book Book
+func (r *PostgresRepo) GetById(ctx context.Context, bookId string) (model.Book, error) {
+	var book model.Book
 
 	result := r.Client.First(&book, "id = ?", bookId)
 
 	if result.Error != nil {
-		return Book{}, fmt.Errorf("failed to add to database: %w", result.Error)
+		return model.Book{}, fmt.Errorf("failed to add to database: %w", result.Error)
 	}
 
 	return book, nil
 }
 
 func (r *PostgresRepo) DeleteById(ctx context.Context, bookId string) error {
-	result := r.Client.Delete(&Book{}, "id = ?", bookId)
+	result := r.Client.Delete(&model.Book{}, "id = ?", bookId)
 
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete: %w", result.Error)
@@ -45,7 +46,7 @@ func (r *PostgresRepo) DeleteById(ctx context.Context, bookId string) error {
 	return nil
 }
 
-func (r *PostgresRepo) Update(ctx context.Context, authorId string, book Book) error {
+func (r *PostgresRepo) Update(ctx context.Context, authorId string, book model.Book) error {
 	result := r.Client.Save(&book)
 
 	if result.Error != nil {
@@ -56,12 +57,12 @@ func (r *PostgresRepo) Update(ctx context.Context, authorId string, book Book) e
 }
 
 func (r *PostgresRepo) GetAll(ctx context.Context, pagination shared.LimitPagination) (GetAllBookReturn, error) {
-	var books []Book
+	var books []model.Book
 
 	var limit = pagination.Limit
 	var page = pagination.Page
 
-	result := r.Client.Model(&Book{}).
+	result := r.Client.Model(&model.Book{}).
 		Limit(limit).
 		Offset(helper.CalculateLimitPaginationOffset(limit, page)).
 		Preload("Author").
