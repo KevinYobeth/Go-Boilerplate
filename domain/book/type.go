@@ -9,11 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type GetAllBookReturn struct {
-	Books []model.Book `json:"books"`
-	Count int64        `json:"-"`
-}
-
 type Handler struct {
 	UseCase UseCase
 }
@@ -34,4 +29,9 @@ type Repo interface {
 type UpsertBookEntity struct {
 	Title    string    `json:"title"`
 	AuthorId uuid.UUID `json:"authorId"`
+}
+
+type GetAllBookReturn struct {
+	Books []model.Book `json:"books"`
+	Count int64        `json:"-"`
 }

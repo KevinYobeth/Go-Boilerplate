@@ -8,11 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type GetAllAuthorReturn struct {
-	Authors []model.Author `json:"authors"`
-	Count   int64          `json:"-"`
-}
-
 type Handler struct {
 	UseCase UseCase
 }
@@ -31,4 +26,9 @@ type Repo interface {
 
 type UpsertAuthorEntity struct {
 	Name string `json:"name"`
+}
+
+type GetAllAuthorReturn struct {
+	Authors []model.Author `json:"authors"`
+	Count   int64          `json:"-"`
 }
