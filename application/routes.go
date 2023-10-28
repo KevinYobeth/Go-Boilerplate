@@ -26,9 +26,9 @@ func (a *App) loadRoutes() {
 }
 
 func (a *App) loadAuthorRoutes(router chi.Router) {
-	authorRepository := author.NewAuthorPostgresRepo(a.pgdb)
-	authorUseCase := author.NewAuthorUseCase(authorRepository)
-	authorHandler := author.NewAuthorHandler(*authorUseCase)
+	authorRepository := author.NewRepo(a.pgdb)
+	authorUseCase := author.NewUseCase(authorRepository)
+	authorHandler := author.NewHandler(*authorUseCase)
 
 	router.Get("/", authorHandler.GetAll)
 	router.Post("/", authorHandler.Create)
@@ -38,12 +38,12 @@ func (a *App) loadAuthorRoutes(router chi.Router) {
 }
 
 func (a *App) loadBookRoutes(router chi.Router) {
-	authorRepository := author.NewAuthorPostgresRepo(a.pgdb)
-	authorUseCase := author.NewAuthorUseCase(authorRepository)
+	authorRepository := author.NewRepo(a.pgdb)
+	authorUseCase := author.NewUseCase(authorRepository)
 
-	bookRepository := book.NewBookPostgresRepo(a.pgdb)
-	bookUseCase := book.NewBookUseCase(bookRepository, *authorUseCase)
-	bookHandler := book.NewBookHandler(*bookUseCase)
+	bookRepository := book.NewPostgresRepo(a.pgdb)
+	bookUseCase := book.NewUseCase(bookRepository, *authorUseCase)
+	bookHandler := book.NewHandler(*bookUseCase)
 
 	router.Get("/", bookHandler.GetAll)
 	router.Post("/", bookHandler.Create)

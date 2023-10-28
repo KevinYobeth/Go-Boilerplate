@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewAuthorUseCase(repo Repo) *UseCase {
+func NewUseCase(repo Repo) *UseCase {
 	return &UseCase{
 		Repo: repo,
 	}

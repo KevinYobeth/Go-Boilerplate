@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewBookUseCase(repo Repo, authorUseCase author.UseCase) *UseCase {
+func NewUseCase(repo Repo, authorUseCase author.UseCase) *UseCase {
 	return &UseCase{
 		Repo:          repo,
 		AuthorUseCase: authorUseCase,

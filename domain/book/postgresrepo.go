@@ -15,7 +15,7 @@ type PostgresRepo struct {
 	Client *gorm.DB
 }
 
-func NewBookPostgresRepo(client *gorm.DB) *PostgresRepo {
+func NewPostgresRepo(client *gorm.DB) *PostgresRepo {
 	return &PostgresRepo{
 		Client: client,
 	}

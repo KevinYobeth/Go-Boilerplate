@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewBookHandler(useCase UseCase) *Handler {
+func NewHandler(useCase UseCase) *Handler {
 	return &Handler{
 		UseCase: useCase,
 	}
