@@ -1,8 +1,11 @@
 package application
 
 import (
+	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -18,8 +21,17 @@ func LoadConfig() Config {
 		ServerPort:      8080,
 	}
 
-	if redisAddr, exists := os.LookupEnv("REDIS_ADDR"); exists {
-		cfg.RedisAddress = redisAddr
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	if redisAddress, exists := os.LookupEnv("REDIS_ADDRESS"); exists {
+		cfg.RedisAddress = redisAddress
+	}
+
+	if postgresAddress, exists := os.LookupEnv("POSTGRES_ADDRESS"); exists {
+		cfg.PostgresAddress = postgresAddress
 	}
 
 	if serverPort, exists := os.LookupEnv("SERVER_PORT"); exists {
