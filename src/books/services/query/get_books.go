@@ -2,7 +2,6 @@ package query
 
 import (
 	"context"
-	"fmt"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
 
@@ -15,27 +14,28 @@ type GetBooksHandler struct {
 }
 
 func (h GetBooksHandler) Execute(c context.Context, request books.GetBooksDto) ([]books.Book, error) {
-	books, err := h.cache.GetBooks(c, request)
+	booksObj, err := h.cache.GetBooks(c, request)
 	if err != nil {
 		return nil, tracerr.Wrap(err)
 	}
-	if books != nil {
-		fmt.Println("From cache")
-		return books, nil
+	if booksObj != nil {
+		return booksObj, nil
 	}
 
-	fmt.Println("From db")
-	books, err = h.repository.GetBooks(c, request)
+	booksObj, err = h.repository.GetBooks(c, request)
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+	if booksObj == nil {
+		return []books.Book{}, nil
+	}
+
+	err = h.cache.SetBooks(c, request, booksObj)
 	if err != nil {
 		return nil, tracerr.Wrap(err)
 	}
 
-	err = h.cache.SetBooks(c, request, books)
-	if err != nil {
-		return nil, tracerr.Wrap(err)
-	}
-
-	return books, nil
+	return booksObj, nil
 }
 
 func NewGetBooksHandler(repository repository.Repository, cache repository.Cache) GetBooksHandler {

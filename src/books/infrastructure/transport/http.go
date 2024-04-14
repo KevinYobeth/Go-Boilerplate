@@ -14,11 +14,11 @@ type HTTPTransport struct {
 	app *services.Application
 }
 
-func NewHTTPServer(app *services.Application) HTTPTransport {
+func NewBooksHTTPServer(app *services.Application) HTTPTransport {
 	return HTTPTransport{app: app}
 }
 
-func (h HTTPTransport) RegisterBookHTTPRoutes(r *echo.Group) {
+func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 	api := r.Group("/v1")
 	RegisterHandlers(api, h)
 }

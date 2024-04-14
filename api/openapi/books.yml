@@ -1,8 +1,8 @@
 openapi: "3.0.0"
 info:
   version: 0.1.0
-  title: Library API
-  description: Library API Definition
+  title: Library Books API
+  description: Library Books API Definition
   contact:
     name: Kevin Yobeth
     url: https://github.com/kevinyobeth
@@ -29,7 +29,7 @@ paths:
       operationId: createBook
       description: create book
       requestBody:
-        description: verify agent for ory
+        description: create book
         required: true
         content:
           application/json:
@@ -119,27 +119,27 @@ components:
         data:
           type: object
           $ref: "#/components/schemas/Book"
+    CreateBookRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+    UpdateBookRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+
     Book:
       type: object
-      required: [id, name]
+      required: [id, title]
       properties:
         id:
           type: string
           format: uuid
-        name:
-          type: string
-
-    CreateBookRequest:
-      type: object
-      required: [name]
-      properties:
-        name:
-          type: string
-    UpdateBookRequest:
-      type: object
-      required: [name]
-      properties:
-        name:
+        title:
           type: string
     MessageResponse:
       type: object

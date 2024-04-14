@@ -6,8 +6,10 @@ import (
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/shared/log"
 	"go-boilerplate/shared/types"
-	books "go-boilerplate/src/books/infrastructure/transport"
-	"go-boilerplate/src/books/services"
+	authorsTransport "go-boilerplate/src/authors/infrastructure/transport"
+	authorsService "go-boilerplate/src/authors/services"
+	booksTransport "go-boilerplate/src/books/infrastructure/transport"
+	booksService "go-boilerplate/src/books/services"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -76,12 +78,16 @@ func RunHTTPServer() {
 		})
 	})
 
-	booksService := services.NewBookService()
-	booksServer := books.NewHTTPServer(&booksService)
+	booksService := booksService.NewBookService()
+	booksServer := booksTransport.NewBooksHTTPServer(&booksService)
+
+	authorsService := authorsService.NewAuthorService()
+	authorsServer := authorsTransport.NewAuthorsHTTPServer(&authorsService)
 
 	api := app.Group("/api")
 
-	booksServer.RegisterBookHTTPRoutes(api)
+	booksServer.RegisterHTTPRoutes(api)
+	authorsServer.RegisterHTTPRoutes(api)
 
 	logger.Fatal(app.Start(config.ServerHost + ":" + config.ServerPort))
 }

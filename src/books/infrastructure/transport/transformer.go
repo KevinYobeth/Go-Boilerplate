@@ -10,7 +10,7 @@ func TransformToHTTPBook(bookObj *books.Book) Book {
 }
 
 func TransformToHTTPBooks(booksObj []books.Book) []Book {
-	var books []Book
+	var books []Book = make([]Book, 0)
 	for _, book := range booksObj {
 		books = append(books, TransformToHTTPBook(&book))
 	}
