@@ -26,4 +26,4 @@ proto:
 
 .PHONY: run
 run:
-	SERVER_TO_RUN=$(filter-out $@,$(MAKECMDGOALS)) go run .
+	SERVER_TYPE=$(filter-out $@,$(MAKECMDGOALS)) go run .
