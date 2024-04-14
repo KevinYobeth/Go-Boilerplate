@@ -22,7 +22,7 @@ func validateConfig(dest interface{}) error {
 	return nil
 }
 
-func loadConfig(dest interface{}) error {
+func loadConfig(dest interface{}) {
 	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
@@ -42,8 +42,6 @@ func loadConfig(dest interface{}) error {
 	if err != nil {
 		panic(err)
 	}
-
-	return nil
 }
 
 func InitConfig() Config {
