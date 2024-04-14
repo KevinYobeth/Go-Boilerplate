@@ -1,6 +1,38 @@
 version: '3.8'
 name: 'go-boilerplate'
 services:
+  http:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    environment:
+      SERVER_TYPE: http
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 5s
+      timeout: 2s
+      retries: 5
+  grpc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8181:8181'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    environment:
+      SERVER_TYPE: grpc
+
   postgres:
     image: postgres
     ports:

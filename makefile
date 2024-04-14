@@ -19,3 +19,11 @@ db_create:
 .PHONY: openapi
 openapi:
 	@./scripts/openapi-http.sh
+
+.PHONY: proto
+proto:
+	@./scripts/proto.sh	
+
+.PHONY: run
+run:
+	SERVER_TO_RUN=$(filter-out $@,$(MAKECMDGOALS)) go run .
