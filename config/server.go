@@ -1,21 +1,18 @@
 package config
 
-import "github.com/spf13/viper"
-
 type ServerConfig struct {
-	ServerPort string `mapstructure:"SERVER_PORT"`
-	ServerType string `mapstructure:"SERVER_TYPE"`
+	ServerPort string `env:"SERVER_PORT" default:"8080"`
+	ServerType string `env:"SERVER_TYPE" default:"http"`
 }
 
-func LoadServerConfig() (config ServerConfig, err error) {
-	viper.SetConfigFile(".env")
-	viper.AutomaticEnv()
+var serverConfig ServerConfig
 
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
+func LoadServerConfig() ServerConfig {
+	if serverConfig != (ServerConfig{}) {
+		return serverConfig
 	}
 
-	err = viper.Unmarshal(&config)
-	return
+	loadConfig(&serverConfig)
+
+	return serverConfig
 }

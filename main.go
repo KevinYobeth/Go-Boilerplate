@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	config := config.InitConfig()
+	configs := config.InitConfig()
 
-	switch config.Server.ServerType {
+	switch configs.Server.ServerType {
 	case "http":
 		http.RunHTTPServer()
 		return

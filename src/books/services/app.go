@@ -1,6 +1,7 @@
 package services
 
 import (
+	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/command"
 	"go-boilerplate/src/books/services/query"
@@ -23,7 +24,8 @@ type Queries struct {
 }
 
 func NewBookService() Application {
-	repository := repository.NewBooksPostgresRepository()
+	db := database.InitPostgres()
+	repository := repository.NewBooksPostgresRepository(db)
 
 	return Application{
 		Commands: Commands{

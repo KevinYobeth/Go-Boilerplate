@@ -19,10 +19,7 @@ func RunHTTPServer() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 
-	config, err := config.LoadServerConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
+	config := config.LoadServerConfig()
 
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{

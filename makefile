@@ -1,5 +1,7 @@
+include .env
+
 DB_DRIVER=postgres
-DB_STRING="host=localhost port=5432 user=postgres password=postgres dbname=boilerplate sslmode=disable"
+DB_STRING="host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USERNAME} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB_NAME} sslmode=${POSTGRES_SSL_MODE}"
 MIGRATION_DIR=db/migrations
 
 db_up:

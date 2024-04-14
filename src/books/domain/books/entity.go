@@ -3,6 +3,6 @@ package books
 import "github.com/google/uuid"
 
 type Book struct {
-	ID    uuid.UUID
-	Title string
+	ID    uuid.UUID `json:"id"`
+	Title string    `json:"title"`
 }
