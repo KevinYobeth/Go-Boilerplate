@@ -16,14 +16,11 @@ db_status:
 db_create:
 	GOOSE_DRIVER=$(DB_DRIVER) GOOSE_DBSTRING=$(DB_STRING) goose -dir=${MIGRATION_DIR} create $(filter-out $@,$(MAKECMDGOALS)) sql
 
-.PHONY: openapi
 openapi:
 	@./scripts/openapi-http.sh
 
-.PHONY: proto
 proto:
 	@./scripts/proto.sh	
 
-.PHONY: run
 run:
 	SERVER_TYPE=$(filter-out $@,$(MAKECMDGOALS)) go run .
