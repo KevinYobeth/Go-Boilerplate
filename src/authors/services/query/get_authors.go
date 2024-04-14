@@ -8,12 +8,16 @@ import (
 	"github.com/ztrue/tracerr"
 )
 
+type GetAuthorsParams struct {
+	Name *string
+}
+
 type GetAuthorsHandler struct {
 	repository repository.Repository
 }
 
-func (h GetAuthorsHandler) Execute(c context.Context, request authors.GetAuthorsDto) ([]authors.Author, error) {
-	authorsObj, err := h.repository.GetAuthors(c, request)
+func (h GetAuthorsHandler) Execute(c context.Context, params GetAuthorsParams) ([]authors.Author, error) {
+	authorsObj, err := h.repository.GetAuthors(c, authors.GetAuthorsDto{Name: params.Name})
 	if err != nil {
 		return nil, tracerr.Wrap(err)
 	}

@@ -6,12 +6,16 @@ import (
 	"go-boilerplate/src/authors/infrastructure/repository"
 )
 
+type CreateAuthorParams struct {
+	Name string
+}
+
 type CreateAuthorHandler struct {
 	repository repository.Repository
 }
 
-func (h CreateAuthorHandler) Execute(c context.Context, request authors.CreateAuthorDto) error {
-	dto := authors.NewCreateAuthorDto(request.Name)
+func (h CreateAuthorHandler) Execute(c context.Context, params CreateAuthorParams) error {
+	dto := authors.NewCreateAuthorDto(params.Name)
 
 	err := h.repository.CreateAuthor(c, dto)
 	if err != nil {

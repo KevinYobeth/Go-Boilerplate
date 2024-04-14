@@ -9,13 +9,14 @@ import (
 
 // Book defines model for Book.
 type Book struct {
-	Id   openapi_types.UUID `json:"id"`
-	Name string             `json:"name"`
+	Id    openapi_types.UUID `json:"id"`
+	Title string             `json:"title"`
 }
 
 // CreateBookRequest defines model for CreateBookRequest.
 type CreateBookRequest struct {
-	Name string `json:"name"`
+	Author string `json:"author"`
+	Title  string `json:"title"`
 }
 
 // GetBookResponse defines model for GetBookResponse.

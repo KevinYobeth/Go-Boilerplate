@@ -9,12 +9,16 @@ import (
 	"github.com/google/uuid"
 )
 
+type GetBookParams struct {
+	ID uuid.UUID
+}
+
 type GetBookHandler struct {
 	repository repository.Repository
 }
 
-func (h GetBookHandler) Execute(c context.Context, id uuid.UUID) (*books.Book, error) {
-	book, err := h.repository.GetBook(c, id)
+func (h GetBookHandler) Execute(c context.Context, params GetBookParams) (*books.Book, error) {
+	book, err := h.repository.GetBook(c, params.ID)
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get book")
 	}

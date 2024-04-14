@@ -2,8 +2,11 @@ package transport
 
 import (
 	respond "go-boilerplate/shared/response"
+	"go-boilerplate/shared/utils"
 	"go-boilerplate/src/authors/domain/authors"
 	"go-boilerplate/src/authors/services"
+	"go-boilerplate/src/authors/services/command"
+	"go-boilerplate/src/authors/services/query"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -24,7 +27,7 @@ func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 
 // GET /authors
 func (h HTTPTransport) GetAuthors(c echo.Context) error {
-	authorsObj, err := h.app.Queries.GetAuthors.Execute(c.Request().Context(), authors.GetAuthorsDto{})
+	authorsObj, err := h.app.Queries.GetAuthors.Execute(c.Request().Context(), query.GetAuthorsParams{})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -39,7 +42,13 @@ func (h HTTPTransport) GetAuthors(c echo.Context) error {
 
 // GET /authors/:id
 func (h HTTPTransport) GetAuthor(c echo.Context, id string) error {
-	author, err := h.app.Queries.GetAuthor.Execute(c.Request().Context(), id)
+	parsedUUID, err := utils.ParseUUID(id)
+	if err != nil {
+		respond.SendHTTP(c, err)
+		return err
+	}
+
+	author, err := h.app.Queries.GetAuthor.Execute(c.Request().Context(), query.GetAuthorParams{ID: parsedUUID})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -60,7 +69,7 @@ func (h HTTPTransport) CreateAuthor(c echo.Context) error {
 		return err
 	}
 
-	err := h.app.Commands.CreateAuthor.Execute(c.Request().Context(), request)
+	err := h.app.Commands.CreateAuthor.Execute(c.Request().Context(), command.CreateAuthorParams{Name: request.Name})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err

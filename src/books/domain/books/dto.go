@@ -7,8 +7,9 @@ type GetBooksDto struct {
 }
 
 type CreateBookDto struct {
-	ID    uuid.UUID
-	Title string
+	ID     uuid.UUID
+	Title  string
+	Author uuid.UUID
 }
 
 func NewCreateBookDto(title string) CreateBookDto {

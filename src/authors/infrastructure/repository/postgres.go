@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/src/authors/domain/authors"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
 )
 
@@ -45,7 +46,7 @@ func (r *PostgresAuthorsRepo) GetAuthors(c context.Context, request authors.GetA
 	return authorsResult, nil
 }
 
-func (p *PostgresAuthorsRepo) GetAuthor(c context.Context, id string) (*authors.Author, error) {
+func (p *PostgresAuthorsRepo) GetAuthor(c context.Context, id uuid.UUID) (*authors.Author, error) {
 	query, args, err := psql.Select("id", "name").
 		From("authors").
 		Where(sq.Eq{"id": id, "deleted_at": nil}).

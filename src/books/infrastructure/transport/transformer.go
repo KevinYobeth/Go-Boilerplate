@@ -4,8 +4,8 @@ import "go-boilerplate/src/books/domain/books"
 
 func TransformToHTTPBook(bookObj *books.Book) Book {
 	return Book{
-		Id:   bookObj.ID,
-		Name: bookObj.Title,
+		Id:    bookObj.ID,
+		Title: bookObj.Title,
 	}
 }
 

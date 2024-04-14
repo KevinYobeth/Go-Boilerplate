@@ -5,6 +5,8 @@ import (
 	"go-boilerplate/shared/utils"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/services"
+	"go-boilerplate/src/books/services/command"
+	"go-boilerplate/src/books/services/query"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -25,7 +27,7 @@ func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 
 // GET /books
 func (h HTTPTransport) GetBooks(c echo.Context) error {
-	booksObj, err := h.app.Queries.GetBooks.Execute(c.Request().Context(), books.GetBooksDto{})
+	booksObj, err := h.app.Queries.GetBooks.Execute(c.Request().Context(), query.GetBooksParams{})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -46,7 +48,7 @@ func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 		return err
 	}
 
-	book, err := h.app.Queries.GetBook.Execute(c.Request().Context(), parsedUUID)
+	book, err := h.app.Queries.GetBook.Execute(c.Request().Context(), query.GetBookParams{ID: parsedUUID})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -61,13 +63,13 @@ func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 
 // POST /books
 func (h HTTPTransport) CreateBook(c echo.Context) error {
-	var request books.CreateBookDto
+	var request CreateBookRequest
 	if err := c.Bind(&request); err != nil {
 		respond.SendHTTP(c, err)
 		return err
 	}
 
-	if err := h.app.Commands.CreateBook.Execute(c.Request().Context(), request); err != nil {
+	if err := h.app.Commands.CreateBook.Execute(c.Request().Context(), command.CreateBookParams{Title: request.Title}); err != nil {
 		respond.SendHTTP(c, err)
 		return err
 	}
@@ -92,7 +94,7 @@ func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 		return err
 	}
 
-	if err := h.app.Commands.UpdateBook.Execute(c.Request().Context(), books.UpdateBookDto{
+	if err := h.app.Commands.UpdateBook.Execute(c.Request().Context(), command.UpdateBookParams{
 		ID:    parsedUUID,
 		Title: request.Title,
 	}); err != nil {
@@ -114,7 +116,9 @@ func (h HTTPTransport) DeleteBook(c echo.Context, id string) error {
 		return nil
 	}
 
-	if err := h.app.Commands.DeleteBook.Execute(c.Request().Context(), parsedUUID); err != nil {
+	if err := h.app.Commands.DeleteBook.Execute(c.Request().Context(), command.DeleteBookParams{
+		ID: parsedUUID,
+	}); err != nil {
 		respond.SendHTTP(c, err)
 		return err
 	}

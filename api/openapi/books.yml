@@ -121,9 +121,11 @@ components:
           $ref: "#/components/schemas/Book"
     CreateBookRequest:
       type: object
-      required: [title]
+      required: [title, author]
       properties:
         title:
+          type: string
+        author:
           type: string
     UpdateBookRequest:
       type: object

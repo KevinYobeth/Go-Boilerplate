@@ -8,13 +8,18 @@ import (
 	"github.com/ztrue/tracerr"
 )
 
+type CreateBookParams struct {
+	Title  string
+	Author string
+}
+
 type CreateBookHandler struct {
 	repository repository.Repository
 	cache      repository.Cache
 }
 
-func (h CreateBookHandler) Execute(c context.Context, request books.CreateBookDto) error {
-	dto := books.NewCreateBookDto(request.Title)
+func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) error {
+	dto := books.NewCreateBookDto(params.Title)
 
 	err := h.repository.CreateBook(c, dto)
 	if err != nil {

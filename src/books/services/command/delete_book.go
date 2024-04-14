@@ -10,6 +10,10 @@ import (
 	"github.com/ztrue/tracerr"
 )
 
+type DeleteBookParams struct {
+	ID uuid.UUID
+}
+
 type DeleteBookService struct {
 	GetBook query.GetBookHandler
 }
@@ -21,9 +25,9 @@ type DeleteBookHandler struct {
 	services   DeleteBookService
 }
 
-func (h DeleteBookHandler) Execute(c context.Context, id uuid.UUID) error {
+func (h DeleteBookHandler) Execute(c context.Context, params DeleteBookParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
-		bookObj, err := h.services.GetBook.Execute(c, id)
+		bookObj, err := h.services.GetBook.Execute(c, query.GetBookParams{ID: params.ID})
 		if err != nil {
 			return tracerr.Wrap(err)
 		}

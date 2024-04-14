@@ -18,4 +18,8 @@ db_create:
 
 .PHONY: openapi
 openapi:
-	@./scripts/openapi-http.sh
+	@./scripts/openapi-http-all.sh
+
+.PHONY: single_openapi
+single_openapi:
+	@./scripts/openapi-http.sh $(filter-out $@,$(MAKECMDGOALS)) src/$(filter-out $@,$(MAKECMDGOALS))/infrastructure/transport transport
