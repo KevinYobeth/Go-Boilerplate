@@ -1,0 +1,147 @@
+openapi: "3.0.0"
+info:
+  version: 0.1.0
+  title: Library API
+  description: Library API Definition
+  contact:
+    name: Kevin Yobeth
+    url: https://github.com/kevinyobeth
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+paths:
+  /books:
+    get:
+      tags: [Books]
+      operationId: getBooks
+      description: get all books
+      responses:
+        "200":
+          description: get all books success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBooksResponse"
+    post:
+      tags: [Books]
+      operationId: createBook
+      description: create book
+      requestBody:
+        description: verify agent for ory
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookRequest"   
+      responses:
+        "200":
+          description: create book success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /books/{id}:
+    get:
+      tags: [Books]
+      operationId: getBook
+      description: get book
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: book id
+      responses:
+        "200":
+          description: get book success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBookResponse"
+    put:
+      tags: [Books]
+      operationId: updateBook
+      description: update book
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: book id
+      responses:
+        "200":
+          description: update book success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+    delete:
+      tags: [Books]
+      operationId: deleteBook
+      description: delete book
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: book id
+      responses:
+        "200":
+          description: delete book success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+components:
+  schemas:
+    GetBooksResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Book"
+    GetBookResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+          $ref: "#/components/schemas/Book"
+    Book:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    CreateBookRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    UpdateBookRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string

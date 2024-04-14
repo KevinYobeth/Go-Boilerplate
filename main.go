@@ -2,7 +2,8 @@ package main
 
 import (
 	"go-boilerplate/config"
-	"go-boilerplate/src/ports"
+	"go-boilerplate/ports/grpc"
+	"go-boilerplate/ports/http"
 )
 
 func main() {
@@ -10,8 +11,10 @@ func main() {
 
 	switch config.Server.ServerType {
 	case "http":
-		ports.RunHTTPServer()
+		http.RunHTTPServer()
 		return
+	case "grpc":
+		grpc.RunGRPCServer()
 	default:
 		panic("Invalid server type")
 	}
