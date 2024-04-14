@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"go-boilerplate/shared/errors"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
 
@@ -15,7 +16,12 @@ type GetBookHandler struct {
 func (h GetBookHandler) Execute(c context.Context, id uuid.UUID) (*books.Book, error) {
 	book, err := h.repository.GetBook(c, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.NewGenericError(err, "failed to get book")
+	}
+
+	if book == nil {
+		return nil, errors.NewNotFoundError(nil, "book")
+
 	}
 
 	return book, nil

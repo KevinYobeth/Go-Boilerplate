@@ -3,12 +3,12 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"go-boilerplate/src/books/domain/books"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
+	"github.com/ztrue/tracerr"
 )
 
 var psql = sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
@@ -27,12 +27,12 @@ func (r PostgresBooksRepo) GetBooks(c context.Context, request books.GetBooksDto
 		Where(sq.Eq{"deleted_at": nil}).
 		ToSql()
 	if err != nil {
-		return nil, err
+		return nil, tracerr.Wrap(err)
 	}
 
 	rows, err := r.db.QueryContext(c, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, tracerr.Wrap(err)
 	}
 	defer rows.Close()
 
@@ -54,7 +54,7 @@ func (r PostgresBooksRepo) GetBook(c context.Context, id uuid.UUID) (*books.Book
 		Limit(1).
 		ToSql()
 	if err != nil {
-		return nil, err
+		return nil, tracerr.Wrap(err)
 	}
 
 	var book books.Book
@@ -62,10 +62,10 @@ func (r PostgresBooksRepo) GetBook(c context.Context, id uuid.UUID) (*books.Book
 		Scan(&book.ID, &book.Title)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("book not found")
+			return nil, nil
 		}
 
-		return nil, err
+		return nil, tracerr.Wrap(err)
 	}
 
 	return &book, nil
@@ -82,12 +82,12 @@ func (r PostgresBooksRepo) CreateBook(c context.Context, request books.CreateBoo
 		}).
 		ToSql()
 	if err != nil {
-		return err
+		return tracerr.Wrap(err)
 	}
 
 	_, err = r.db.ExecContext(c, query, args...)
 	if err != nil {
-		return err
+		return tracerr.Wrap(err)
 	}
 
 	return nil
@@ -104,12 +104,12 @@ func (r PostgresBooksRepo) UpdateBook(c context.Context, request books.UpdateBoo
 		Where(sq.Eq{"id": request.ID}).
 		ToSql()
 	if err != nil {
-		return err
+		return tracerr.Wrap(err)
 	}
 
 	_, err = r.db.ExecContext(c, query, args...)
 	if err != nil {
-		return err
+		return tracerr.Wrap(err)
 	}
 
 	return nil
@@ -125,12 +125,12 @@ func (r PostgresBooksRepo) DeleteBook(c context.Context, id uuid.UUID) error {
 		}).ToSql()
 
 	if err != nil {
-		return err
+		return tracerr.Wrap(err)
 	}
 
 	_, err = r.db.ExecContext(c, query, args...)
 	if err != nil {
-		return err
+		return tracerr.Wrap(err)
 	}
 
 	return nil

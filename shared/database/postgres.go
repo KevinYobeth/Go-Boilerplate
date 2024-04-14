@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"go-boilerplate/config"
+	"go-boilerplate/shared/errors"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -30,6 +31,11 @@ func InitPostgres() *sql.DB {
 	db.SetConnMaxIdleTime(cfg.PostgresConnMaxIdleTime)
 	db.SetMaxOpenConns(cfg.PostgresMaxOpenConns)
 	db.SetMaxIdleConns(cfg.PostgresMaxIdleConns)
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(errors.NewInitializationError(err, "postgres").Message)
+	}
 
 	return db
 }

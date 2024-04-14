@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Database PostgresConfig
 	Server   ServerConfig
+	App      AppConfig
 }
 
 func validateConfig(dest interface{}) error {
@@ -47,9 +48,11 @@ func loadConfig(dest interface{}) {
 func InitConfig() Config {
 	dbConfig := LoadPostgresDBConfig()
 	serverConfig := LoadServerConfig()
+	appConfig := LoadAppConfig()
 
 	return Config{
 		Database: dbConfig,
 		Server:   serverConfig,
+		App:      appConfig,
 	}
 }
