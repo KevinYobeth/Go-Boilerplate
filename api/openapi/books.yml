@@ -102,6 +102,7 @@ components:
   schemas:
     GetBooksResponse:
       type: object
+      required: [data, message]
       properties:
         message:
           type: string
@@ -111,6 +112,7 @@ components:
             $ref: "#/components/schemas/Book"
     GetBookResponse:
       type: object
+      required: [data, message]
       properties:
         message:
           type: string

@@ -20,14 +20,14 @@ type CreateBookRequest struct {
 
 // GetBookResponse defines model for GetBookResponse.
 type GetBookResponse struct {
-	Data    *Book   `json:"data,omitempty"`
-	Message *string `json:"message,omitempty"`
+	Data    Book   `json:"data"`
+	Message string `json:"message"`
 }
 
 // GetBooksResponse defines model for GetBooksResponse.
 type GetBooksResponse struct {
-	Data    *[]Book `json:"data,omitempty"`
-	Message *string `json:"message,omitempty"`
+	Data    []Book `json:"data"`
+	Message string `json:"message"`
 }
 
 // MessageResponse defines model for MessageResponse.

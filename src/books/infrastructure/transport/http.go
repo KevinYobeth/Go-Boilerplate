@@ -2,7 +2,6 @@ package transport
 
 import (
 	respond "go-boilerplate/shared/response"
-	"go-boilerplate/shared/types"
 	"go-boilerplate/shared/utils"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/services"
@@ -32,8 +31,8 @@ func (h HTTPTransport) GetBooks(c echo.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, types.ResponseBody{
-		Data:    booksObj,
+	c.JSON(http.StatusOK, GetBooksResponse{
+		Data:    TransformToHTTPBooks(booksObj),
 		Message: "success get books",
 	})
 	return nil
@@ -53,8 +52,8 @@ func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, types.ResponseBody{
-		Data:    book,
+	c.JSON(http.StatusOK, GetBookResponse{
+		Data:    TransformToHTTPBook(book),
 		Message: "success get book",
 	})
 	return nil
@@ -73,7 +72,7 @@ func (h HTTPTransport) CreateBook(c echo.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusCreated, types.ResponseBody{
+	c.JSON(http.StatusCreated, MessageResponse{
 		Message: "success create book",
 	})
 	return nil
@@ -101,7 +100,7 @@ func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, types.ResponseBody{
+	c.JSON(http.StatusOK, MessageResponse{
 		Message: "success update book",
 	})
 	return nil
@@ -120,7 +119,7 @@ func (h HTTPTransport) DeleteBook(c echo.Context, id string) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, types.ResponseBody{
+	c.JSON(http.StatusOK, MessageResponse{
 		Message: "success delete book",
 	})
 	return nil
