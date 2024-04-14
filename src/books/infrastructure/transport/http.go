@@ -15,19 +15,13 @@ type HTTPTransport struct {
 	app *services.Application
 }
 
-func NewHTTPServer(app *services.Application) HttpServer {
-	return &HTTPTransport{app: app}
+func NewHTTPServer(app *services.Application) HTTPTransport {
+	return HTTPTransport{app: app}
 }
 
 func (h HTTPTransport) RegisterBookHTTPRoutes(r *echo.Group) {
-	api := r.Group("/v1/books")
-
-	api.GET("", h.GetBooks)
-	api.GET("/:id", h.GetBook)
-
-	api.POST("", h.CreateBook)
-	api.PUT("/:id", h.UpdateBook)
-	api.DELETE("/:id", h.DeleteBook)
+	api := r.Group("/v1")
+	RegisterHandlers(api, h)
 }
 
 // GET /books
@@ -46,8 +40,7 @@ func (h HTTPTransport) GetBooks(c echo.Context) error {
 }
 
 // GET /books/:id
-func (h HTTPTransport) GetBook(c echo.Context) error {
-	id := c.Param("id")
+func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 	parsedUUID, err := utils.ParseUUID(id)
 	if err != nil {
 		respond.SendHTTP(c, err)
@@ -87,8 +80,7 @@ func (h HTTPTransport) CreateBook(c echo.Context) error {
 }
 
 // PUT /books/:id
-func (h HTTPTransport) UpdateBook(c echo.Context) error {
-	id := c.Param("id")
+func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 	parsedUUID, err := utils.ParseUUID(id)
 	if err != nil {
 		respond.SendHTTP(c, err)
@@ -116,8 +108,7 @@ func (h HTTPTransport) UpdateBook(c echo.Context) error {
 }
 
 // DELETE /books/:id
-func (h HTTPTransport) DeleteBook(c echo.Context) error {
-	id := c.Param("id")
+func (h HTTPTransport) DeleteBook(c echo.Context, id string) error {
 	parsedUUID, err := utils.ParseUUID(id)
 	if err != nil {
 		respond.SendHTTP(c, err)

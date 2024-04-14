@@ -5,8 +5,10 @@ import (
 	"go-boilerplate/shared/constants"
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/shared/log"
+	"go-boilerplate/shared/types"
 	books "go-boilerplate/src/books/infrastructure/transport"
 	"go-boilerplate/src/books/services"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -23,7 +25,6 @@ func RunHTTPServer() {
 		app.Debug = true
 	}
 
-	app.Pre(middleware.RemoveTrailingSlash())
 	app.Use(middleware.Recover())
 	app.Use(middleware.CORS())
 	app.Use(middleware.RequestID())
@@ -38,7 +39,6 @@ func RunHTTPServer() {
 		LogError:     true,
 
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-
 			fields := []interface{}{
 				"URI", v.URI,
 				"status", v.Status,
@@ -71,8 +71,8 @@ func RunHTTPServer() {
 	config := config.LoadServerConfig()
 
 	app.GET("/health", func(c echo.Context) error {
-		return c.JSON(200, map[string]string{
-			"status": "ok",
+		return c.JSON(http.StatusOK, types.ResponseBody{
+			Message: "ok",
 		})
 	})
 
