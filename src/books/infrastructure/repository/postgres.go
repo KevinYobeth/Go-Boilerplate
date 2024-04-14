@@ -22,7 +22,22 @@ func (r PostgresBooksRepo) GetBooks(c *fiber.Ctx, request books.GetBooksDto) ([]
 	}}, nil
 }
 
+func (r PostgresBooksRepo) GetBook(c *fiber.Ctx, id uuid.UUID) (books.Book, error) {
+	return books.Book{
+		ID:    uuid.MustParse("7edb2649-c637-4b7e-9f12-23ce6f35dd34"),
+		Title: "The Hobbit",
+	}, nil
+}
+
 func (r PostgresBooksRepo) CreateBook(c *fiber.Ctx, request books.CreateBookDto) error {
 	fmt.Println("Creating book", request)
+	return nil
+}
+
+func (r PostgresBooksRepo) UpdateBook(c *fiber.Ctx, request books.UpdateBookDto) error {
+	return nil
+}
+
+func (r PostgresBooksRepo) DeleteBook(c *fiber.Ctx, id uuid.UUID) error {
 	return nil
 }

@@ -2,8 +2,8 @@ package http
 
 import (
 	"go-boilerplate/config"
-	authors "go-boilerplate/src/authors/infrastructure/adapters"
-	books "go-boilerplate/src/books/infrastructure/adapters"
+	authors "go-boilerplate/src/authors/infrastructure/transport"
+	books "go-boilerplate/src/books/infrastructure/transport"
 	"go-boilerplate/src/books/services"
 	"log"
 

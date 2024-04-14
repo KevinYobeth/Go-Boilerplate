@@ -13,9 +13,12 @@ type Application struct {
 
 type Commands struct {
 	CreateBook command.CreateBookHandler
+	UpdateBook command.UpdateBookHandler
+	DeleteBook command.DeleteBookHandler
 }
 
 type Queries struct {
+	GetBook  query.GetBookHandler
 	GetBooks query.GetBooksHandler
 }
 
@@ -25,9 +28,12 @@ func NewBookService() Application {
 	return Application{
 		Commands: Commands{
 			CreateBook: command.NewCreateBookHandler(repository),
+			UpdateBook: command.NewUpdateBookHandler(repository),
+			DeleteBook: command.NewDeleteBookHandler(repository),
 		},
 		Queries: Queries{
 			GetBooks: query.NewGetBooksHandler(repository),
+			GetBook:  query.NewGetBookHandler(repository),
 		},
 	}
 }
