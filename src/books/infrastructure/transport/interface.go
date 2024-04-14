@@ -5,6 +5,8 @@ import (
 )
 
 type Server interface {
+	RegisterBookHTTPRoutes(r fiber.Router)
+
 	GetBooks(c *fiber.Ctx) error
 	GetBook(c *fiber.Ctx) error
 

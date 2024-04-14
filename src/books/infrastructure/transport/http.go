@@ -18,7 +18,11 @@ func NewHTTPServer(app *services.Application) Server {
 
 func (h HTTPServer) RegisterBookHTTPRoutes(r fiber.Router) {
 	r.Get("/", h.GetBooks)
+	r.Get("/:id", h.GetBook)
+
 	r.Post("/", h.CreateBook)
+	r.Put("/:id", h.UpdateBook)
+	r.Delete("/:id", h.DeleteBook)
 }
 
 // GET /books
