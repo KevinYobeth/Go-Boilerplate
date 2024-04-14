@@ -136,3 +136,20 @@ func (r PostgresBooksRepo) DeleteBook(c context.Context, id uuid.UUID) error {
 
 	return nil
 }
+
+func (r PostgresBooksRepo) CreateAuthorBook(c context.Context, request books.CreateAuthorBookDto) error {
+	query, args, err := psql.Insert("author_book").
+		Columns("book_id", "author_id").
+		Values(request.BookID, request.AuthorID).
+		ToSql()
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	_, err = r.db.ExecContext(c, query, args...)
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	return nil
+}

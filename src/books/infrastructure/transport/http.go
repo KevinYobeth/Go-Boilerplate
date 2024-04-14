@@ -69,7 +69,8 @@ func (h HTTPTransport) CreateBook(c echo.Context) error {
 		return err
 	}
 
-	if err := h.app.Commands.CreateBook.Execute(c.Request().Context(), command.CreateBookParams{Title: request.Title}); err != nil {
+	if err := h.app.Commands.CreateBook.Execute(c.Request().Context(),
+		command.CreateBookParams{Title: request.Title, Author: request.Author}); err != nil {
 		respond.SendHTTP(c, err)
 		return err
 	}

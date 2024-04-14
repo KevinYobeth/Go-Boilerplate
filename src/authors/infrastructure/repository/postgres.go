@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/authors/domain/authors"
 
@@ -47,19 +48,40 @@ func (r *PostgresAuthorsRepo) GetAuthors(c context.Context, request authors.GetA
 }
 
 func (p *PostgresAuthorsRepo) GetAuthor(c context.Context, id uuid.UUID) (*authors.Author, error) {
-	query, args, err := psql.Select("id", "name").
+	return p.getAuthor(c, &id, nil)
+}
+
+func (p PostgresAuthorsRepo) GetAuthorByName(c context.Context, name string) (*authors.Author, error) {
+	return p.getAuthor(c, nil, &name)
+}
+
+func (p PostgresAuthorsRepo) getAuthor(c context.Context, id *uuid.UUID, name *string) (*authors.Author, error) {
+	builder := psql.Select("id", "name").
 		From("authors").
-		Where(sq.Eq{"id": id, "deleted_at": nil}).
-		Limit(1).
-		ToSql()
+		Where(sq.Eq{"deleted_at": nil})
+
+	if id != nil {
+		builder = builder.Where(sq.Eq{"id": id})
+	}
+
+	if name != nil {
+		builder = builder.Where(sq.Eq{"name": name})
+	}
+
+	query, args, err := builder.Limit(1).ToSql()
 	if err != nil {
 		return nil, tracerr.Wrap(err)
 	}
 
 	row := p.db.QueryRowContext(c, query, args...)
+
 	var author authors.Author
 	err = row.Scan(&author.ID, &author.Name)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
 		return nil, tracerr.Wrap(err)
 	}
 

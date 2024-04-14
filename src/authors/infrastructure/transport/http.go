@@ -69,7 +69,7 @@ func (h HTTPTransport) CreateAuthor(c echo.Context) error {
 		return err
 	}
 
-	err := h.app.Commands.CreateAuthor.Execute(c.Request().Context(), command.CreateAuthorParams{Name: request.Name})
+	_, err := h.app.Commands.CreateAuthor.Execute(c.Request().Context(), command.CreateAuthorParams{Name: request.Name})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err

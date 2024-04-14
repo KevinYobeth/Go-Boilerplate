@@ -14,6 +14,8 @@ type Repository interface {
 	CreateBook(c context.Context, request books.CreateBookDto) error
 	UpdateBook(c context.Context, request books.UpdateBookDto) error
 	DeleteBook(c context.Context, id uuid.UUID) error
+
+	CreateAuthorBook(c context.Context, request books.CreateAuthorBookDto) error
 }
 
 type Cache interface {

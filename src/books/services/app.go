@@ -3,6 +3,9 @@ package services
 import (
 	"go-boilerplate/shared/cache"
 	"go-boilerplate/shared/database"
+	authorRepo "go-boilerplate/src/authors/infrastructure/repository"
+	authorCommand "go-boilerplate/src/authors/services/command"
+	authorQuery "go-boilerplate/src/authors/services/query"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/command"
 	"go-boilerplate/src/books/services/query"
@@ -17,6 +20,8 @@ type Commands struct {
 	CreateBook command.CreateBookHandler
 	UpdateBook command.UpdateBookHandler
 	DeleteBook command.DeleteBookHandler
+
+	CreateAuthorBook command.CreateAuthorBookHandler
 }
 
 type Queries struct {
@@ -32,14 +37,24 @@ func NewBookService() Application {
 	cache := repository.NewBooksRedisCache(lru)
 	manager := database.NewTransactionManager(db)
 
+	authorRepo := authorRepo.NewAuthorsPostgresRepository(db)
+
 	return Application{
 		Commands: Commands{
-			CreateBook: command.NewCreateBookHandler(repo, cache),
+			CreateBook: command.NewCreateBookHandler(manager, repo, cache,
+				command.CreateBookService{
+					CreateAuthorBook: command.NewCreateAuthorBookHandler(repo),
+				},
+				command.AuthorService{
+					GetAuthorByName: authorQuery.NewGetAuthorByNameHandler(authorRepo),
+					CreateAuthor:    authorCommand.NewCreateAuthorHandler(authorRepo),
+				}),
 			UpdateBook: command.NewUpdateBookHandler(repo, cache),
 			DeleteBook: command.NewDeleteBookHandler(manager, repo, cache,
 				command.DeleteBookService{
 					GetBook: query.NewGetBookHandler(repo),
 				}),
+			CreateAuthorBook: command.NewCreateAuthorBookHandler(repo),
 		},
 		Queries: Queries{
 			GetBooks: query.NewGetBooksHandler(repo, cache),

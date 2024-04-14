@@ -23,3 +23,8 @@ type UpdateBookDto struct {
 	ID    uuid.UUID
 	Title string
 }
+
+type CreateAuthorBookDto struct {
+	BookID   uuid.UUID
+	AuthorID uuid.UUID
+}
