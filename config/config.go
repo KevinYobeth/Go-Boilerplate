@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Database PostgresConfig
+	Cache    RedisConfig
 	Server   ServerConfig
 	App      AppConfig
 }
@@ -49,9 +50,11 @@ func InitConfig() Config {
 	dbConfig := LoadPostgresDBConfig()
 	serverConfig := LoadServerConfig()
 	appConfig := LoadAppConfig()
+	cacheConfig := LoadRedisCacheConfig()
 
 	return Config{
 		Database: dbConfig,
+		Cache:    cacheConfig,
 		Server:   serverConfig,
 		App:      appConfig,
 	}

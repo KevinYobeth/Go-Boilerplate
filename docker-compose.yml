@@ -16,3 +16,13 @@ services:
       interval: 5s
       timeout: 2s
       retries: 5
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      start_period: 5s
+      interval: 5s
+      timeout: 3s
+      retries: 10

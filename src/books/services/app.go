@@ -1,6 +1,7 @@
 package services
 
 import (
+	"go-boilerplate/shared/cache"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/command"
@@ -25,20 +26,24 @@ type Queries struct {
 
 func NewBookService() Application {
 	db := database.InitPostgres()
-	repository := repository.NewBooksPostgresRepository(db)
+	lru := cache.InitRedis()
+
+	repo := repository.NewBooksPostgresRepository(db)
+	cache := repository.NewBooksRedisCache(lru)
 	manager := database.NewTransactionManager(db)
 
 	return Application{
 		Commands: Commands{
-			CreateBook: command.NewCreateBookHandler(manager, repository),
-			UpdateBook: command.NewUpdateBookHandler(repository),
-			DeleteBook: command.NewDeleteBookHandler(repository, command.DeleteBookService{
-				GetBook: query.NewGetBookHandler(repository),
-			}),
+			CreateBook: command.NewCreateBookHandler(repo, cache),
+			UpdateBook: command.NewUpdateBookHandler(repo, cache),
+			DeleteBook: command.NewDeleteBookHandler(manager, repo, cache,
+				command.DeleteBookService{
+					GetBook: query.NewGetBookHandler(repo),
+				}),
 		},
 		Queries: Queries{
-			GetBooks: query.NewGetBooksHandler(repository),
-			GetBook:  query.NewGetBookHandler(repository),
+			GetBooks: query.NewGetBooksHandler(repo, cache),
+			GetBook:  query.NewGetBookHandler(repo),
 		},
 	}
 }

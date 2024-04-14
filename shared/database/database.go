@@ -9,11 +9,11 @@ type TransactionManager struct {
 	db PostgresDB
 }
 
-func NewTransactionManager(db PostgresDB) *TransactionManager {
-	return &TransactionManager{db}
+func NewTransactionManager(db PostgresDB) TransactionManager {
+	return TransactionManager{db}
 }
 
-func (tm *TransactionManager) RunInTransaction(c context.Context, f func(c context.Context) error) error {
+func (tm TransactionManager) RunInTransaction(c context.Context, f func(c context.Context) error) error {
 	var err error
 
 	tx := TransactionFromContext(c)

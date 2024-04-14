@@ -50,6 +50,7 @@ func RunHTTPServer() {
 			}
 
 			if v.Error != nil {
+				fields = append(fields, "error", v.Error)
 				fields = append(fields, "trace", tracerr.StackTrace(errors.GetTracerrErr(v.Error)))
 			}
 
