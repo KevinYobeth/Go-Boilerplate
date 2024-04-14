@@ -1,12 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"go-boilerplate/config"
+	"go-boilerplate/src/ports"
 )
 
 func main() {
 	config := config.InitConfig()
 
-	fmt.Println("CONFIG", config)
+	switch config.Server.ServerType {
+	case "http":
+		ports.RunHTTPServer()
+		return
+	default:
+		panic("Invalid server type")
+	}
 }

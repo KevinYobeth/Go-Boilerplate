@@ -2,34 +2,26 @@ package config
 
 import (
 	"log"
-
-	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Database Database
-}
-
-func LoadDBConfig() (db Database, err error) {
-	viper.SetConfigFile(".env")
-	viper.AutomaticEnv()
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
-	}
-
-	err = viper.Unmarshal(&db)
-	return
+	Database DBConfig
+	Server   ServerConfig
 }
 
 func InitConfig() (config Config) {
 	dbConfig, err := LoadDBConfig()
 	if err != nil {
-		log.Fatal("cannot load config:", err)
+		log.Fatal("cannot load database config:", err)
+	}
+
+	serverConfig, err := LoadServerConfig()
+	if err != nil {
+		log.Fatal("cannot load server config:", err)
 	}
 
 	return Config{
 		Database: dbConfig,
+		Server:   serverConfig,
 	}
 }
