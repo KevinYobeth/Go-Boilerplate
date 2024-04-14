@@ -11,9 +11,9 @@ fi
 directory="api/openapi"
 
 function codegen {
-  readonly service="$1"
-  readonly output_dir="$2"
-  readonly package="$3"
+  service="$1"
+  output_dir="$2"
+  package="$3"
 
   IFS='/' read -r -a folders <<< $output_dir
   for i in "${!folders[@]}"
@@ -26,7 +26,7 @@ function codegen {
   oapi-codegen -generate types -package $package "${directory}/${service}.yml" > "${output_dir}/openapi_types.gen.go"
   oapi-codegen -generate server -package $package "${directory}/${service}.yml" > "${output_dir}/openapi_server.gen.go"
 
-  echo "openapi types and server generated successfully under $output_dir."
+  echo "openapi types and server generated successfully under $output_dir"
 }
 
 for file in "$directory"/*
