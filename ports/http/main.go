@@ -2,8 +2,8 @@ package http
 
 import (
 	"go-boilerplate/config"
-	authors "go-boilerplate/internal/author/ports"
-	books "go-boilerplate/internal/book/ports"
+	authors "go-boilerplate/src/authors/infrastructure/adapters"
+	books "go-boilerplate/src/books/infrastructure/adapters"
 	"log"
 
 	"github.com/gofiber/fiber/v2"

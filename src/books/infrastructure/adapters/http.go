@@ -1,4 +1,4 @@
-package books
+package adapters
 
 import "github.com/gofiber/fiber/v2"
 

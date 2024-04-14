@@ -1,6 +1,6 @@
 package infrastructure
 
-import books "go-boilerplate/internal/book/domain"
+import "go-boilerplate/src/books/domain/books"
 
 type Repository interface {
 	GetBooks() ([]books.Book, error)
