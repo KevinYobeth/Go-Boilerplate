@@ -26,12 +26,15 @@ type Queries struct {
 func NewBookService() Application {
 	db := database.InitPostgres()
 	repository := repository.NewBooksPostgresRepository(db)
+	manager := database.NewTransactionManager(db)
 
 	return Application{
 		Commands: Commands{
-			CreateBook: command.NewCreateBookHandler(repository),
+			CreateBook: command.NewCreateBookHandler(manager, repository),
 			UpdateBook: command.NewUpdateBookHandler(repository),
-			DeleteBook: command.NewDeleteBookHandler(repository),
+			DeleteBook: command.NewDeleteBookHandler(repository, command.DeleteBookService{
+				GetBook: query.NewGetBookHandler(repository),
+			}),
 		},
 		Queries: Queries{
 			GetBooks: query.NewGetBooksHandler(repository),

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/domain/books"
 	"time"
 
@@ -14,10 +15,10 @@ import (
 var psql = sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
 type PostgresBooksRepo struct {
-	db *sql.DB
+	db database.PostgresDB
 }
 
-func NewBooksPostgresRepository(db *sql.DB) Repository {
+func NewBooksPostgresRepository(db database.PostgresDB) Repository {
 	return &PostgresBooksRepo{db}
 }
 

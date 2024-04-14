@@ -10,7 +10,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func InitPostgres() *sql.DB {
+type PostgresDB SqlDatabase
+
+func InitPostgres() PostgresDB {
 	cfg := config.LoadPostgresDBConfig()
 
 	connStr := fmt.Sprintf(
@@ -37,5 +39,7 @@ func InitPostgres() *sql.DB {
 		log.Fatal(errors.NewInitializationError(err, "postgres").Message)
 	}
 
-	return db
+	wrappedDB := NewDB(db)
+
+	return wrappedDB
 }

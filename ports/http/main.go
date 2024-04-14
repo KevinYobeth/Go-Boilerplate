@@ -82,5 +82,5 @@ func RunHTTPServer() {
 
 	booksServer.RegisterBookHTTPRoutes(api)
 
-	logger.Fatal(app.Start(":" + config.ServerPort))
+	logger.Fatal(app.Start(config.ServerHost + ":" + config.ServerPort))
 }
