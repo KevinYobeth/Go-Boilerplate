@@ -4,16 +4,21 @@ import (
 	"go-boilerplate/config"
 	authors "go-boilerplate/src/authors/infrastructure/adapters"
 	books "go-boilerplate/src/books/infrastructure/adapters"
+	"go-boilerplate/src/books/services"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
-
-type HTTPServer struct {
-}
 
 func RunHTTPServer() {
 	app := fiber.New()
+	app.Use(helmet.New())
+	app.Use(cors.New())
+	app.Use(logger.New())
+
 	config, err := config.LoadServerConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -25,9 +30,12 @@ func RunHTTPServer() {
 		})
 	})
 
+	booksService := services.NewBookService()
+	booksServer := books.NewHTTPServer(&booksService)
+
 	api := app.Group("/api")
 	api.Route("/v1/authors", authors.RegisterAuthorHTTPRoutes)
-	api.Route("/v1/books", books.RegisterBookHTTPRoutes)
+	api.Route("/v1/books", booksServer.RegisterBookHTTPRoutes)
 
 	log.Fatal(app.Listen(":" + config.ServerPort))
 }
