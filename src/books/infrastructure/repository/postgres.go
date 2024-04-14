@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/domain/books"
 	"time"
@@ -22,10 +23,12 @@ func NewBooksPostgresRepository(db database.PostgresDB) Repository {
 	return &PostgresBooksRepo{db}
 }
 
-func (r PostgresBooksRepo) GetBooks(c context.Context, request books.GetBooksDto) ([]books.Book, error) {
-	query, args, err := psql.Select("id", "title").
-		From("books").
-		Where(sq.Eq{"deleted_at": nil}).
+func (r PostgresBooksRepo) GetBooks(c context.Context, request books.GetBooksDto) ([]books.BookWithAuthor, error) {
+	query, args, err := psql.Select("b.id", "b.title", "a.id", "a.name").
+		From("books b").
+		Join("author_book ab ON b.id = ab.book_id").
+		Join("authors a ON a.id = ab.author_id").
+		Where(sq.Eq{"b.deleted_at": nil}).
 		ToSql()
 	if err != nil {
 		return nil, tracerr.Wrap(err)
@@ -37,14 +40,15 @@ func (r PostgresBooksRepo) GetBooks(c context.Context, request books.GetBooksDto
 	}
 	defer rows.Close()
 
-	var booksResult []books.Book
+	var booksResult []books.BookWithAuthor
 	for rows.Next() {
-		var book books.Book
-		rows.Scan(&book.ID, &book.Title)
+		var book books.BookWithAuthor
+		rows.Scan(&book.ID, &book.Title, &book.Author.ID, &book.Author.Name)
 
 		booksResult = append(booksResult, book)
 	}
 
+	fmt.Println("MASUK", booksResult)
 	return booksResult, nil
 }
 

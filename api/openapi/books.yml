@@ -109,7 +109,7 @@ components:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/Book"
+            $ref: "#/components/schemas/BookWithAuthor"
     GetBookResponse:
       type: object
       required: [data, message]
@@ -142,6 +142,26 @@ components:
           type: string
           format: uuid
         title:
+          type: string
+    BookWithAuthor:
+      type: object
+      required: [id, title]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        author:
+          $ref: "#/components/schemas/Author"
+    Author:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
           type: string
     MessageResponse:
       type: object

@@ -17,7 +17,7 @@ func NewBooksRedisCache(cache *redis.Client) Cache {
 	return &RedisBooksCache{cache}
 }
 
-func (r RedisBooksCache) GetBooks(c context.Context, request books.GetBooksDto) ([]books.Book, error) {
+func (r RedisBooksCache) GetBooks(c context.Context, request books.GetBooksDto) ([]books.BookWithAuthor, error) {
 	title := utils.ValueOrEmptyString(request.Title)
 	key := utils.NewRedisKey("books", title)
 
@@ -30,7 +30,7 @@ func (r RedisBooksCache) GetBooks(c context.Context, request books.GetBooksDto) 
 		return nil, tracerr.Wrap(err)
 	}
 
-	var jsonBooks []books.Book
+	var jsonBooks []books.BookWithAuthor
 	err = utils.FromJsonString(result, &jsonBooks)
 	if err != nil {
 		return nil, tracerr.Wrap(err)
@@ -39,7 +39,7 @@ func (r RedisBooksCache) GetBooks(c context.Context, request books.GetBooksDto) 
 	return jsonBooks, nil
 }
 
-func (r RedisBooksCache) SetBooks(c context.Context, request books.GetBooksDto, books []books.Book) error {
+func (r RedisBooksCache) SetBooks(c context.Context, request books.GetBooksDto, books []books.BookWithAuthor) error {
 	title := utils.ValueOrEmptyString(request.Title)
 	key := utils.NewRedisKey("books", title)
 

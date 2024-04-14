@@ -7,10 +7,23 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Author defines model for Author.
+type Author struct {
+	Id   openapi_types.UUID `json:"id"`
+	Name string             `json:"name"`
+}
+
 // Book defines model for Book.
 type Book struct {
 	Id    openapi_types.UUID `json:"id"`
 	Title string             `json:"title"`
+}
+
+// BookWithAuthor defines model for BookWithAuthor.
+type BookWithAuthor struct {
+	Author *Author            `json:"author,omitempty"`
+	Id     openapi_types.UUID `json:"id"`
+	Title  string             `json:"title"`
 }
 
 // CreateBookRequest defines model for CreateBookRequest.
@@ -27,8 +40,8 @@ type GetBookResponse struct {
 
 // GetBooksResponse defines model for GetBooksResponse.
 type GetBooksResponse struct {
-	Data    []Book `json:"data"`
-	Message string `json:"message"`
+	Data    []BookWithAuthor `json:"data"`
+	Message string           `json:"message"`
 }
 
 // MessageResponse defines model for MessageResponse.

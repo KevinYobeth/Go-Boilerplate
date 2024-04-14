@@ -34,7 +34,7 @@ func (h HTTPTransport) GetBooks(c echo.Context) error {
 	}
 
 	c.JSON(http.StatusOK, GetBooksResponse{
-		Data:    TransformToHTTPBooks(booksObj),
+		Data:    TransformToHTTPBooksWithAuthor(booksObj),
 		Message: "success get books",
 	})
 	return nil

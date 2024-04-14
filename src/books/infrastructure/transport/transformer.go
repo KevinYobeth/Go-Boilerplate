@@ -1,6 +1,8 @@
 package transport
 
-import "go-boilerplate/src/books/domain/books"
+import (
+	"go-boilerplate/src/books/domain/books"
+)
 
 func TransformToHTTPBook(bookObj *books.Book) Book {
 	return Book{
@@ -13,6 +15,25 @@ func TransformToHTTPBooks(booksObj []books.Book) []Book {
 	var books []Book = make([]Book, 0)
 	for _, book := range booksObj {
 		books = append(books, TransformToHTTPBook(&book))
+	}
+	return books
+}
+
+func TransformToHTTPBookWithAuthor(bookObj *books.BookWithAuthor) BookWithAuthor {
+	return BookWithAuthor{
+		Id:    bookObj.ID,
+		Title: bookObj.Title,
+		Author: &Author{
+			Id:   bookObj.Author.ID,
+			Name: bookObj.Author.Name,
+		},
+	}
+}
+
+func TransformToHTTPBooksWithAuthor(booksObj []books.BookWithAuthor) []BookWithAuthor {
+	var books []BookWithAuthor = make([]BookWithAuthor, 0)
+	for _, book := range booksObj {
+		books = append(books, TransformToHTTPBookWithAuthor(&book))
 	}
 	return books
 }

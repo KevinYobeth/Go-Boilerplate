@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	GetBooks(c context.Context, request books.GetBooksDto) ([]books.Book, error)
+	GetBooks(c context.Context, request books.GetBooksDto) ([]books.BookWithAuthor, error)
 	GetBook(c context.Context, id uuid.UUID) (*books.Book, error)
 
 	CreateBook(c context.Context, request books.CreateBookDto) error
@@ -19,7 +19,7 @@ type Repository interface {
 }
 
 type Cache interface {
-	GetBooks(c context.Context, request books.GetBooksDto) ([]books.Book, error)
-	SetBooks(c context.Context, request books.GetBooksDto, books []books.Book) error
+	GetBooks(c context.Context, request books.GetBooksDto) ([]books.BookWithAuthor, error)
+	SetBooks(c context.Context, request books.GetBooksDto, books []books.BookWithAuthor) error
 	ClearBooks(c context.Context) error
 }
