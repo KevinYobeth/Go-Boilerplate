@@ -1,9 +1,13 @@
 package transport
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"net/http"
 
-func RegisterAuthorHTTPRoutes(r fiber.Router) {
-	r.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("yang ini author")
+	"github.com/labstack/echo/v4"
+)
+
+func RegisterAuthorHTTPRoutes(r echo.Group) {
+	r.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "yang ini author")
 	})
 }

@@ -2,27 +2,26 @@ package http
 
 import (
 	"go-boilerplate/config"
-	authors "go-boilerplate/src/authors/infrastructure/transport"
 	books "go-boilerplate/src/books/infrastructure/transport"
 	"go-boilerplate/src/books/services"
-	"log"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/helmet"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func RunHTTPServer() {
-	app := fiber.New()
-	app.Use(helmet.New())
-	app.Use(cors.New())
-	app.Use(logger.New())
+	app := echo.New()
+	app.Debug = true
+
+	app.Use(middleware.Logger())
+	app.Use(middleware.Recover())
+	app.Use(middleware.CORS())
+	app.Pre(middleware.RemoveTrailingSlash())
 
 	config := config.LoadServerConfig()
 
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
+	app.GET("/health", func(c echo.Context) error {
+		return c.JSON(200, map[string]string{
 			"status": "ok",
 		})
 	})
@@ -31,8 +30,8 @@ func RunHTTPServer() {
 	booksServer := books.NewHTTPServer(&booksService)
 
 	api := app.Group("/api")
-	api.Route("/v1/authors", authors.RegisterAuthorHTTPRoutes)
-	api.Route("/v1/books", booksServer.RegisterBookHTTPRoutes)
 
-	log.Fatal(app.Listen(":" + config.ServerPort))
+	booksServer.RegisterBookHTTPRoutes(api)
+
+	app.Logger.Fatal(app.Start(":" + config.ServerPort))
 }

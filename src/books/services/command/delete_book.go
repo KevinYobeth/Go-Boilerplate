@@ -1,9 +1,9 @@
 package command
 
 import (
+	"context"
 	"go-boilerplate/src/books/infrastructure/repository"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -11,7 +11,7 @@ type DeleteBookHandler struct {
 	repository repository.Repository
 }
 
-func (h DeleteBookHandler) Execute(c *fiber.Ctx, id uuid.UUID) error {
+func (h DeleteBookHandler) Execute(c context.Context, id uuid.UUID) error {
 	return h.repository.DeleteBook(c, id)
 }
 

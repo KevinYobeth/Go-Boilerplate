@@ -1,17 +1,16 @@
 package command
 
 import (
+	"context"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type UpdateBookHandler struct {
 	repository repository.Repository
 }
 
-func (h UpdateBookHandler) Execute(c *fiber.Ctx, request books.UpdateBookDto) error {
+func (h UpdateBookHandler) Execute(c context.Context, request books.UpdateBookDto) error {
 	return h.repository.UpdateBook(c, request)
 }
 

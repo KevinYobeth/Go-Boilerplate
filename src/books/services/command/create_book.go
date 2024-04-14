@@ -1,18 +1,19 @@
 package command
 
 import (
+	"context"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type CreateBookHandler struct {
 	repository repository.Repository
 }
 
-func (h CreateBookHandler) Execute(c *fiber.Ctx, request books.CreateBookDto) error {
-	return h.repository.CreateBook(c, request)
+func (h CreateBookHandler) Execute(c context.Context, request books.CreateBookDto) error {
+	dto := books.NewCreateBookDto(request.Title)
+
+	return h.repository.CreateBook(c, dto)
 }
 
 func NewCreateBookHandler(repository repository.Repository) CreateBookHandler {

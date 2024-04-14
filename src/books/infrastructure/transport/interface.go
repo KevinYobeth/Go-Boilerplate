@@ -1,16 +1,16 @@
 package transport
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
-type Server interface {
-	RegisterBookHTTPRoutes(r fiber.Router)
+type HttpServer interface {
+	RegisterBookHTTPRoutes(r *echo.Group)
 
-	GetBooks(c *fiber.Ctx) error
-	GetBook(c *fiber.Ctx) error
+	GetBooks(c echo.Context) error
+	GetBook(c echo.Context) error
 
-	CreateBook(c *fiber.Ctx) error
-	UpdateBook(c *fiber.Ctx) error
-	DeleteBook(c *fiber.Ctx) error
+	CreateBook(c echo.Context) error
+	UpdateBook(c echo.Context) error
+	DeleteBook(c echo.Context) error
 }
