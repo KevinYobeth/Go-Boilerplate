@@ -11,6 +11,7 @@ type Config struct {
 	Cache    RedisConfig
 	Server   ServerConfig
 	App      AppConfig
+	Event    RabbitMQConfig
 }
 
 func validateConfig(dest interface{}) error {
@@ -51,11 +52,13 @@ func InitConfig() Config {
 	serverConfig := LoadServerConfig()
 	appConfig := LoadAppConfig()
 	cacheConfig := LoadRedisCacheConfig()
+	eventConfig := LoadRabbitMQConfig()
 
 	return Config{
 		Database: dbConfig,
 		Cache:    cacheConfig,
 		Server:   serverConfig,
 		App:      appConfig,
+		Event:    eventConfig,
 	}
 }

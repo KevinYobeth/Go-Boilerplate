@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/authors/domain/authors"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -93,6 +94,26 @@ func (p *PostgresAuthorsRepo) CreateAuthor(c context.Context, request authors.Cr
 		Columns("id", "name").
 		Values(request.ID, request.Name).
 		ToSql()
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	_, err = p.db.ExecContext(c, query, args...)
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	return nil
+}
+
+func (p *PostgresAuthorsRepo) DeleteAuthor(c context.Context, id uuid.UUID) error {
+	now := time.Now().UTC()
+
+	query, args, err := psql.Update("authors").
+		Where(sq.Eq{"id": id}).
+		SetMap(map[string]interface{}{
+			"deleted_at": now,
+		}).ToSql()
 	if err != nil {
 		return tracerr.Wrap(err)
 	}

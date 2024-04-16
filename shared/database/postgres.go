@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go-boilerplate/config"
 	"go-boilerplate/shared/errors"
-	"log"
+	"go-boilerplate/shared/log"
 
 	_ "github.com/lib/pq"
 )
@@ -13,6 +13,7 @@ import (
 type PostgresDB SqlDatabase
 
 func InitPostgres() PostgresDB {
+	log := log.InitLogger()
 	cfg := config.LoadPostgresDBConfig()
 
 	connStr := fmt.Sprintf(

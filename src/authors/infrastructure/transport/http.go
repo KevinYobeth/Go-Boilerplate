@@ -61,6 +61,26 @@ func (h HTTPTransport) GetAuthor(c echo.Context, id string) error {
 	return nil
 }
 
+// DELETE /authors/:id
+func (h HTTPTransport) DeleteAuthor(c echo.Context, id string) error {
+	parsedUUID, err := utils.ParseUUID(id)
+	if err != nil {
+		respond.SendHTTP(c, err)
+		return err
+	}
+
+	err = h.app.Commands.DeleteAuthor.Execute(c.Request().Context(), command.DeleteAuthorParams{ID: parsedUUID})
+	if err != nil {
+		respond.SendHTTP(c, err)
+		return err
+	}
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Message: "success delete author",
+	})
+	return nil
+}
+
 // POST /authors
 func (h HTTPTransport) CreateAuthor(c echo.Context) error {
 	var request authors.CreateAuthorDto

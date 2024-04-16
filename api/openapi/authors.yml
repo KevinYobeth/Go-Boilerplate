@@ -61,6 +61,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetAuthorResponse"
+    delete:
+      tags: [Authors]
+      operationId: deleteAuthor
+      description: delete author
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: author id
+      responses:
+        "200":
+          description: delete author success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
 
 components:
   schemas:

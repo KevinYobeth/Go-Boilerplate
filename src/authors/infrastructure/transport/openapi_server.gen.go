@@ -20,6 +20,9 @@ type ServerInterface interface {
 	// (POST /authors)
 	CreateAuthor(ctx echo.Context) error
 
+	// (DELETE /authors/{id})
+	DeleteAuthor(ctx echo.Context, id string) error
+
 	// (GET /authors/{id})
 	GetAuthor(ctx echo.Context, id string) error
 }
@@ -44,6 +47,22 @@ func (w *ServerInterfaceWrapper) CreateAuthor(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.CreateAuthor(ctx)
+	return err
+}
+
+// DeleteAuthor converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteAuthor(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteAuthor(ctx, id)
 	return err
 }
 
@@ -93,6 +112,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/authors", wrapper.GetAuthors)
 	router.POST(baseURL+"/authors", wrapper.CreateAuthor)
+	router.DELETE(baseURL+"/authors/:id", wrapper.DeleteAuthor)
 	router.GET(baseURL+"/authors/:id", wrapper.GetAuthor)
 
 }

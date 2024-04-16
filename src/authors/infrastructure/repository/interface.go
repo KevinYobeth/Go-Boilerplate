@@ -13,4 +13,5 @@ type Repository interface {
 	GetAuthorByName(c context.Context, name string) (*authors.Author, error)
 
 	CreateAuthor(c context.Context, request authors.CreateAuthorDto) error
+	DeleteAuthor(c context.Context, id uuid.UUID) error
 }
