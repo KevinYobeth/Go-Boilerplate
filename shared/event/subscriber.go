@@ -57,10 +57,10 @@ func InitSubscriber(topic string) SubscriberInterface {
 	}
 
 	q, err := ch.QueueDeclare(
-		"",
+		fmt.Sprint("queue-", topic),
 		false,
 		false,
-		true,
+		false,
 		false,
 		nil,
 	)
@@ -107,7 +107,6 @@ func (s Subscriber) Subscribe(c context.Context, fn func(c context.Context, even
 
 	go func() {
 		for d := range msgs {
-			s.logger.Infof("EVENT: %s", d.Body)
 			fn(c, NewEvent(c, d.Body))
 		}
 	}()
