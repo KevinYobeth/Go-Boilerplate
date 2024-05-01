@@ -1,11 +1,11 @@
 package event
 
 import (
+	"context"
 	"fmt"
 	"go-boilerplate/config"
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/shared/log"
-	"go-boilerplate/shared/utils"
 	"strings"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -14,16 +14,21 @@ import (
 
 type Publisher struct {
 	channel *amqp.Channel
-	log     *zap.SugaredLogger
+	logger  *zap.SugaredLogger
 	topic   string
 }
 
-func InitPublisher(topic string) PublisherInterface {
-	log := log.InitLogger()
+type PublisherOptions struct {
+	Topic string
+	Queue *string
+}
+
+func InitPublisher(options PublisherOptions) PublisherInterface {
+	logger := log.InitLogger()
 	cfg := config.LoadRabbitMQConfig()
 
-	if strings.TrimSpace(topic) == "" {
-		log.Fatal("Topic cannot be empty")
+	if strings.TrimSpace(options.Topic) == "" {
+		logger.Fatal("Topic cannot be empty")
 	}
 
 	connStr := fmt.Sprintf(
@@ -35,16 +40,16 @@ func InitPublisher(topic string) PublisherInterface {
 	)
 	conn, err := amqp.Dial(connStr)
 	if err != nil {
-		log.Fatal(errors.NewInitializationError(err, "rabbitMQ publisher").Message)
+		logger.Fatal(errors.NewInitializationError(err, "rabbitMQ publisher").Message)
 	}
 
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("Failed to open a channel: %v", err)
+		logger.Fatalf("Failed to open a channel: %v", err)
 	}
 
 	err = ch.ExchangeDeclare(
-		topic,
+		options.Topic,
 		"fanout",
 		true,
 		false,
@@ -53,34 +58,33 @@ func InitPublisher(topic string) PublisherInterface {
 		nil,
 	)
 	if err != nil {
-		log.Fatalf("Failed to declare an exchange: %v", err)
+		logger.Fatalf("Failed to declare an exchange: %v", err)
 	}
 
 	return Publisher{
 		channel: ch,
-		log:     log,
-		topic:   topic,
+		logger:  logger,
+		topic:   options.Topic,
 	}
 }
 
-func (p Publisher) Publish(event Event) error {
-	json, err := utils.ToJsonString(event.data)
+func (p Publisher) Publish(c context.Context, event Event) error {
+	body, err := Serialize(event)
 	if err != nil {
-		p.log.Fatalf("Failed to marshal event: %v", err)
-		return err
+		p.logger.Fatalf("Failed to serialize event: %v", err)
 	}
 
-	err = p.channel.PublishWithContext(event.c,
+	err = p.channel.PublishWithContext(c,
 		p.topic,
 		"",
 		false,
 		false,
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(json),
+			Body:        []byte(body),
 		})
 	if err != nil {
-		p.log.Fatalf("Failed to open a channel: %v", err)
+		p.logger.Fatalf("Failed to open a channel: %v", err)
 		return err
 	}
 

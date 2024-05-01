@@ -11,7 +11,7 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file: .env
+    env_file: .env.docker
     environment:
       SERVER_TYPE: http
     healthcheck:
@@ -29,7 +29,7 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file: .env
+    env_file: .env.docker
     environment:
       SERVER_TYPE: grpc
   books-authors-subscriber:
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     depends_on:
       - rabbitmq
-    env_file: .env
+    env_file: .env.docker
 
   postgres:
     image: postgres

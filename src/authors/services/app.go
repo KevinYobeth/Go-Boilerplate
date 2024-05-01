@@ -26,7 +26,9 @@ type Queries struct {
 func NewAuthorService() Application {
 	db := database.InitPostgres()
 	repo := repository.NewAuthorsPostgresRepository(db)
-	publisher := event.InitPublisher("authors")
+	publisher := event.InitPublisher(event.PublisherOptions{
+		Topic: "authors",
+	})
 
 	return Application{
 		Commands: Commands{

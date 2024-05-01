@@ -18,11 +18,16 @@ type Subscriber struct {
 	queue   string
 }
 
-func InitSubscriber(topic string) SubscriberInterface {
+type SubscriberOptions struct {
+	Topic string
+	Queue *string
+}
+
+func InitSubscriber(options SubscriberOptions) SubscriberInterface {
 	logger := log.InitLogger()
 	cfg := config.LoadRabbitMQConfig()
 
-	if strings.TrimSpace(topic) == "" {
+	if strings.TrimSpace(options.Topic) == "" {
 		logger.Fatal("Topic cannot be empty")
 	}
 
@@ -44,7 +49,7 @@ func InitSubscriber(topic string) SubscriberInterface {
 	}
 
 	err = ch.ExchangeDeclare(
-		topic,
+		options.Topic,
 		"fanout",
 		true,
 		false,
@@ -56,8 +61,13 @@ func InitSubscriber(topic string) SubscriberInterface {
 		logger.Fatalf("Failed to declare an exchange: %v", err)
 	}
 
+	var qName string = fmt.Sprint("queue-", options.Topic)
+	if options.Queue != nil {
+		qName = *options.Queue
+	}
+
 	q, err := ch.QueueDeclare(
-		fmt.Sprint("queue-", topic),
+		qName,
 		false,
 		false,
 		false,
@@ -71,7 +81,7 @@ func InitSubscriber(topic string) SubscriberInterface {
 	err = ch.QueueBind(
 		q.Name,
 		"",
-		topic,
+		options.Topic,
 		false,
 		nil,
 	)
@@ -79,7 +89,7 @@ func InitSubscriber(topic string) SubscriberInterface {
 		logger.Fatalf("Failed to bind a queue: %v", err)
 	}
 
-	logger.Infof("RabbitMQ subscriber listening on %s", topic)
+	logger.Infof("RabbitMQ subscriber listening on %s", options.Topic)
 
 	return Subscriber{
 		channel: ch,
@@ -107,7 +117,12 @@ func (s Subscriber) Subscribe(c context.Context, fn func(c context.Context, even
 
 	go func() {
 		for d := range msgs {
-			fn(c, NewEvent(c, d.Body))
+			event, err := Deserialize(d.Body)
+			if err != nil {
+				s.logger.Fatalf("Failed to serialize event: %v", err)
+			}
+
+			fn(c, event)
 		}
 	}()
 

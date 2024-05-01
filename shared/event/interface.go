@@ -3,7 +3,7 @@ package event
 import "context"
 
 type PublisherInterface interface {
-	Publish(event Event) error
+	Publish(c context.Context, event Event) error
 }
 
 type SubscriberInterface interface {

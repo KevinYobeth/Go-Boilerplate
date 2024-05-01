@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/domain/books"
 	"time"
@@ -48,7 +47,6 @@ func (r PostgresBooksRepo) GetBooks(c context.Context, request books.GetBooksDto
 		booksResult = append(booksResult, book)
 	}
 
-	fmt.Println("MASUK", booksResult)
 	return booksResult, nil
 }
 

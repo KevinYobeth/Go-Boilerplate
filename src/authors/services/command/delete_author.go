@@ -24,7 +24,10 @@ func (h DeleteAuthorHandler) Execute(c context.Context, params DeleteAuthorParam
 		return tracerr.Wrap(err)
 	}
 
-	err = h.publisher.Publish(event.NewEvent(c, "author.delete"))
+	qName := "bobah"
+	err = h.publisher.Publish(c, event.NewEvent("author.delete",
+		event.PublisherOptions{Topic: "HELLO WORLD", Queue: &qName}),
+	)
 	if err != nil {
 		return tracerr.Wrap(err)
 	}

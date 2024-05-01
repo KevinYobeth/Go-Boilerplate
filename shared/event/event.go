@@ -1,12 +1,30 @@
 package event
 
-import "context"
+import (
+	"bytes"
+	"encoding/json"
+)
 
 type Event struct {
-	c    context.Context
-	data any
+	Event string
+	Data  any
 }
 
-func NewEvent(c context.Context, data any) Event {
-	return Event{c, data}
+func NewEvent(event string, data any) Event {
+	return Event{event, data}
+}
+
+func Serialize(event Event) ([]byte, error) {
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	err := encoder.Encode(event)
+	return b.Bytes(), err
+}
+
+func Deserialize(b []byte) (Event, error) {
+	var event Event
+	buf := bytes.NewBuffer(b)
+	decoder := json.NewDecoder(buf)
+	err := decoder.Decode(&event)
+	return event, err
 }
