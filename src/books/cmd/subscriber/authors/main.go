@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"go-boilerplate/shared/event"
 	"go-boilerplate/shared/log"
+	"go-boilerplate/src/books/domain/authors"
 	"go-boilerplate/src/books/services"
 	"go-boilerplate/src/books/services/command"
-	"go-boilerplate/src/books/services/query"
 
+	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
 )
 
@@ -19,13 +19,14 @@ type HandlerParams struct {
 
 func main() {
 	logger := log.InitLogger()
-
-	subscriber := event.InitSubscriber(event.SubscriberOptions{Topic: "authors"})
-	app := services.NewBookService()
-
 	c := context.Background()
 
+	app := services.NewBookService()
+
+	subscriber := event.InitSubscriber(event.SubscriberOptions{Topic: "authors"})
+
 	subscriber.Subscribe(c, func(ctx context.Context, e event.Event) error {
+		logger.Infof("Received event: %s", e.Event)
 		var err error
 
 		switch e.Event {
@@ -35,25 +36,23 @@ func main() {
 			logger.Infof("Event %s is not handled", e.Event)
 		}
 
-		return err
+		return tracerr.Wrap(err)
 	})
 }
 
 func handleDeleteAuthor(c context.Context, params HandlerParams, event event.Event) error {
-	fmt.Println("EVENT DIDALEM", event)
-	books, err := params.app.Queries.GetBooks.Execute(c, query.GetBooksParams{})
-
+	var data authors.DeleteAuthorEvent
+	err := event.TransformTo(&data)
 	if err != nil {
-		params.logger.Errorf("Failed to get books: %v", err)
-		return err
+		params.logger.Errorf("Failed to transform event data: %v", tracerr.Wrap(err))
 	}
 
-	for _, book := range books {
-		err := params.app.Commands.DeleteBook.Execute(c, command.DeleteBookParams{ID: book.ID})
-		if err != nil {
-			params.logger.Errorf("Failed to delete book: %v", err)
-			return err
-		}
+	err = params.app.Commands.DeleteBookByAuthor.Execute(c, command.DeleteBookByAuthorParams{
+		AuthorID: data.ID,
+	})
+	if err != nil {
+		params.logger.Errorf("Failed to delete books by author: %v", tracerr.Wrap(err))
+		return err
 	}
 
 	return nil

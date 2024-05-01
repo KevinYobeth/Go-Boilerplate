@@ -28,3 +28,17 @@ func Deserialize(b []byte) (Event, error) {
 	err := decoder.Decode(&event)
 	return event, err
 }
+
+func (e Event) TransformTo(data interface{}) error {
+	b, err := json.Marshal(e.Data)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

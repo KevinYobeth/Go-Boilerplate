@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"go-boilerplate/shared/event"
+	"go-boilerplate/src/authors/domain/authors"
 	"go-boilerplate/src/authors/infrastructure/repository"
 
 	"github.com/google/uuid"
@@ -24,10 +25,7 @@ func (h DeleteAuthorHandler) Execute(c context.Context, params DeleteAuthorParam
 		return tracerr.Wrap(err)
 	}
 
-	qName := "bobah"
-	err = h.publisher.Publish(c, event.NewEvent("author.delete",
-		event.PublisherOptions{Topic: "HELLO WORLD", Queue: &qName}),
-	)
+	err = h.publisher.Publish(c, event.NewEvent("author.delete", authors.DeleteAuthorEvent{ID: params.ID}))
 	if err != nil {
 		return tracerr.Wrap(err)
 	}

@@ -125,7 +125,8 @@ func (r PostgresBooksRepo) DeleteBook(c context.Context, id uuid.UUID) error {
 		Where(sq.Eq{"id": id}).
 		SetMap(map[string]interface{}{
 			"deleted_at": now,
-		}).ToSql()
+		}).
+		ToSql()
 
 	if err != nil {
 		return tracerr.Wrap(err)
@@ -144,6 +145,53 @@ func (r PostgresBooksRepo) CreateAuthorBook(c context.Context, request books.Cre
 		Columns("book_id", "author_id").
 		Values(request.BookID, request.AuthorID).
 		ToSql()
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	_, err = r.db.ExecContext(c, query, args...)
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	return nil
+}
+
+func (r PostgresBooksRepo) GetBooksByAuthor(c context.Context, id uuid.UUID) ([]books.Book, error) {
+	query, args, err := psql.Select("b.id", "b.title").
+		From("books b").
+		Join("author_book ab ON b.id = ab.book_id").
+		Where(sq.Eq{"b.deleted_at": nil, "ab.author_id": id}).
+		ToSql()
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	rows, err := r.db.QueryContext(c, query, args...)
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+	defer rows.Close()
+
+	var booksResult []books.Book
+	for rows.Next() {
+		var book books.Book
+		rows.Scan(&book.ID, &book.Title)
+
+		booksResult = append(booksResult, book)
+	}
+
+	return booksResult, nil
+}
+
+func (r PostgresBooksRepo) DeleteBooks(c context.Context, ids uuid.UUIDs) error {
+	var now = time.Now().UTC()
+
+	query, args, err := psql.Update("books").
+		Set("deleted_at", now).
+		Where(sq.Eq{"id": ids}).
+		ToSql()
+
 	if err != nil {
 		return tracerr.Wrap(err)
 	}

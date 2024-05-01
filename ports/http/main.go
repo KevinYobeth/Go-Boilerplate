@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"go-boilerplate/config"
 	"go-boilerplate/shared/constants"
 	"go-boilerplate/shared/errors"
@@ -27,8 +26,6 @@ func RunHTTPServer() {
 	if appConfig.AppEnv == constants.APP_DEVELOPMENT {
 		app.Debug = true
 	}
-
-	fmt.Println("APP CONFIG", appConfig)
 
 	app.Use(middleware.Recover())
 	app.Use(middleware.CORS())

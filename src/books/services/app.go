@@ -17,16 +17,18 @@ type Application struct {
 }
 
 type Commands struct {
-	CreateBook command.CreateBookHandler
-	UpdateBook command.UpdateBookHandler
-	DeleteBook command.DeleteBookHandler
+	CreateBook         command.CreateBookHandler
+	UpdateBook         command.UpdateBookHandler
+	DeleteBook         command.DeleteBookHandler
+	DeleteBookByAuthor command.DeleteBookByAuthorHandler
 
 	CreateAuthorBook command.CreateAuthorBookHandler
 }
 
 type Queries struct {
-	GetBook  query.GetBookHandler
-	GetBooks query.GetBooksHandler
+	GetBook          query.GetBookHandler
+	GetBooks         query.GetBooksHandler
+	GetBooksByAuthor query.GetBooksByAuthorHandler
 }
 
 func NewBookService() Application {
@@ -54,11 +56,17 @@ func NewBookService() Application {
 				command.DeleteBookService{
 					GetBook: query.NewGetBookHandler(repo),
 				}),
+			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repo,
+				command.DeleteBookByAuthorService{
+					GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo),
+				}),
+
 			CreateAuthorBook: command.NewCreateAuthorBookHandler(repo),
 		},
 		Queries: Queries{
-			GetBooks: query.NewGetBooksHandler(repo, cache),
-			GetBook:  query.NewGetBookHandler(repo),
+			GetBooks:         query.NewGetBooksHandler(repo, cache),
+			GetBook:          query.NewGetBookHandler(repo),
+			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo),
 		},
 	}
 }
