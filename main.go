@@ -4,6 +4,7 @@ import (
 	"go-boilerplate/config"
 	"go-boilerplate/ports/grpc"
 	"go-boilerplate/ports/http"
+	"go-boilerplate/ports/scheduler"
 )
 
 func main() {
@@ -15,6 +16,8 @@ func main() {
 		return
 	case "grpc":
 		grpc.RunGRPCServer()
+	case "scheduler":
+		scheduler.RunScheduler()
 	default:
 		panic("Invalid server type")
 	}
