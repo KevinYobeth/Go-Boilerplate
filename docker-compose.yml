@@ -32,6 +32,17 @@ services:
     env_file: .env.docker
     environment:
       SERVER_TYPE: grpc
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env.docker
+    environment:
+      SERVER_TYPE: scheduler
   books-authors-subscriber:
     build:
       context: .
