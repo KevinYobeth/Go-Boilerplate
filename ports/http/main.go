@@ -1,9 +1,11 @@
 package http
 
 import (
+	"context"
 	"go-boilerplate/config"
 	"go-boilerplate/shared/constants"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
 	"go-boilerplate/shared/types"
 	authorsTransport "go-boilerplate/src/authors/infrastructure/transport"
@@ -11,6 +13,10 @@ import (
 	booksTransport "go-boilerplate/src/books/infrastructure/transport"
 	booksService "go-boilerplate/src/books/services"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -89,5 +95,28 @@ func RunHTTPServer() {
 	booksServer.RegisterHTTPRoutes(api)
 	authorsServer.RegisterHTTPRoutes(api)
 
-	logger.Fatal(app.Start(config.ServerHost + ":" + config.ServerHTTPPort))
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		host := config.ServerHost + ":" + config.ServerHTTPPort
+		if err := app.Start(host); err != nil && err != http.ErrServerClosed {
+			logger.Fatal(err)
+		}
+	}()
+
+	<-signals
+
+	logger.Info("Shutting down server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := app.Shutdown(ctx); err != nil {
+		logger.Fatal(err)
+	}
+
+	graceroutine.Stop()
+	graceroutine.Wait()
+
+	logger.Info("Server Shutdown")
 }

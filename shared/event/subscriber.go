@@ -129,3 +129,7 @@ func (s Subscriber) Subscribe(c context.Context, fn func(c context.Context, even
 	<-forever
 	return nil
 }
+
+func (s Subscriber) Shutdown() error {
+	return s.channel.Close()
+}

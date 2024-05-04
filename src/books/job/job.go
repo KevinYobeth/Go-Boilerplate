@@ -33,7 +33,9 @@ func (j Job) RegisterAutomaticArchiveBooksJob() {
 				return nil
 			})
 		},
-	))
+	),
+		gocron.WithSingletonMode(gocron.LimitModeReschedule),
+	)
 }
 
 func (j Job) decorate(name string, fn func() error) {
