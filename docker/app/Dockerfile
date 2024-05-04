@@ -1,13 +1,15 @@
-FROM golang:alpine
-
-RUN apk update && apk add --no-cache git
+FROM golang:1.21-alpine as golang
 
 WORKDIR /app
-
 COPY . .
 
-RUN go mod tidy
+RUN go mod download
 
-RUN go build -o binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /server .
 
-ENTRYPOINT ["/app/binary"]
+FROM gcr.io/distroless/static-debian12
+
+COPY --from=golang /server .
+COPY .env .
+
+CMD ["/server"]
