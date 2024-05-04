@@ -53,6 +53,13 @@ services:
     depends_on:
       - rabbitmq
     env_file: .env.docker
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/migration/Dockerfile
+    depends_on:
+      - postgres
+    env_file: .env.docker
 
   postgres:
     image: postgres

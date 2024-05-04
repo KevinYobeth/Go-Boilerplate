@@ -1,20 +1,19 @@
 include .env
 
-DB_DRIVER=postgres
 DB_STRING="host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USERNAME} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB_NAME} sslmode=${POSTGRES_SSL_MODE}"
 MIGRATION_DIR=db/migrations
 
 db_up:
-	GOOSE_DRIVER=$(DB_DRIVER) GOOSE_DBSTRING=$(DB_STRING) goose -dir=${MIGRATION_DIR} up
+	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} up
 
 db_down:
-	GOOSE_DRIVER=$(DB_DRIVER) GOOSE_DBSTRING=$(DB_STRING) goose -dir=${MIGRATION_DIR} down
+	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} down
 
 db_status:
-	GOOSE_DRIVER=$(DB_DRIVER) GOOSE_DBSTRING=$(DB_STRING) goose -dir=${MIGRATION_DIR} status
+	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} status
 
 db_create:
-	GOOSE_DRIVER=$(DB_DRIVER) GOOSE_DBSTRING=$(DB_STRING) goose -dir=${MIGRATION_DIR} create $(filter-out $@,$(MAKECMDGOALS)) sql
+	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} create $(filter-out $@,$(MAKECMDGOALS)) sql
 
 .PHONY: openapi
 openapi:

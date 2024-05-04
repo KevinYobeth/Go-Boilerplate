@@ -10,6 +10,4 @@ RUN go mod tidy
 
 RUN go build -o binary
 
-RUN pwd
-
 ENTRYPOINT ["/app/binary"]
