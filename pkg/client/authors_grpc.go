@@ -9,11 +9,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewAccountClient() (authors.AuthorServiceClient, error) {
-	addr, ok := os.LookupEnv("GRPC_AEGIS_ADDR")
+func NewAuthorsClient() (authors.AuthorServiceClient, error) {
+	addr, ok := os.LookupEnv("GRPC_AUTHORS_ADDRESS")
 
 	if !ok {
-		return nil, errors.New("empty env GRPC_AEGIS_ADDR")
+		return nil, errors.New("empty env GRPC_AUTHORS_ADDRESS")
 	}
 
 	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))

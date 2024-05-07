@@ -35,6 +35,6 @@ do
         filename=$(basename "$file")
         filename_no_ext="${filename%.*}"
 
-        codegen $filename_no_ext "src/${filename_no_ext}/infrastructure/transport" "transport"
+        codegen $filename_no_ext "src/${filename_no_ext}/presentation/http" "http"
     fi
 done

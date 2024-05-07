@@ -4,7 +4,7 @@ import (
 	"go-boilerplate/config"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
-	authorsTransport "go-boilerplate/src/authors/infrastructure/transport"
+	authorsGRPC "go-boilerplate/src/authors/presentation/grpc"
 	authorsService "go-boilerplate/src/authors/services"
 	"net"
 	"os"
@@ -28,7 +28,7 @@ func RunGRPCServer() {
 	server := GoogleGRPC.NewServer()
 
 	authorsService := authorsService.NewAuthorService()
-	authorsServer := authorsTransport.NewAuthorsGRPCServer(&authorsService)
+	authorsServer := authorsGRPC.NewAuthorsGRPCServer(&authorsService)
 
 	authorsServer.RegisterGRPCRoutes(server)
 

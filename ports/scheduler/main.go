@@ -3,7 +3,7 @@ package scheduler
 import (
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
-	"go-boilerplate/src/books/job"
+	"go-boilerplate/src/books/presentation/job"
 	"go-boilerplate/src/books/services"
 	"os"
 	"os/signal"

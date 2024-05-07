@@ -8,9 +8,9 @@ import (
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
 	"go-boilerplate/shared/types"
-	authorsTransport "go-boilerplate/src/authors/infrastructure/transport"
+	authorsHTTP "go-boilerplate/src/authors/presentation/http"
 	authorsService "go-boilerplate/src/authors/services"
-	booksTransport "go-boilerplate/src/books/infrastructure/transport"
+	booksHTTP "go-boilerplate/src/books/presentation/http"
 	booksService "go-boilerplate/src/books/services"
 	"net/http"
 	"os"
@@ -85,10 +85,10 @@ func RunHTTPServer() {
 	})
 
 	booksService := booksService.NewBookService()
-	booksServer := booksTransport.NewBooksHTTPServer(&booksService)
+	booksServer := booksHTTP.NewBooksHTTPServer(&booksService)
 
 	authorsService := authorsService.NewAuthorService()
-	authorsServer := authorsTransport.NewAuthorsHTTPServer(&authorsService)
+	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
 
 	api := app.Group("/api")
 

@@ -1,4 +1,4 @@
-package transport
+package http
 
 import (
 	"go-boilerplate/src/books/domain/books"
