@@ -4,16 +4,16 @@ DB_STRING="host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USERNAME}
 MIGRATION_DIR=db/migrations
 
 db_up:
-	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} up
+	./db/migrate dir=${MIGRATION_DIR} db=${DB_STRING} up
 
 db_down:
-	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} down
+	./db/migrate dir=${MIGRATION_DIR} db=${DB_STRING} down
 
 db_status:
-	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} status
+	./db/migrate dir=${MIGRATION_DIR} db=${DB_STRING} status
 
 db_create:
-	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} create $(filter-out $@,$(MAKECMDGOALS)) sql
+	./db/migrate dir=${MIGRATION_DIR} db=${DB_STRING} create $(filter-out $@,$(MAKECMDGOALS)) sql
 
 migrate_binary:
 	go build -o ./db/migrate ./db
