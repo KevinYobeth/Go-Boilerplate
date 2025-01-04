@@ -3,3 +3,7 @@
 
 /vendor
 /tmp
+
+/db/migrate
+
+/docker/data

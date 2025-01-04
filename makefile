@@ -15,6 +15,9 @@ db_status:
 db_create:
 	./migrate dir=${MIGRATION_DIR} db=${DB_STRING} create $(filter-out $@,$(MAKECMDGOALS)) sql
 
+migrate_binary:
+	go build -o ./db/migrate ./db
+
 .PHONY: openapi
 openapi:
 	@./scripts/openapi-http.sh
