@@ -1,6 +1,8 @@
 package http
 
 import (
+	"context"
+	"go-boilerplate/shared/database"
 	respond "go-boilerplate/shared/response"
 	"go-boilerplate/shared/utils"
 	"go-boilerplate/src/books/domain/books"
@@ -13,7 +15,8 @@ import (
 )
 
 type HTTPTransport struct {
-	app *services.Application
+	app     *services.Application
+	manager database.TransactionManager
 }
 
 func NewBooksHTTPServer(app *services.Application) HTTPTransport {
@@ -23,6 +26,18 @@ func NewBooksHTTPServer(app *services.Application) HTTPTransport {
 func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 	api := r.Group("/v1")
 	RegisterHandlers(api, h)
+}
+
+func (h HTTPTransport) TransactionMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(echoCtx echo.Context) error {
+		return h.manager.RunInTransaction(echoCtx.Request().Context(), func(c context.Context) error {
+			ctx := echoCtx.Echo().NewContext(echoCtx.Request().WithContext(c), echoCtx.Response())
+			ctx.SetParamNames(echoCtx.ParamNames()...)
+			ctx.SetParamValues(echoCtx.ParamValues()...)
+
+			return next(ctx)
+		})
+	}
 }
 
 // GET /books

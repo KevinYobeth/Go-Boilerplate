@@ -1,0 +1,122 @@
+openapi: "3.0.0"
+info:
+  version: 0.1.0
+  title: Library Authors API
+  description: Library Authors API Definition
+  contact:
+    name: Kevin Yobeth
+    url: https://github.com/kevinyobeth
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+paths:
+  /bookings:
+    get:
+      tags: [Bookings]
+      operationId: getBookings
+      description: get all bookings
+      responses:
+        "200":
+          description: get all bookings success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBookingsResponse"
+    post:
+      tags: [Bookings]
+      operationId: createBooking
+      description: create booking
+      requestBody:
+        description: create booking
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingRequest"   
+      responses:
+        "200":
+          description: create booking success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /bookings/{id}:
+    get:
+      tags: [Bookings]
+      operationId: getBooking
+      description: get booking
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: booking id
+      responses:
+        "200":
+          description: get booking success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBookingResponse"
+
+components:
+  schemas:
+    GetBookingsResponse:
+      type: object
+      required: [data, message]
+      properties:
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Booking"
+    GetBookingResponse:
+      type: object
+      required: [data, message]
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+          $ref: "#/components/schemas/Booking"
+          
+    CreateBookingRequest:
+      type: object
+      required: [book_id, date_from, date_to]
+      properties:
+        book_id:
+          type: string
+          format: uuid
+        date_from:
+          type: string
+          format: date-time
+        date_to:
+          type: string
+          format: date-time
+
+    Booking:
+      type: object
+      required: [id, book_id, date_from, date_to]
+      properties:
+        id:
+          type: string
+          format: uuid
+        book_id:
+          type: string
+          format: uuid
+        date_from:
+          type: string
+          format: date-time
+        date_to:
+          type: string
+          format: date-time
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string

@@ -10,6 +10,8 @@ import (
 	"go-boilerplate/shared/types"
 	authorsHTTP "go-boilerplate/src/authors/presentation/http"
 	authorsService "go-boilerplate/src/authors/services"
+	bookingsHTTP "go-boilerplate/src/bookings/presentation/http"
+	bookingsService "go-boilerplate/src/bookings/services"
 	booksHTTP "go-boilerplate/src/books/presentation/http"
 	booksService "go-boilerplate/src/books/services"
 	"net/http"
@@ -90,10 +92,14 @@ func RunHTTPServer() {
 	authorsService := authorsService.NewAuthorService()
 	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
 
+	bookingsService := bookingsService.NewBookingService()
+	bookingsServer := bookingsHTTP.NewBookingsHTTPServer(&bookingsService)
+
 	api := app.Group("/api")
 
 	booksServer.RegisterHTTPRoutes(api)
 	authorsServer.RegisterHTTPRoutes(api)
+	bookingsServer.RegisterHTTPRoutes(api)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
