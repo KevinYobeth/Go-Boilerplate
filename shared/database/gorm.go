@@ -11,6 +11,14 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+type GormAbstraction struct {
+	*gorm.Config
+	Error        error
+	RowsAffected int64
+	Statement    *gorm.Statement
+	clone        int
+}
+
 func InitGorm() *gorm.DB {
 	appLog := log.InitLogger()
 	gormLogger := log.NewGormLogger(100*time.Millisecond, logger.Info)

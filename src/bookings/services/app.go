@@ -32,9 +32,7 @@ func NewBookingService() Application {
 	return Application{
 		Commands: Commands{
 			CreateBooking: command.NewCreateBookingHandler(repo, gormManager, command.CreateBookingService{
-				BookService: command.BookService{
-					GetBook: bookService.Queries.GetBook,
-				},
+				BookService: bookService,
 			}),
 		},
 		Queries: Queries{

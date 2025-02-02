@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/bookings/domain/bookings"
 	"go-boilerplate/src/bookings/infrastructure/repository"
+	bookService "go-boilerplate/src/books/services"
 	bookQuery "go-boilerplate/src/books/services/query"
 	"time"
 
@@ -18,12 +19,8 @@ type CreateBookingParams struct {
 	DateTo   time.Time
 }
 
-type BookService struct {
-	GetBook bookQuery.GetBookHandler
-}
-
 type CreateBookingService struct {
-	BookService BookService
+	BookService bookService.Application
 }
 
 type CreateBookingHandler struct {
@@ -43,7 +40,7 @@ func (h CreateBookingHandler) Execute(c context.Context, params CreateBookingPar
 			return err
 		}
 
-		_, err = h.service.BookService.GetBook.Execute(c, bookQuery.GetBookParams{
+		_, err = h.service.BookService.Queries.GetBook.Execute(c, bookQuery.GetBookParams{
 			ID: params.BookID,
 		})
 		fmt.Println("tx get book")
