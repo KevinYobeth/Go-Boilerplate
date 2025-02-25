@@ -5,6 +5,7 @@ import (
 	"go-boilerplate/shared/constants"
 	"go-boilerplate/shared/errors"
 	"log"
+	"os"
 
 	"go.uber.org/zap"
 )
@@ -19,7 +20,16 @@ func InitLogger() *zap.SugaredLogger {
 	appConfig := config.LoadAppConfig()
 
 	if appConfig.AppEnv == constants.APP_DEVELOPMENT {
-		newLogger, err := zap.NewDevelopment()
+		logDir := "logs"
+		cfg := zap.NewDevelopmentConfig()
+
+		if err := os.MkdirAll(logDir, 0755); err != nil {
+			log.Fatalf("failed to create log directory: %v", err)
+		}
+
+		cfg.OutputPaths = []string{"logs/development.log", "stderr"}
+
+		newLogger, err := cfg.Build()
 
 		if err != nil {
 			log.Fatal(errors.NewInitializationError(err, "logger").Message)

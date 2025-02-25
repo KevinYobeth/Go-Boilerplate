@@ -6,4 +6,6 @@
 
 /db/migrate
 
+/logs
+
 /docker/data
