@@ -3,13 +3,19 @@ package http
 import (
 	"context"
 	"go-boilerplate/config"
+	"go-boilerplate/shared/cache"
 	"go-boilerplate/shared/constants"
+	"go-boilerplate/shared/database"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/event"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
 	"go-boilerplate/shared/types"
+	"go-boilerplate/src/authors/infrastructure/repository"
 	authorsHTTP "go-boilerplate/src/authors/presentation/http"
+	"go-boilerplate/src/authors/presentation/intraprocess"
 	authorsService "go-boilerplate/src/authors/services"
+	booksRepository "go-boilerplate/src/books/infrastructure/repository"
 	booksHTTP "go-boilerplate/src/books/presentation/http"
 	booksService "go-boilerplate/src/books/services"
 	"net/http"
@@ -84,10 +90,25 @@ func RunHTTPServer() {
 		})
 	})
 
-	booksService := booksService.NewBookService()
+	lru := cache.InitRedis()
+	db := database.InitPostgres()
+	manager := database.NewTransactionManager(db)
+
+	bookRepo := booksRepository.NewBooksPostgresRepository(db)
+	bookCache := booksRepository.NewBooksRedisCache(lru)
+	// authorRepo := authorsRepository.NewAuthorsPostgresRepository(db)
+
+	authorRepo := repository.NewAuthorsPostgresRepository(db)
+	authorPublisher := event.InitPublisher(event.PublisherOptions{
+		Topic: "authors",
+	})
+
+	authorsService := authorsService.NewAuthorService(authorRepo, authorPublisher)
+	authorIntraprocess := intraprocess.NewAuthorIntraprocessService(authorsService)
+
+	booksService := booksService.NewBookService(bookRepo, bookCache, manager, authorIntraprocess)
 	booksServer := booksHTTP.NewBooksHTTPServer(&booksService)
 
-	authorsService := authorsService.NewAuthorService()
 	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
 
 	api := app.Group("/api")
