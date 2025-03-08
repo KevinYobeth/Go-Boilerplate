@@ -3,12 +3,11 @@ package command
 import (
 	"context"
 	"go-boilerplate/shared/database"
-	"go-boilerplate/src/authors/domain/authors"
-	"go-boilerplate/src/authors/services/command"
-	authorCommand "go-boilerplate/src/authors/services/command"
-	authorQuery "go-boilerplate/src/authors/services/query"
+	"go-boilerplate/src/books/domain/authors"
 	"go-boilerplate/src/books/domain/books"
+	"go-boilerplate/src/books/infrastructure/intraprocess"
 	"go-boilerplate/src/books/infrastructure/repository"
+	"go-boilerplate/src/books/services/helper"
 
 	"github.com/ztrue/tracerr"
 )
@@ -18,33 +17,24 @@ type CreateBookParams struct {
 	Author string
 }
 
-type AuthorService struct {
-	GetAuthorByName authorQuery.GetAuthorByNameHandler
-	CreateAuthor    authorCommand.CreateAuthorHandler
-}
-
-type CreateBookService struct {
-	CreateAuthorBook CreateAuthorBookHandler
-}
-
 type CreateBookHandler struct {
-	manager       database.TransactionManager
-	repository    repository.Repository
-	cache         repository.Cache
-	service       CreateBookService
-	authorService AuthorService
+	manager    database.TransactionManager
+	repository repository.Repository
+	cache      repository.Cache
+
+	authorService intraprocess.BookAuthorIntraprocess
 }
 
 func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
 		var authorObj *authors.Author
 
-		authorObj, err := h.authorService.GetAuthorByName.Execute(c, authorQuery.GetAuthorByNameParams{Name: params.Author})
+		authorObj, err := h.authorService.GetAuthorByName(c, params.Author)
 		if err != nil {
 			return tracerr.Wrap(err)
 		}
 		if authorObj == nil {
-			authorObj, err = h.authorService.CreateAuthor.Execute(c, command.CreateAuthorParams{Name: params.Author})
+			authorObj, err = h.authorService.CreateAuthor(c, params.Author)
 			if err != nil {
 				return tracerr.Wrap(err)
 			}
@@ -57,7 +47,12 @@ func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) e
 			return tracerr.Wrap(err)
 		}
 
-		err = h.service.CreateAuthorBook.Execute(c, CreateAuthorBookParams{BookID: dto.ID, AuthorID: authorObj.ID})
+		err = helper.CreateAuthorBook(c, helper.CreateAuthorBookOpts{
+			Params: helper.CreateAuthorBookRequest{
+				BookID:   dto.ID,
+				AuthorID: authorObj.ID,
+			},
+		})
 		if err != nil {
 			return tracerr.Wrap(err)
 		}
@@ -66,6 +61,6 @@ func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) e
 	}))
 }
 
-func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, service CreateBookService, authorService AuthorService) CreateBookHandler {
-	return CreateBookHandler{manager, database, cache, service, authorService}
+func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService intraprocess.BookAuthorIntraprocess) CreateBookHandler {
+	return CreateBookHandler{manager, database, cache, authorService}
 }

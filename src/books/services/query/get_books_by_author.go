@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
+	"go-boilerplate/src/books/services/helper"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -18,12 +19,14 @@ type GetBooksByAuthorHandler struct {
 }
 
 func (h GetBooksByAuthorHandler) Execute(c context.Context, params GetBooksByAuthorParams) ([]books.Book, error) {
-	booksObj, err := h.repository.GetBooksByAuthor(c, params.ID)
+	booksObj, err := helper.GetBooksByAuthor(c, helper.GetBooksByAuthorOpts{
+		Params: helper.GetBooksByAuthorRequest{
+			ID: params.ID,
+		},
+		BookRepository: h.repository,
+	})
 	if err != nil {
 		return nil, tracerr.Wrap(err)
-	}
-	if booksObj == nil {
-		return []books.Book{}, nil
 	}
 
 	return booksObj, nil

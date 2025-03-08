@@ -2,10 +2,11 @@ package command
 
 import (
 	"context"
-	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
+	"go-boilerplate/src/books/services/helper"
 
 	"github.com/google/uuid"
+	"github.com/ztrue/tracerr"
 )
 
 type CreateAuthorBookParams struct {
@@ -18,7 +19,17 @@ type CreateAuthorBookHandler struct {
 }
 
 func (h CreateAuthorBookHandler) Execute(c context.Context, params CreateAuthorBookParams) error {
-	return h.repository.CreateAuthorBook(c, books.CreateAuthorBookDto{BookID: params.BookID, AuthorID: params.AuthorID})
+	err := helper.CreateAuthorBook(c, helper.CreateAuthorBookOpts{
+		Params: helper.CreateAuthorBookRequest{
+			BookID:   params.BookID,
+			AuthorID: params.AuthorID,
+		},
+	})
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
+	return nil
 }
 
 func NewCreateAuthorBookHandler(database repository.Repository) CreateAuthorBookHandler {
