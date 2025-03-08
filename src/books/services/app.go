@@ -48,9 +48,9 @@ func NewBookService(authorService intraprocess.BookAuthorIntraprocess) Applicati
 			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repo, logger),
 		},
 		Queries: Queries{
-			GetBooks:         query.NewGetBooksHandler(repo, cache),
-			GetBook:          query.NewGetBookHandler(repo),
-			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo),
+			GetBooks:         query.NewGetBooksHandler(repo, cache, logger),
+			GetBook:          query.NewGetBookHandler(repo, logger),
+			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo, logger),
 		},
 	}
 }

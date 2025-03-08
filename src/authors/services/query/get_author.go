@@ -7,6 +7,7 @@ import (
 	"go-boilerplate/src/authors/infrastructure/repository"
 
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type GetAuthorParams struct {
@@ -28,7 +29,7 @@ func (h getAuthorHandler) Handle(c context.Context, params GetAuthorParams) (*au
 	return author, nil
 }
 
-func NewGetAuthorHandler(repository repository.Repository) GetAuthorHandler {
+func NewGetAuthorHandler(repository repository.Repository, logger *zap.SugaredLogger) GetAuthorHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -36,6 +37,6 @@ func NewGetAuthorHandler(repository repository.Repository) GetAuthorHandler {
 	return decorator.ApplyQueryDecorators(
 		getAuthorHandler{
 			repository: repository,
-		},
+		}, logger,
 	)
 }

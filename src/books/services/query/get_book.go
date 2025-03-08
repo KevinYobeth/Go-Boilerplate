@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type GetBookParams struct {
@@ -35,12 +36,14 @@ func (h getBookHandler) Handle(c context.Context, params GetBookParams) (*books.
 	return book, nil
 }
 
-func NewGetBookHandler(repository repository.Repository) getBookHandler {
+func NewGetBookHandler(repository repository.Repository, logger *zap.SugaredLogger) GetBookHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
 
-	return getBookHandler{
-		repository: repository,
-	}
+	return decorator.ApplyQueryDecorators(
+		getBookHandler{
+			repository: repository,
+		}, logger,
+	)
 }

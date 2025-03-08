@@ -39,8 +39,8 @@ func NewAuthorService() Application {
 			DeleteAuthor: command.NewDeleteAuthorHandler(repository, publisher, logger),
 		},
 		Queries: Queries{
-			GetAuthors: query.NewGetAuthorsHandler(repository),
-			GetAuthor:  query.NewGetAuthorHandler(repository),
+			GetAuthors: query.NewGetAuthorsHandler(repository, logger),
+			GetAuthor:  query.NewGetAuthorHandler(repository, logger),
 		},
 	}
 }

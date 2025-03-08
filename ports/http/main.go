@@ -8,6 +8,7 @@ import (
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
 	"go-boilerplate/shared/types"
+	"go-boilerplate/shared/utils"
 	authorsHTTP "go-boilerplate/src/authors/presentation/http"
 	authorIntraprocess "go-boilerplate/src/authors/presentation/intraprocess"
 	authorsService "go-boilerplate/src/authors/services"
@@ -38,7 +39,18 @@ func RunHTTPServer() {
 
 	app.Use(middleware.Recover())
 	app.Use(middleware.CORS())
-	app.Use(middleware.RequestID())
+	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
+		RequestIDHandler: func(c echo.Context, requestID string) {
+			stdCtx := c.Request().Context()
+			newCtx := context.WithValue(stdCtx, constants.ContextKeyRequestID, requestID)
+
+			c.Set(string(constants.ContextKeyRequestID), requestID)
+			c.SetRequest(c.Request().WithContext(newCtx))
+		},
+		Generator: func() string {
+			return utils.RandomString(16)
+		},
+	}))
 	app.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:       true,
 		LogStatus:    true,

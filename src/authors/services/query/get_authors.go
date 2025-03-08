@@ -7,6 +7,7 @@ import (
 	"go-boilerplate/src/authors/infrastructure/repository"
 
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type GetAuthorsParams struct {
@@ -28,7 +29,7 @@ func (h getAuthorsHandler) Handle(c context.Context, params GetAuthorsParams) ([
 	return authorsObj, nil
 }
 
-func NewGetAuthorsHandler(repository repository.Repository) GetAuthorsHandler {
+func NewGetAuthorsHandler(repository repository.Repository, logger *zap.SugaredLogger) GetAuthorsHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -36,6 +37,6 @@ func NewGetAuthorsHandler(repository repository.Repository) GetAuthorsHandler {
 	return decorator.ApplyQueryDecorators(
 		getAuthorsHandler{
 			repository: repository,
-		},
+		}, logger,
 	)
 }

@@ -7,6 +7,7 @@ import (
 	"go-boilerplate/src/books/infrastructure/repository"
 
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type GetBooksParams struct {
@@ -45,7 +46,7 @@ func (h getBooksHandler) Handle(c context.Context, params GetBooksParams) ([]boo
 	return booksObj, nil
 }
 
-func NewGetBooksHandler(repository repository.Repository, cache repository.Cache) GetBooksHandler {
+func NewGetBooksHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger) GetBooksHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -57,5 +58,5 @@ func NewGetBooksHandler(repository repository.Repository, cache repository.Cache
 		getBooksHandler{
 			repository: repository,
 			cache:      cache,
-		})
+		}, logger)
 }
