@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/shared/errors"
 	"log"
 	"os"
+	"strings"
 
 	"go.uber.org/zap"
 )
@@ -19,7 +20,7 @@ func InitLogger() *zap.SugaredLogger {
 
 	appConfig := config.LoadAppConfig()
 
-	if appConfig.AppEnv == constants.APP_DEVELOPMENT {
+	if strings.ToUpper(appConfig.AppEnv) == constants.APP_DEVELOPMENT {
 		logDir := "logs"
 		cfg := zap.NewDevelopmentConfig()
 

@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -31,7 +32,7 @@ func RunHTTPServer() {
 	appConfig := config.LoadAppConfig()
 	logger := log.InitLogger()
 
-	if appConfig.AppEnv == constants.APP_DEVELOPMENT {
+	if strings.ToUpper(appConfig.AppEnv) == constants.APP_DEVELOPMENT {
 		app.Debug = true
 	}
 
