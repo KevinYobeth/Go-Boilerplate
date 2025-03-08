@@ -23,7 +23,7 @@ func (g GRPCTransport) RegisterGRPCRoutes(server *grpc.Server) {
 }
 
 func (g GRPCTransport) GetAuthors(c context.Context, params *authors.GetAuthorsRequest) (*authors.GetAuthorsResponse, error) {
-	authorsObj, err := g.app.Queries.GetAuthors.Execute(c, query.GetAuthorsParams{Name: &params.Name})
+	authorsObj, err := g.app.Queries.GetAuthors.Handle(c, query.GetAuthorsParams{Name: &params.Name})
 	if err != nil {
 		return nil, err
 	}

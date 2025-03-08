@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/helper"
@@ -14,11 +15,13 @@ type GetBookParams struct {
 	ID uuid.UUID
 }
 
-type GetBookHandler struct {
+type getBookHandler struct {
 	repository repository.Repository
 }
 
-func (h GetBookHandler) Execute(c context.Context, params GetBookParams) (*books.Book, error) {
+type GetBookHandler decorator.QueryHandler[GetBookParams, *books.Book]
+
+func (h getBookHandler) Handle(c context.Context, params GetBookParams) (*books.Book, error) {
 	book, err := helper.GetBook(c, helper.GetBookOpts{
 		Params: helper.GetBookRequest{
 			ID: params.ID,
@@ -32,6 +35,12 @@ func (h GetBookHandler) Execute(c context.Context, params GetBookParams) (*books
 	return book, nil
 }
 
-func NewGetBookHandler(repository repository.Repository) GetBookHandler {
-	return GetBookHandler{repository}
+func NewGetBookHandler(repository repository.Repository) getBookHandler {
+	if repository == nil {
+		panic("repository is required")
+	}
+
+	return getBookHandler{
+		repository: repository,
+	}
 }

@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/authors/domain/authors"
 	"go-boilerplate/src/authors/infrastructure/repository"
 
@@ -12,11 +13,13 @@ type GetAuthorsParams struct {
 	Name *string
 }
 
-type GetAuthorsHandler struct {
+type getAuthorsHandler struct {
 	repository repository.Repository
 }
 
-func (h GetAuthorsHandler) Execute(c context.Context, params GetAuthorsParams) ([]authors.Author, error) {
+type GetAuthorsHandler decorator.QueryHandler[GetAuthorsParams, []authors.Author]
+
+func (h getAuthorsHandler) Handle(c context.Context, params GetAuthorsParams) ([]authors.Author, error) {
 	authorsObj, err := h.repository.GetAuthors(c, authors.GetAuthorsDto{Name: params.Name})
 	if err != nil {
 		return nil, tracerr.Wrap(err)
@@ -26,5 +29,13 @@ func (h GetAuthorsHandler) Execute(c context.Context, params GetAuthorsParams) (
 }
 
 func NewGetAuthorsHandler(repository repository.Repository) GetAuthorsHandler {
-	return GetAuthorsHandler{repository}
+	if repository == nil {
+		panic("repository is required")
+	}
+
+	return decorator.ApplyQueryDecorators(
+		getAuthorsHandler{
+			repository: repository,
+		},
+	)
 }

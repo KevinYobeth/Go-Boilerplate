@@ -3,28 +3,27 @@ package command
 import (
 	"context"
 	"go-boilerplate/shared/database"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/helper"
-	"go-boilerplate/src/books/services/query"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type DeleteBookByAuthorParams struct {
 	AuthorID uuid.UUID
 }
 
-type DeleteBookByAuthorService struct {
-	GetBooksByAuthor query.GetBooksByAuthorHandler
-}
-
-type DeleteBookByAuthorHandler struct {
+type deleteBookByAuthorHandler struct {
 	manager    database.TransactionManager
 	repository repository.Repository
 }
 
-func (h DeleteBookByAuthorHandler) Execute(c context.Context, params DeleteBookByAuthorParams) error {
+type DeleteBookByAuthorHandler decorator.CommandHandler[DeleteBookByAuthorParams]
+
+func (h deleteBookByAuthorHandler) Handle(c context.Context, params DeleteBookByAuthorParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
 		books, err := helper.GetBooksByAuthor(c, helper.GetBooksByAuthorOpts{
 			Params: helper.GetBooksByAuthorRequest{
@@ -49,6 +48,15 @@ func (h DeleteBookByAuthorHandler) Execute(c context.Context, params DeleteBookB
 	}))
 }
 
-func NewDeleteBookByAuthorHandler(manager database.TransactionManager, repository repository.Repository) DeleteBookByAuthorHandler {
-	return DeleteBookByAuthorHandler{manager, repository}
+func NewDeleteBookByAuthorHandler(manager database.TransactionManager, repository repository.Repository, logger *zap.SugaredLogger) DeleteBookByAuthorHandler {
+	if repository == nil {
+		panic("repository is required")
+	}
+
+	return decorator.ApplyCommandDecorators(
+		deleteBookByAuthorHandler{
+			manager:    manager,
+			repository: repository,
+		}, logger,
+	)
 }

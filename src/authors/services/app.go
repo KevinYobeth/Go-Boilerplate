@@ -3,6 +3,7 @@ package services
 import (
 	"go-boilerplate/shared/database"
 	"go-boilerplate/shared/event"
+	"go-boilerplate/shared/log"
 	"go-boilerplate/src/authors/infrastructure/repository"
 	"go-boilerplate/src/authors/services/command"
 	"go-boilerplate/src/authors/services/query"
@@ -25,6 +26,7 @@ type Queries struct {
 
 func NewAuthorService() Application {
 	db := database.InitPostgres()
+	logger := log.InitLogger()
 
 	repository := repository.NewAuthorsPostgresRepository(db)
 	publisher := event.InitPublisher(event.PublisherOptions{
@@ -33,8 +35,8 @@ func NewAuthorService() Application {
 
 	return Application{
 		Commands: Commands{
-			CreateAuthor: command.NewCreateAuthorHandler(repository),
-			DeleteAuthor: command.NewDeleteAuthorHandler(repository, publisher),
+			CreateAuthor: command.NewCreateAuthorHandler(repository, logger),
+			DeleteAuthor: command.NewDeleteAuthorHandler(repository, publisher, logger),
 		},
 		Queries: Queries{
 			GetAuthors: query.NewGetAuthorsHandler(repository),

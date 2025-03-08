@@ -8,6 +8,7 @@ import (
 	"go-boilerplate/src/authors/services/query"
 	"go-boilerplate/src/shared/interfaces"
 
+	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
 )
 
@@ -20,7 +21,7 @@ func NewAuthorIntraprocessService(intraprocessInterface services.Application) in
 }
 
 func (i AuthorIntraprocessService) GetAuthors(c context.Context, name *string) ([]interfaces.Author, error) {
-	authors, err := i.intraprocessInterface.Queries.GetAuthors.Execute(c, query.GetAuthorsParams{
+	authors, err := i.intraprocessInterface.Queries.GetAuthors.Handle(c, query.GetAuthorsParams{
 		Name: name,
 	})
 	if err != nil {
@@ -31,14 +32,19 @@ func (i AuthorIntraprocessService) GetAuthors(c context.Context, name *string) (
 }
 
 func (i AuthorIntraprocessService) CreateAuthor(c context.Context, name string) (*interfaces.Author, error) {
-	author, err := i.intraprocessInterface.Commands.CreateAuthor.Execute(c, command.CreateAuthorParams{
+	ID := uuid.New()
+	err := i.intraprocessInterface.Commands.CreateAuthor.Handle(c, command.CreateAuthorParams{
+		ID:   &ID,
 		Name: name,
 	})
 	if err != nil {
 		return nil, tracerr.Wrap(err)
 	}
 
-	return transformDomainAuthorToIntraprocessAuthor(author), err
+	return transformDomainAuthorToIntraprocessAuthor(&authors.Author{
+		ID:   ID,
+		Name: name,
+	}), err
 }
 
 func transformDomainAuthorToIntraprocessAuthor(domainAuthor *authors.Author) *interfaces.Author {

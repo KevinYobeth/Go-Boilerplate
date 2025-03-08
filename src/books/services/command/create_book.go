@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"go-boilerplate/shared/database"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/books/domain/authors"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/intraprocess"
@@ -10,6 +11,7 @@ import (
 	"go-boilerplate/src/books/services/helper"
 
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type CreateBookParams struct {
@@ -17,7 +19,7 @@ type CreateBookParams struct {
 	Author string
 }
 
-type CreateBookHandler struct {
+type createBookHandler struct {
 	manager    database.TransactionManager
 	repository repository.Repository
 	cache      repository.Cache
@@ -25,7 +27,9 @@ type CreateBookHandler struct {
 	authorService intraprocess.BookAuthorIntraprocess
 }
 
-func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) error {
+type CreateBookHandler decorator.CommandHandler[CreateBookParams]
+
+func (h createBookHandler) Handle(c context.Context, params CreateBookParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
 		var authorObj *authors.Author
 
@@ -61,6 +65,24 @@ func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) e
 	}))
 }
 
-func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService intraprocess.BookAuthorIntraprocess) CreateBookHandler {
-	return CreateBookHandler{manager, database, cache, authorService}
+func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService intraprocess.BookAuthorIntraprocess, logger *zap.SugaredLogger) CreateBookHandler {
+	if database == nil {
+		panic("nil database")
+	}
+	if cache == nil {
+		panic("nil cache")
+	}
+	if authorService == nil {
+		panic("nil authorService")
+	}
+
+	return decorator.ApplyCommandDecorators(
+		createBookHandler{
+			manager:    manager,
+			repository: database,
+			cache:      cache,
+
+			authorService: authorService,
+		}, logger,
+	)
 }

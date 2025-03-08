@@ -2,11 +2,13 @@ package command
 
 import (
 	"context"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type UpdateBookParams struct {
@@ -14,12 +16,14 @@ type UpdateBookParams struct {
 	Title string
 }
 
-type UpdateBookHandler struct {
+type updateBookHandler struct {
 	repository repository.Repository
 	cache      repository.Cache
 }
 
-func (h UpdateBookHandler) Execute(c context.Context, params UpdateBookParams) error {
+type UpdateBookHandler decorator.CommandHandler[UpdateBookParams]
+
+func (h updateBookHandler) Handle(c context.Context, params UpdateBookParams) error {
 	err := h.repository.UpdateBook(c, books.UpdateBookDto{
 		ID:    params.ID,
 		Title: params.Title,
@@ -36,6 +40,18 @@ func (h UpdateBookHandler) Execute(c context.Context, params UpdateBookParams) e
 	return nil
 }
 
-func NewUpdateBookHandler(repository repository.Repository, cache repository.Cache) UpdateBookHandler {
-	return UpdateBookHandler{repository, cache}
+func NewUpdateBookHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger) UpdateBookHandler {
+	if repository == nil {
+		panic("repository is required")
+	}
+	if cache == nil {
+		panic("cache is required")
+	}
+
+	return decorator.ApplyCommandDecorators(
+		updateBookHandler{
+			repository: repository,
+			cache:      cache,
+		}, logger,
+	)
 }

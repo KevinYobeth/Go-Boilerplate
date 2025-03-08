@@ -26,7 +26,7 @@ func (j Job) RegisterAutomaticArchiveBooksJob() {
 	j.schedule.NewJob(gocron.DurationJob(5*time.Second), gocron.NewTask(
 		func() {
 			j.decorate(jobName, func() error {
-				j.app.Commands.CreateBook.Execute(context.Background(), command.CreateBookParams{
+				j.app.Commands.CreateBook.Handle(context.Background(), command.CreateBookParams{
 					Title:  "Automatic Archive Book",
 					Author: "Automatic Archive Author",
 				})

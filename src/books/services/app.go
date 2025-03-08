@@ -3,6 +3,7 @@ package services
 import (
 	"go-boilerplate/shared/cache"
 	"go-boilerplate/shared/database"
+	"go-boilerplate/shared/log"
 	"go-boilerplate/src/books/infrastructure/intraprocess"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/command"
@@ -33,17 +34,18 @@ func NewBookService(authorService intraprocess.BookAuthorIntraprocess) Applicati
 	lru := cache.InitRedis()
 	db := database.InitPostgres()
 	manager := database.NewTransactionManager(db)
+	logger := log.InitLogger()
 
 	repo := repository.NewBooksPostgresRepository(db)
 	cache := repository.NewBooksRedisCache(lru)
 
 	return Application{
 		Commands: Commands{
-			CreateBook:         command.NewCreateBookHandler(manager, repo, cache, authorService),
-			UpdateBook:         command.NewUpdateBookHandler(repo, cache),
-			DeleteBook:         command.NewDeleteBookHandler(manager, repo, cache),
-			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repo),
-			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repo),
+			CreateBook:         command.NewCreateBookHandler(manager, repo, cache, authorService, logger),
+			UpdateBook:         command.NewUpdateBookHandler(repo, cache, logger),
+			DeleteBook:         command.NewDeleteBookHandler(manager, repo, cache, logger),
+			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repo, logger),
+			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repo, logger),
 		},
 		Queries: Queries{
 			GetBooks:         query.NewGetBooksHandler(repo, cache),
