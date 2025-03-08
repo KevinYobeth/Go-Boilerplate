@@ -1,8 +1,9 @@
 package services
 
 import (
+	"go-boilerplate/shared/cache"
 	"go-boilerplate/shared/database"
-	"go-boilerplate/src/books/domain/authors"
+	"go-boilerplate/src/books/infrastructure/intraprocess"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/command"
 	"go-boilerplate/src/books/services/query"
@@ -28,19 +29,26 @@ type Queries struct {
 	GetBooksByAuthor query.GetBooksByAuthorHandler
 }
 
-func NewBookService(repository repository.Repository, cache repository.Cache, manager database.TransactionManager, authorService authors.AuthorService) Application {
+func NewBookService(authorService intraprocess.BookAuthorIntraprocess) Application {
+	lru := cache.InitRedis()
+	db := database.InitPostgres()
+	manager := database.NewTransactionManager(db)
+
+	repo := repository.NewBooksPostgresRepository(db)
+	cache := repository.NewBooksRedisCache(lru)
+
 	return Application{
 		Commands: Commands{
-			CreateBook:         command.NewCreateBookHandler(manager, repository, cache, authorService),
-			UpdateBook:         command.NewUpdateBookHandler(repository, cache),
-			DeleteBook:         command.NewDeleteBookHandler(manager, repository, cache),
-			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repository),
-			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repository),
+			CreateBook:         command.NewCreateBookHandler(manager, repo, cache, authorService),
+			UpdateBook:         command.NewUpdateBookHandler(repo, cache),
+			DeleteBook:         command.NewDeleteBookHandler(manager, repo, cache),
+			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repo),
+			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repo),
 		},
 		Queries: Queries{
-			GetBooks:         query.NewGetBooksHandler(repository, cache),
-			GetBook:          query.NewGetBookHandler(repository),
-			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repository),
+			GetBooks:         query.NewGetBooksHandler(repo, cache),
+			GetBook:          query.NewGetBookHandler(repo),
+			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo),
 		},
 	}
 }

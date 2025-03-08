@@ -5,7 +5,10 @@ import (
 	"go-boilerplate/shared/event"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
+	authorIntraprocess "go-boilerplate/src/authors/presentation/intraprocess"
+	authorsService "go-boilerplate/src/authors/services"
 	"go-boilerplate/src/books/domain/authors"
+	"go-boilerplate/src/books/infrastructure/intraprocess"
 	"go-boilerplate/src/books/services"
 	"go-boilerplate/src/books/services/command"
 	"os"
@@ -25,7 +28,12 @@ func main() {
 	logger := log.InitLogger()
 	c := context.Background()
 
-	app := services.NewBookService()
+	authorsService := authorsService.NewAuthorService()
+	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
+
+	booksAuthorIntraprocess := intraprocess.NewBookAuthorIntraprocessService(authorIntraprocess)
+
+	app := services.NewBookService(booksAuthorIntraprocess)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)

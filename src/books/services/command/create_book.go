@@ -5,6 +5,7 @@ import (
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/domain/authors"
 	"go-boilerplate/src/books/domain/books"
+	"go-boilerplate/src/books/infrastructure/intraprocess"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/helper"
 
@@ -21,7 +22,7 @@ type CreateBookHandler struct {
 	repository repository.Repository
 	cache      repository.Cache
 
-	authorService authors.AuthorService
+	authorService intraprocess.BookAuthorIntraprocess
 }
 
 func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) error {
@@ -60,6 +61,6 @@ func (h CreateBookHandler) Execute(c context.Context, params CreateBookParams) e
 	}))
 }
 
-func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService authors.AuthorService) CreateBookHandler {
+func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService intraprocess.BookAuthorIntraprocess) CreateBookHandler {
 	return CreateBookHandler{manager, database, cache, authorService}
 }

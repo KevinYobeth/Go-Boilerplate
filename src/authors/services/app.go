@@ -1,6 +1,7 @@
 package services
 
 import (
+	"go-boilerplate/shared/database"
 	"go-boilerplate/shared/event"
 	"go-boilerplate/src/authors/infrastructure/repository"
 	"go-boilerplate/src/authors/services/command"
@@ -22,7 +23,14 @@ type Queries struct {
 	GetAuthor  query.GetAuthorHandler
 }
 
-func NewAuthorService(repository repository.Repository, publisher event.PublisherInterface) Application {
+func NewAuthorService() Application {
+	db := database.InitPostgres()
+
+	repository := repository.NewAuthorsPostgresRepository(db)
+	publisher := event.InitPublisher(event.PublisherOptions{
+		Topic: "authors",
+	})
+
 	return Application{
 		Commands: Commands{
 			CreateAuthor: command.NewCreateAuthorHandler(repository),
