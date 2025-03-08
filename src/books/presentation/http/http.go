@@ -27,7 +27,7 @@ func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 
 // GET /books
 func (h HTTPTransport) GetBooks(c echo.Context) error {
-	booksObj, err := h.app.Queries.GetBooks.Execute(c.Request().Context(), query.GetBooksParams{})
+	booksObj, err := h.app.Queries.GetBooks.Handle(c.Request().Context(), query.GetBooksParams{})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -48,7 +48,7 @@ func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 		return err
 	}
 
-	book, err := h.app.Queries.GetBook.Execute(c.Request().Context(), query.GetBookParams{ID: parsedUUID})
+	book, err := h.app.Queries.GetBook.Handle(c.Request().Context(), query.GetBookParams{ID: parsedUUID})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -69,7 +69,7 @@ func (h HTTPTransport) CreateBook(c echo.Context) error {
 		return err
 	}
 
-	if err := h.app.Commands.CreateBook.Execute(c.Request().Context(),
+	if err := h.app.Commands.CreateBook.Handle(c.Request().Context(),
 		command.CreateBookParams{Title: request.Title, Author: request.Author}); err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -95,7 +95,7 @@ func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 		return err
 	}
 
-	if err := h.app.Commands.UpdateBook.Execute(c.Request().Context(), command.UpdateBookParams{
+	if err := h.app.Commands.UpdateBook.Handle(c.Request().Context(), command.UpdateBookParams{
 		ID:    parsedUUID,
 		Title: request.Title,
 	}); err != nil {
@@ -117,7 +117,7 @@ func (h HTTPTransport) DeleteBook(c echo.Context, id string) error {
 		return nil
 	}
 
-	if err := h.app.Commands.DeleteBook.Execute(c.Request().Context(), command.DeleteBookParams{
+	if err := h.app.Commands.DeleteBook.Handle(c.Request().Context(), command.DeleteBookParams{
 		ID: parsedUUID,
 	}); err != nil {
 		respond.SendHTTP(c, err)

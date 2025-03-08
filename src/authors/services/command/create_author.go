@@ -2,32 +2,45 @@ package command
 
 import (
 	"context"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/authors/domain/authors"
 	"go-boilerplate/src/authors/infrastructure/repository"
+
+	"github.com/google/uuid"
+	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type CreateAuthorParams struct {
+	ID   *uuid.UUID
 	Name string
 }
 
-type CreateAuthorHandler struct {
+type createAuthorHandler struct {
 	repository repository.Repository
 }
 
-func (h CreateAuthorHandler) Execute(c context.Context, params CreateAuthorParams) (*authors.Author, error) {
-	dto := authors.NewCreateAuthorDto(params.Name)
+type CreateAuthorHandler decorator.CommandHandler[CreateAuthorParams]
+
+func (h createAuthorHandler) Handle(c context.Context, params CreateAuthorParams) error {
+	dto := authors.NewCreateAuthorDto(params.Name, params.ID)
 
 	err := h.repository.CreateAuthor(c, dto)
 	if err != nil {
-		return nil, err
+		return tracerr.Wrap(err)
 	}
 
-	return &authors.Author{
-		ID:   dto.ID,
-		Name: dto.Name,
-	}, nil
+	return nil
 }
 
-func NewCreateAuthorHandler(database repository.Repository) CreateAuthorHandler {
-	return CreateAuthorHandler{database}
+func NewCreateAuthorHandler(repository repository.Repository, logger *zap.SugaredLogger) CreateAuthorHandler {
+	if repository == nil {
+		panic("repository is required")
+	}
+
+	return decorator.ApplyCommandDecorators(
+		createAuthorHandler{
+			repository: repository,
+		}, logger,
+	)
 }

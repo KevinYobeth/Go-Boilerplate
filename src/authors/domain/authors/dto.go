@@ -11,9 +11,14 @@ type CreateAuthorDto struct {
 	Name string
 }
 
-func NewCreateAuthorDto(name string) CreateAuthorDto {
+func NewCreateAuthorDto(name string, ID *uuid.UUID) CreateAuthorDto {
+	id := uuid.New()
+	if ID != nil {
+		id = *ID
+	}
+
 	return CreateAuthorDto{
-		ID:   uuid.New(),
+		ID:   id,
 		Name: name,
 	}
 }

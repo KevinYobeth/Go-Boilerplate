@@ -3,24 +3,28 @@ package command
 import (
 	"context"
 	"go-boilerplate/shared/database"
+	"go-boilerplate/shared/decorator"
 	"go-boilerplate/src/books/infrastructure/repository"
 	"go-boilerplate/src/books/services/helper"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
+	"go.uber.org/zap"
 )
 
 type DeleteBookParams struct {
 	ID uuid.UUID
 }
 
-type DeleteBookHandler struct {
+type deleteBookHandler struct {
 	manager    database.TransactionManager
 	repository repository.Repository
 	cache      repository.Cache
 }
 
-func (h DeleteBookHandler) Execute(c context.Context, params DeleteBookParams) error {
+type DeleteBookHandler decorator.CommandHandler[DeleteBookParams]
+
+func (h deleteBookHandler) Handle(c context.Context, params DeleteBookParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
 		bookObj, err := helper.GetBook(c, helper.GetBookOpts{
 			Params: helper.GetBookRequest{
@@ -46,6 +50,19 @@ func (h DeleteBookHandler) Execute(c context.Context, params DeleteBookParams) e
 	}))
 }
 
-func NewDeleteBookHandler(manager database.TransactionManager, repository repository.Repository, cache repository.Cache) DeleteBookHandler {
-	return DeleteBookHandler{manager, repository, cache}
+func NewDeleteBookHandler(manager database.TransactionManager, repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger) DeleteBookHandler {
+	if repository == nil {
+		panic("repository is required")
+	}
+	if cache == nil {
+		panic("cache is required")
+	}
+
+	return decorator.ApplyCommandDecorators(
+		deleteBookHandler{
+			manager:    manager,
+			repository: repository,
+			cache:      cache,
+		}, logger,
+	)
 }

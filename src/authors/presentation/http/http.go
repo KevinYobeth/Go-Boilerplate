@@ -27,7 +27,7 @@ func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 
 // GET /authors
 func (h HTTPTransport) GetAuthors(c echo.Context) error {
-	authorsObj, err := h.app.Queries.GetAuthors.Execute(c.Request().Context(), query.GetAuthorsParams{})
+	authorsObj, err := h.app.Queries.GetAuthors.Handle(c.Request().Context(), query.GetAuthorsParams{})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -48,7 +48,7 @@ func (h HTTPTransport) GetAuthor(c echo.Context, id string) error {
 		return err
 	}
 
-	author, err := h.app.Queries.GetAuthor.Execute(c.Request().Context(), query.GetAuthorParams{ID: parsedUUID})
+	author, err := h.app.Queries.GetAuthor.Handle(c.Request().Context(), query.GetAuthorParams{ID: parsedUUID})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -69,7 +69,7 @@ func (h HTTPTransport) DeleteAuthor(c echo.Context, id string) error {
 		return err
 	}
 
-	err = h.app.Commands.DeleteAuthor.Execute(c.Request().Context(), command.DeleteAuthorParams{ID: parsedUUID})
+	err = h.app.Commands.DeleteAuthor.Handle(c.Request().Context(), command.DeleteAuthorParams{ID: parsedUUID})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
@@ -89,7 +89,7 @@ func (h HTTPTransport) CreateAuthor(c echo.Context) error {
 		return err
 	}
 
-	_, err := h.app.Commands.CreateAuthor.Execute(c.Request().Context(), command.CreateAuthorParams{Name: request.Name})
+	err := h.app.Commands.CreateAuthor.Handle(c.Request().Context(), command.CreateAuthorParams{Name: request.Name})
 	if err != nil {
 		respond.SendHTTP(c, err)
 		return err
