@@ -9,7 +9,9 @@ import (
 	"go-boilerplate/shared/log"
 	"go-boilerplate/shared/types"
 	authorsHTTP "go-boilerplate/src/authors/presentation/http"
+	authorIntraprocess "go-boilerplate/src/authors/presentation/intraprocess"
 	authorsService "go-boilerplate/src/authors/services"
+	booksAuthorIntraprocess "go-boilerplate/src/books/infrastructure/intraprocess"
 	booksHTTP "go-boilerplate/src/books/presentation/http"
 	booksService "go-boilerplate/src/books/services"
 	"net/http"
@@ -84,10 +86,13 @@ func RunHTTPServer() {
 		})
 	})
 
-	booksService := booksService.NewBookService()
+	authorsService := authorsService.NewAuthorService()
+	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
+
+	booksAuthorIntraprocess := booksAuthorIntraprocess.NewBookAuthorIntraprocessService(authorIntraprocess)
+	booksService := booksService.NewBookService(booksAuthorIntraprocess)
 	booksServer := booksHTTP.NewBooksHTTPServer(&booksService)
 
-	authorsService := authorsService.NewAuthorService()
 	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
 
 	api := app.Group("/api")

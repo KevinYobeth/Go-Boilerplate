@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/infrastructure/repository"
+	"go-boilerplate/src/books/services/helper"
 	"go-boilerplate/src/books/services/query"
 
 	"github.com/google/uuid"
@@ -21,15 +22,15 @@ type DeleteBookByAuthorService struct {
 type DeleteBookByAuthorHandler struct {
 	manager    database.TransactionManager
 	repository repository.Repository
-	service    DeleteBookByAuthorService
 }
 
 func (h DeleteBookByAuthorHandler) Execute(c context.Context, params DeleteBookByAuthorParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
-		books, err := h.service.GetBooksByAuthor.Execute(c, query.GetBooksByAuthorParams{
-			ID: params.AuthorID,
+		books, err := helper.GetBooksByAuthor(c, helper.GetBooksByAuthorOpts{
+			Params: helper.GetBooksByAuthorRequest{
+				ID: params.AuthorID,
+			},
 		})
-
 		if err != nil {
 			return tracerr.Wrap(err)
 		}
@@ -48,6 +49,6 @@ func (h DeleteBookByAuthorHandler) Execute(c context.Context, params DeleteBookB
 	}))
 }
 
-func NewDeleteBookByAuthorHandler(manager database.TransactionManager, repository repository.Repository, service DeleteBookByAuthorService) DeleteBookByAuthorHandler {
-	return DeleteBookByAuthorHandler{manager, repository, service}
+func NewDeleteBookByAuthorHandler(manager database.TransactionManager, repository repository.Repository) DeleteBookByAuthorHandler {
+	return DeleteBookByAuthorHandler{manager, repository}
 }

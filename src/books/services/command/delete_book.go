@@ -4,7 +4,7 @@ import (
 	"context"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/src/books/infrastructure/repository"
-	"go-boilerplate/src/books/services/query"
+	"go-boilerplate/src/books/services/helper"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -14,20 +14,20 @@ type DeleteBookParams struct {
 	ID uuid.UUID
 }
 
-type DeleteBookService struct {
-	GetBook query.GetBookHandler
-}
-
 type DeleteBookHandler struct {
 	manager    database.TransactionManager
 	repository repository.Repository
 	cache      repository.Cache
-	services   DeleteBookService
 }
 
 func (h DeleteBookHandler) Execute(c context.Context, params DeleteBookParams) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
-		bookObj, err := h.services.GetBook.Execute(c, query.GetBookParams{ID: params.ID})
+		bookObj, err := helper.GetBook(c, helper.GetBookOpts{
+			Params: helper.GetBookRequest{
+				ID: params.ID,
+			},
+			BookRepository: h.repository,
+		})
 		if err != nil {
 			return tracerr.Wrap(err)
 		}
@@ -46,6 +46,6 @@ func (h DeleteBookHandler) Execute(c context.Context, params DeleteBookParams) e
 	}))
 }
 
-func NewDeleteBookHandler(manager database.TransactionManager, repository repository.Repository, cache repository.Cache, services DeleteBookService) DeleteBookHandler {
-	return DeleteBookHandler{manager, repository, cache, services}
+func NewDeleteBookHandler(manager database.TransactionManager, repository repository.Repository, cache repository.Cache) DeleteBookHandler {
+	return DeleteBookHandler{manager, repository, cache}
 }

@@ -2,11 +2,12 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/shared/errors"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/infrastructure/repository"
+	"go-boilerplate/src/books/services/helper"
 
 	"github.com/google/uuid"
+	"github.com/ztrue/tracerr"
 )
 
 type GetBookParams struct {
@@ -18,14 +19,14 @@ type GetBookHandler struct {
 }
 
 func (h GetBookHandler) Execute(c context.Context, params GetBookParams) (*books.Book, error) {
-	book, err := h.repository.GetBook(c, params.ID)
+	book, err := helper.GetBook(c, helper.GetBookOpts{
+		Params: helper.GetBookRequest{
+			ID: params.ID,
+		},
+		BookRepository: h.repository,
+	})
 	if err != nil {
-		return nil, errors.NewGenericError(err, "failed to get book")
-	}
-
-	if book == nil {
-		return nil, errors.NewNotFoundError(nil, "book")
-
+		return nil, tracerr.Wrap(err)
 	}
 
 	return book, nil

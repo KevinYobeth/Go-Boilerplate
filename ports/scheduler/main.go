@@ -3,6 +3,9 @@ package scheduler
 import (
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
+	authorIntraprocess "go-boilerplate/src/authors/presentation/intraprocess"
+	authorsService "go-boilerplate/src/authors/services"
+	"go-boilerplate/src/books/infrastructure/intraprocess"
 	"go-boilerplate/src/books/presentation/job"
 	"go-boilerplate/src/books/services"
 	"os"
@@ -14,7 +17,12 @@ import (
 
 func RunScheduler() {
 	logger := log.InitLogger()
-	app := services.NewBookService()
+	authorsService := authorsService.NewAuthorService()
+	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
+
+	booksAuthorIntraprocess := intraprocess.NewBookAuthorIntraprocessService(authorIntraprocess)
+
+	app := services.NewBookService(booksAuthorIntraprocess)
 
 	s, err := gocron.NewScheduler()
 

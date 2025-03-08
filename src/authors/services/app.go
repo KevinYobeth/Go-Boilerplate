@@ -25,19 +25,20 @@ type Queries struct {
 
 func NewAuthorService() Application {
 	db := database.InitPostgres()
-	repo := repository.NewAuthorsPostgresRepository(db)
+
+	repository := repository.NewAuthorsPostgresRepository(db)
 	publisher := event.InitPublisher(event.PublisherOptions{
 		Topic: "authors",
 	})
 
 	return Application{
 		Commands: Commands{
-			CreateAuthor: command.NewCreateAuthorHandler(repo),
-			DeleteAuthor: command.NewDeleteAuthorHandler(repo, publisher),
+			CreateAuthor: command.NewCreateAuthorHandler(repository),
+			DeleteAuthor: command.NewDeleteAuthorHandler(repository, publisher),
 		},
 		Queries: Queries{
-			GetAuthors: query.NewGetAuthorsHandler(repo),
-			GetAuthor:  query.NewGetAuthorHandler(repo),
+			GetAuthors: query.NewGetAuthorsHandler(repository),
+			GetAuthor:  query.NewGetAuthorHandler(repository),
 		},
 	}
 }

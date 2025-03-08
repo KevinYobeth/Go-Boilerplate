@@ -17,8 +17,6 @@ type GetAuthorsHandler struct {
 }
 
 func (h GetAuthorsHandler) Execute(c context.Context, params GetAuthorsParams) ([]authors.Author, error) {
-	// event.InitPublisher()
-
 	authorsObj, err := h.repository.GetAuthors(c, authors.GetAuthorsDto{Name: params.Name})
 	if err != nil {
 		return nil, tracerr.Wrap(err)
