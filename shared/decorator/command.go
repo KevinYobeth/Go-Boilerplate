@@ -10,9 +10,11 @@ func ApplyCommandDecorators[H any](
 	handler CommandHandler[H],
 	logger *zap.SugaredLogger,
 ) CommandHandler[H] {
-	return commandLoggingDecorator[H]{
-		base:   handler,
-		logger: logger,
+	return commandOTelDecorator[H]{
+		commandLoggingDecorator[H]{
+			base:   handler,
+			logger: logger,
+		},
 	}
 }
 

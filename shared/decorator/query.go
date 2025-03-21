@@ -10,9 +10,11 @@ func ApplyQueryDecorators[H any, R any](
 	handler QueryHandler[H, R],
 	logger *zap.SugaredLogger,
 ) QueryHandler[H, R] {
-	return queryLoggingDecorator[H, R]{
-		base:   handler,
-		logger: logger,
+	return queryOTelDecorator[H, R]{
+		queryLoggingDecorator[H, R]{
+			base:   handler,
+			logger: logger,
+		},
 	}
 }
 
