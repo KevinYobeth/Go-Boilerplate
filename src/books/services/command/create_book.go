@@ -56,6 +56,7 @@ func (h createBookHandler) Handle(c context.Context, params CreateBookParams) er
 				BookID:   dto.ID,
 				AuthorID: authorObj.ID,
 			},
+			BookRepository: h.repository,
 		})
 		if err != nil {
 			return tracerr.Wrap(err)

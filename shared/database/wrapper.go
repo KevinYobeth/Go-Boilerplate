@@ -3,6 +3,9 @@ package database
 import (
 	"context"
 	"database/sql"
+	"go-boilerplate/shared/telemetry"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 type DB struct {
@@ -34,9 +37,7 @@ func (t Tx) QueryContext(
 }
 
 func (t Tx) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
-	res := t.tx.QueryRowContext(ctx, query, args...)
-
-	return res
+	return t.tx.QueryRowContext(ctx, query, args...)
 }
 
 func (t Tx) ExecContext(
@@ -61,8 +62,12 @@ func NewDB(db *sql.DB) DB {
 
 // BeginTx implements PostgresDB.
 func (db DB) BeginTx(c context.Context, options *sql.TxOptions) (Transaction, error) {
-	tx, err := db.DB.BeginTx(c, options)
+	ctx, span := telemetry.NewDatabaseSpan(c, "BeginTx")
+	defer span.End()
+
+	tx, err := db.DB.BeginTx(ctx, options)
 	if err != nil {
+		span.RecordError(err, trace.WithStackTrace(true))
 		return nil, err
 	}
 
@@ -87,16 +92,34 @@ func (db DB) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return db.DB.Exec(query, args...)
 }
 
-func (db DB) ExecContext(c context.Context, query string, args ...interface{}) (sql.Result, error) {
-	return TxFromContext(c, db.DB).ExecContext(c, query, args...)
+func (db DB) ExecContext(c context.Context, query string, args ...interface{}) (res sql.Result, err error) {
+	ctx, span := telemetry.NewDatabaseSpan(c, query)
+	defer span.End()
+
+	res, err = TxFromContext(ctx, db.DB).ExecContext(ctx, query, args...)
+
+	if err != nil {
+		span.RecordError(err, trace.WithStackTrace(true))
+	}
+
+	return res, err
 }
 
 func (db DB) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	return db.DB.Query(query, args...)
 }
 
-func (db DB) QueryContext(c context.Context, query string, args ...interface{}) (*sql.Rows, error) {
-	return TxFromContext(c, db.DB).QueryContext(c, query, args...)
+func (db DB) QueryContext(c context.Context, query string, args ...interface{}) (rows *sql.Rows, err error) {
+	ctx, span := telemetry.NewDatabaseSpan(c, query)
+	defer span.End()
+
+	rows, err = TxFromContext(ctx, db.DB).QueryContext(ctx, query, args...)
+
+	if err != nil {
+		span.RecordError(err, trace.WithStackTrace(true))
+	}
+
+	return rows, err
 }
 
 func (db DB) QueryRow(query string, args ...interface{}) *sql.Row {
@@ -104,5 +127,8 @@ func (db DB) QueryRow(query string, args ...interface{}) *sql.Row {
 }
 
 func (db DB) QueryRowContext(c context.Context, query string, args ...interface{}) *sql.Row {
-	return TxFromContext(c, db.DB).QueryRowContext(c, query, args...)
+	ctx, span := telemetry.NewDatabaseSpan(c, query)
+	defer span.End()
+
+	return TxFromContext(ctx, db.DB).QueryRowContext(ctx, query, args...)
 }

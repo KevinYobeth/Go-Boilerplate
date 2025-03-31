@@ -1,13 +1,13 @@
 package http
 
 import (
-	respond "go-boilerplate/shared/response"
+	response "go-boilerplate/shared/response"
+	"go-boilerplate/shared/types"
 	"go-boilerplate/shared/utils"
 	"go-boilerplate/src/books/domain/books"
 	"go-boilerplate/src/books/services"
 	"go-boilerplate/src/books/services/command"
 	"go-boilerplate/src/books/services/query"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -29,13 +29,17 @@ func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
 func (h HTTPTransport) GetBooks(c echo.Context) error {
 	booksObj, err := h.app.Queries.GetBooks.Handle(c.Request().Context(), query.GetBooksParams{})
 	if err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
-	c.JSON(http.StatusOK, GetBooksResponse{
-		Data:    TransformToHTTPBooksWithAuthor(booksObj),
-		Message: "success get books",
+	response.SendHTTP(c, &types.Response{
+		Body: GetBooksResponse{
+			Data:    TransformToHTTPBooksWithAuthor(booksObj),
+			Message: "success get books",
+		},
 	})
 	return nil
 }
@@ -44,19 +48,25 @@ func (h HTTPTransport) GetBooks(c echo.Context) error {
 func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 	parsedUUID, err := utils.ParseUUID(id)
 	if err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
 	book, err := h.app.Queries.GetBook.Handle(c.Request().Context(), query.GetBookParams{ID: parsedUUID})
 	if err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
-	c.JSON(http.StatusOK, GetBookResponse{
-		Data:    TransformToHTTPBook(book),
-		Message: "success get book",
+	response.SendHTTP(c, &types.Response{
+		Body: GetBookResponse{
+			Data:    TransformToHTTPBook(book),
+			Message: "success get book",
+		},
 	})
 	return nil
 }
@@ -65,18 +75,24 @@ func (h HTTPTransport) GetBook(c echo.Context, id string) error {
 func (h HTTPTransport) CreateBook(c echo.Context) error {
 	var request CreateBookRequest
 	if err := c.Bind(&request); err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
 	if err := h.app.Commands.CreateBook.Handle(c.Request().Context(),
 		command.CreateBookParams{Title: request.Title, Author: request.Author}); err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
-	c.JSON(http.StatusCreated, MessageResponse{
-		Message: "success create book",
+	response.SendHTTP(c, &types.Response{
+		Body: MessageResponse{
+			Message: "success create book",
+		},
 	})
 	return nil
 }
@@ -85,13 +101,17 @@ func (h HTTPTransport) CreateBook(c echo.Context) error {
 func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 	parsedUUID, err := utils.ParseUUID(id)
 	if err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return nil
 	}
 
 	var request books.UpdateBookDto
 	if err := c.Bind(&request); err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
@@ -99,12 +119,16 @@ func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 		ID:    parsedUUID,
 		Title: request.Title,
 	}); err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
-	c.JSON(http.StatusOK, MessageResponse{
-		Message: "success update book",
+	response.SendHTTP(c, &types.Response{
+		Body: MessageResponse{
+			Message: "success update book",
+		},
 	})
 	return nil
 }
@@ -113,19 +137,25 @@ func (h HTTPTransport) UpdateBook(c echo.Context, id string) error {
 func (h HTTPTransport) DeleteBook(c echo.Context, id string) error {
 	parsedUUID, err := utils.ParseUUID(id)
 	if err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return nil
 	}
 
 	if err := h.app.Commands.DeleteBook.Handle(c.Request().Context(), command.DeleteBookParams{
 		ID: parsedUUID,
 	}); err != nil {
-		respond.SendHTTP(c, err)
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
 		return err
 	}
 
-	c.JSON(http.StatusOK, MessageResponse{
-		Message: "success delete book",
+	response.SendHTTP(c, &types.Response{
+		Body: MessageResponse{
+			Message: "success delete book",
+		},
 	})
 	return nil
 }

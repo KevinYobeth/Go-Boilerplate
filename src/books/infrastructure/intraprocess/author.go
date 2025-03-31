@@ -2,6 +2,7 @@ package intraprocess
 
 import (
 	"context"
+	"go-boilerplate/shared/telemetry"
 	"go-boilerplate/src/books/domain/authors"
 	"go-boilerplate/src/shared/interfaces"
 
@@ -22,6 +23,9 @@ func NewBookAuthorIntraprocessService(intraprocessInterface interfaces.AuthorInt
 }
 
 func (i BookAuthorIntraprocessService) GetAuthorByName(ctx context.Context, name string) (*authors.Author, error) {
+	ctx, span := telemetry.NewIntraprocessSpan(ctx)
+	defer span.End()
+
 	authors, err := i.intraprocessInterface.GetAuthors(ctx, &name)
 	if err != nil {
 		return nil, tracerr.Wrap(err)
@@ -34,6 +38,9 @@ func (i BookAuthorIntraprocessService) GetAuthorByName(ctx context.Context, name
 }
 
 func (i BookAuthorIntraprocessService) CreateAuthor(ctx context.Context, name string) (*authors.Author, error) {
+	ctx, span := telemetry.NewIntraprocessSpan(ctx)
+	defer span.End()
+
 	author, err := i.intraprocessInterface.CreateAuthor(ctx, name)
 	if err != nil {
 		return nil, err

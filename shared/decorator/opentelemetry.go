@@ -34,7 +34,7 @@ func (d commandOTelDecorator[C]) Handle(ctx context.Context, cmd C) (err error) 
 	)
 
 	err = d.base.Handle(ctx, cmd)
-	if nil != err {
+	if err != nil {
 		span.RecordError(err, trace.WithStackTrace(true))
 	}
 

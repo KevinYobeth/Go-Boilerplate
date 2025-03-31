@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-boilerplate/config"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/telemetry"
 	"log"
 
 	"github.com/redis/go-redis/v9"
@@ -19,6 +20,8 @@ func InitRedis() *redis.Client {
 		Password: redisConfig.RedisPassword,
 		DB:       redisConfig.RedisDB,
 	})
+
+	client.AddHook(telemetry.NewRedisTracingHook())
 
 	_, err := client.Ping(ctx).Result()
 	if err != nil {
