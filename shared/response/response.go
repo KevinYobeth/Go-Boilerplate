@@ -11,7 +11,10 @@ import (
 
 func SendHTTP(c echo.Context, response *types.Response) error {
 	body := types.ResponseBody{}
-	jsonBytes, _ := json.Marshal(response.Body)
+	jsonBytes, err := json.Marshal(response.Body)
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": "Internal Server Error"})
+	}
 	json.Unmarshal(jsonBytes, &body)
 
 	body.TraceID = telemetry.GetTraceID(c.Request().Context())
