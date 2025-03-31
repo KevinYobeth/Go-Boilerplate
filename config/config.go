@@ -7,11 +7,12 @@ import (
 )
 
 type Config struct {
-	Database PostgresConfig
-	Cache    RedisConfig
-	Server   ServerConfig
-	App      AppConfig
-	Event    RabbitMQConfig
+	OpenTelemetry OpenTelemetryConfig
+	Database      PostgresConfig
+	Cache         RedisConfig
+	Server        ServerConfig
+	App           AppConfig
+	Event         RabbitMQConfig
 }
 
 func validateConfig(dest interface{}) error {

@@ -7,6 +7,7 @@ import (
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
+	"go-boilerplate/shared/telemetry"
 	"go-boilerplate/shared/types"
 	"go-boilerplate/shared/utils"
 	authorsHTTP "go-boilerplate/src/authors/presentation/http"
@@ -25,6 +26,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/ztrue/tracerr"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
 func RunHTTPServer() {
@@ -32,6 +34,10 @@ func RunHTTPServer() {
 
 	appConfig := config.LoadAppConfig()
 	logger := log.InitLogger()
+	shutdownOtel, err := telemetry.InitOtel(context.Background())
+	if err != nil {
+		panic(err)
+	}
 
 	if strings.ToUpper(appConfig.AppEnv) == constants.APP_DEVELOPMENT {
 		app.Debug = true
@@ -39,6 +45,7 @@ func RunHTTPServer() {
 
 	app.Use(middleware.Recover())
 	app.Use(middleware.CORS())
+	app.Use(otelecho.Middleware(appConfig.AppName))
 	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		RequestIDHandler: func(c echo.Context, requestID string) {
 			stdCtx := c.Request().Context()
@@ -133,6 +140,7 @@ func RunHTTPServer() {
 		logger.Fatal(err)
 	}
 
+	shutdownOtel(context.Background())
 	graceroutine.Stop()
 	graceroutine.Wait()
 

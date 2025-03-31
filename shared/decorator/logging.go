@@ -53,7 +53,12 @@ func (d queryLoggingDecorator[Q, R]) Handle(ctx context.Context, qry Q) (result 
 }
 
 func generateActionName(handler any) string {
-	return strings.Split(fmt.Sprintf("%T", handler), ".")[1]
+	parts := strings.Split(fmt.Sprintf("%T", handler), ".")
+	if len(parts) < 2 {
+		return "cqrs.unknown"
+	}
+	action := parts[1]
+	return fmt.Sprintf("%s.%s", "cqrs", action)
 }
 
 func getLogBodyParam(param any) any {
