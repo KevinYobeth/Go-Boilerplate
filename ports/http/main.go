@@ -7,6 +7,7 @@ import (
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
+	"go-boilerplate/shared/response"
 	"go-boilerplate/shared/telemetry"
 	"go-boilerplate/shared/types"
 	"go-boilerplate/shared/utils"
@@ -45,7 +46,10 @@ func RunHTTPServer() {
 
 	app.Use(middleware.Recover())
 	app.Use(middleware.CORS())
-	app.Use(otelecho.Middleware(appConfig.AppName))
+	app.Use(otelecho.Middleware(appConfig.AppName,
+		otelecho.WithSkipper(func(c echo.Context) bool {
+			return strings.Contains(c.Request().URL.Path, "/health")
+		})))
 	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		RequestIDHandler: func(c echo.Context, requestID string) {
 			stdCtx := c.Request().Context()
@@ -98,12 +102,18 @@ func RunHTTPServer() {
 		},
 	}))
 
-	config := config.LoadServerConfig()
-
 	app.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, types.ResponseBody{
-			Message: "ok",
+		response.SendHTTP(c, &types.Response{
+			Body: types.ResponseBody{
+				Data: map[string]any{
+					"name":        appConfig.AppName,
+					"version":     appConfig.AppVersion,
+					"environment": appConfig.AppEnv,
+				},
+				Message: "ok",
+			},
 		})
+		return nil
 	})
 
 	authorsService := authorsService.NewAuthorService()
@@ -122,6 +132,8 @@ func RunHTTPServer() {
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+
+	config := config.LoadServerConfig()
 
 	go func() {
 		host := config.ServerHost + ":" + config.ServerHTTPPort

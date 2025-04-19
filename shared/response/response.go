@@ -22,12 +22,25 @@ func SendHTTP(c echo.Context, response *types.Response) error {
 
 	body.TraceID = telemetry.GetTraceID(c.Request().Context())
 
+	var statusCode = 200
+	if response.StatusCode != 0 {
+		statusCode = response.StatusCode
+	}
+
 	if response.Error != nil {
 		errObj := errors.GetGenericError(response.Error)
 		body.Message = errObj.Message
 
-		return c.JSON(errors.ErrorMap[errObj.Type], body)
+		if errObj.Unwrap() != nil {
+			body.Error = errObj.Unwrap().Error()
+		}
+
+		if response.StatusCode == 0 {
+			statusCode = errors.ErrorMap[errObj.Type]
+		}
+
+		return c.JSON(statusCode, body)
 	}
 
-	return c.JSON(200, body)
+	return c.JSON(statusCode, body)
 }
