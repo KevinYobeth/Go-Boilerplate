@@ -14,6 +14,7 @@ var (
 	ErrorTypeDatabase       = ErrorType("database")
 	ErrorTypeIncorrectInput = ErrorType("incorrect-input")
 	ErrorTypeNotFound       = ErrorType("not-found")
+	ErrorTypeUnauthorized   = ErrorType("unauthorized")
 )
 
 type GenericError struct {
@@ -66,6 +67,14 @@ func NewIncorrectInputError(err error, message string) GenericError {
 	}
 }
 
+func NewUnauthorizedError(err error, resource string) GenericError {
+	return GenericError{
+		Err:     err,
+		Type:    ErrorTypeUnauthorized,
+		Message: fmt.Sprintf("unauthorized to access %s", resource),
+	}
+}
+
 func GetGenericError(err error) GenericError {
 	if err == nil {
 		return NewGenericError(err, "")
@@ -90,4 +99,8 @@ func GetTracerrErr(err error) tracerr.Error {
 	}
 
 	return GetTracerrErr(errors.Unwrap(err))
+}
+
+func New(message string) error {
+	return errors.New(message)
 }

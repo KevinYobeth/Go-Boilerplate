@@ -7,6 +7,7 @@ import (
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
+	"go-boilerplate/shared/response"
 	"go-boilerplate/shared/telemetry"
 	"go-boilerplate/shared/types"
 	"go-boilerplate/shared/utils"
@@ -116,6 +117,13 @@ func RunHTTPServer() {
 	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
 
 	api := app.Group("/api")
+
+	api.GET("/sandbox", func(c echo.Context) error {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return nil
+	})
 
 	booksServer.RegisterHTTPRoutes(api)
 	authorsServer.RegisterHTTPRoutes(api)

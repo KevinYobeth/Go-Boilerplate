@@ -11,4 +11,5 @@ type ResponseBody struct {
 	Message  string      `json:"message"`
 	Metadata interface{} `json:"metadata,omitempty"`
 	TraceID  string      `json:"trace_id,omitempty"`
+	Error    string      `json:"error,omitempty"`
 }
