@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type DeleteAuthorParams struct {
+type DeleteAuthorRequest struct {
 	ID uuid.UUID
 }
 
@@ -21,9 +21,9 @@ type deleteAuthorHandler struct {
 	publisher  event.PublisherInterface
 }
 
-type DeleteAuthorHandler decorator.CommandHandler[DeleteAuthorParams]
+type DeleteAuthorHandler decorator.CommandHandler[DeleteAuthorRequest]
 
-func (h deleteAuthorHandler) Handle(c context.Context, params DeleteAuthorParams) error {
+func (h deleteAuthorHandler) Handle(c context.Context, params DeleteAuthorRequest) error {
 	err := h.repository.DeleteAuthor(c, params.ID)
 	if err != nil {
 		return tracerr.Wrap(err)

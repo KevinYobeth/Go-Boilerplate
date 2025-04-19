@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type CreateBookParams struct {
+type CreateBookRequest struct {
 	Title  string
 	Author string
 }
@@ -27,9 +27,9 @@ type createBookHandler struct {
 	authorService intraprocess.BookAuthorIntraprocess
 }
 
-type CreateBookHandler decorator.CommandHandler[CreateBookParams]
+type CreateBookHandler decorator.CommandHandler[CreateBookRequest]
 
-func (h createBookHandler) Handle(c context.Context, params CreateBookParams) error {
+func (h createBookHandler) Handle(c context.Context, params CreateBookRequest) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
 		var authorObj *authors.Author
 

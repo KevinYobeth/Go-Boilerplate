@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type UpdateBookParams struct {
+type UpdateBookRequest struct {
 	ID    uuid.UUID
 	Title string
 }
@@ -21,9 +21,9 @@ type updateBookHandler struct {
 	cache      repository.Cache
 }
 
-type UpdateBookHandler decorator.CommandHandler[UpdateBookParams]
+type UpdateBookHandler decorator.CommandHandler[UpdateBookRequest]
 
-func (h updateBookHandler) Handle(c context.Context, params UpdateBookParams) error {
+func (h updateBookHandler) Handle(c context.Context, params UpdateBookRequest) error {
 	err := h.repository.UpdateBook(c, books.UpdateBookDto{
 		ID:    params.ID,
 		Title: params.Title,

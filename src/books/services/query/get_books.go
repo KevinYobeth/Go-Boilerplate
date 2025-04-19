@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type GetBooksParams struct {
+type GetBooksRequest struct {
 	Title *string
 }
 
@@ -19,9 +19,9 @@ type getBooksHandler struct {
 	cache      repository.Cache
 }
 
-type GetBooksHandler decorator.QueryHandler[GetBooksParams, []books.BookWithAuthor]
+type GetBooksHandler decorator.QueryHandler[GetBooksRequest, []books.BookWithAuthor]
 
-func (h getBooksHandler) Handle(c context.Context, params GetBooksParams) ([]books.BookWithAuthor, error) {
+func (h getBooksHandler) Handle(c context.Context, params GetBooksRequest) ([]books.BookWithAuthor, error) {
 	booksObj, err := h.cache.GetBooks(c, books.GetBooksDto{Title: params.Title})
 	if err != nil {
 		return nil, tracerr.Wrap(err)

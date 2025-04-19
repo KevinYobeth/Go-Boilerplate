@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type GetBooksByAuthorParams struct {
+type GetBooksByAuthorRequest struct {
 	ID uuid.UUID
 }
 
@@ -20,9 +20,9 @@ type getBooksByAuthorHandler struct {
 	repository repository.Repository
 }
 
-type GetBooksByAuthorHandler decorator.QueryHandler[GetBooksByAuthorParams, []books.Book]
+type GetBooksByAuthorHandler decorator.QueryHandler[GetBooksByAuthorRequest, []books.Book]
 
-func (h getBooksByAuthorHandler) Handle(c context.Context, params GetBooksByAuthorParams) ([]books.Book, error) {
+func (h getBooksByAuthorHandler) Handle(c context.Context, params GetBooksByAuthorRequest) ([]books.Book, error) {
 	booksObj, err := helper.GetBooksByAuthor(c, helper.GetBooksByAuthorOpts{
 		Params: helper.GetBooksByAuthorRequest{
 			ID: params.ID,

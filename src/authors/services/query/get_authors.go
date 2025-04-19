@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type GetAuthorsParams struct {
+type GetAuthorsRequest struct {
 	Name *string
 }
 
@@ -18,9 +18,9 @@ type getAuthorsHandler struct {
 	repository repository.Repository
 }
 
-type GetAuthorsHandler decorator.QueryHandler[GetAuthorsParams, []authors.Author]
+type GetAuthorsHandler decorator.QueryHandler[GetAuthorsRequest, []authors.Author]
 
-func (h getAuthorsHandler) Handle(c context.Context, params GetAuthorsParams) ([]authors.Author, error) {
+func (h getAuthorsHandler) Handle(c context.Context, params GetAuthorsRequest) ([]authors.Author, error) {
 	authorsObj, err := h.repository.GetAuthors(c, authors.GetAuthorsDto{Name: params.Name})
 	if err != nil {
 		return nil, tracerr.Wrap(err)

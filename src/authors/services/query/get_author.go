@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type GetAuthorParams struct {
+type GetAuthorRequest struct {
 	ID uuid.UUID
 }
 
@@ -19,9 +19,9 @@ type getAuthorHandler struct {
 	repository repository.Repository
 }
 
-type GetAuthorHandler decorator.QueryHandler[GetAuthorParams, *authors.Author]
+type GetAuthorHandler decorator.QueryHandler[GetAuthorRequest, *authors.Author]
 
-func (h getAuthorHandler) Handle(c context.Context, params GetAuthorParams) (*authors.Author, error) {
+func (h getAuthorHandler) Handle(c context.Context, params GetAuthorRequest) (*authors.Author, error) {
 	author, err := h.repository.GetAuthor(c, params.ID)
 	if err != nil {
 		return nil, err

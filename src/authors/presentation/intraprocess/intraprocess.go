@@ -21,7 +21,7 @@ func NewAuthorIntraprocessService(intraprocessInterface services.Application) in
 }
 
 func (i AuthorIntraprocessService) GetAuthors(c context.Context, name *string) ([]interfaces.Author, error) {
-	authors, err := i.intraprocessInterface.Queries.GetAuthors.Handle(c, query.GetAuthorsParams{
+	authors, err := i.intraprocessInterface.Queries.GetAuthors.Handle(c, query.GetAuthorsRequest{
 		Name: name,
 	})
 	if err != nil {
@@ -33,7 +33,7 @@ func (i AuthorIntraprocessService) GetAuthors(c context.Context, name *string) (
 
 func (i AuthorIntraprocessService) CreateAuthor(c context.Context, name string) (*interfaces.Author, error) {
 	ID := uuid.New()
-	err := i.intraprocessInterface.Commands.CreateAuthor.Handle(c, command.CreateAuthorParams{
+	err := i.intraprocessInterface.Commands.CreateAuthor.Handle(c, command.CreateAuthorRequest{
 		ID:   &ID,
 		Name: name,
 	})
