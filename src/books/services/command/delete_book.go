@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type DeleteBookParams struct {
+type DeleteBookRequest struct {
 	ID uuid.UUID
 }
 
@@ -22,9 +22,9 @@ type deleteBookHandler struct {
 	cache      repository.Cache
 }
 
-type DeleteBookHandler decorator.CommandHandler[DeleteBookParams]
+type DeleteBookHandler decorator.CommandHandler[DeleteBookRequest]
 
-func (h deleteBookHandler) Handle(c context.Context, params DeleteBookParams) error {
+func (h deleteBookHandler) Handle(c context.Context, params DeleteBookRequest) error {
 	return tracerr.Wrap(h.manager.RunInTransaction(c, func(c context.Context) error {
 		bookObj, err := helper.GetBook(c, helper.GetBookOpts{
 			Params: helper.GetBookRequest{

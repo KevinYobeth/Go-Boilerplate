@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type CreateAuthorBookParams struct {
+type CreateAuthorBookRequest struct {
 	BookID   uuid.UUID
 	AuthorID uuid.UUID
 }
@@ -20,9 +20,9 @@ type createAuthorBookHandler struct {
 	repository repository.Repository
 }
 
-type CreateAuthorBookHandler decorator.CommandHandler[CreateAuthorBookParams]
+type CreateAuthorBookHandler decorator.CommandHandler[CreateAuthorBookRequest]
 
-func (h createAuthorBookHandler) Handle(c context.Context, params CreateAuthorBookParams) error {
+func (h createAuthorBookHandler) Handle(c context.Context, params CreateAuthorBookRequest) error {
 	err := helper.CreateAuthorBook(c, helper.CreateAuthorBookOpts{
 		Params: helper.CreateAuthorBookRequest{
 			BookID:   params.BookID,

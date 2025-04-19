@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type CreateAuthorParams struct {
+type CreateAuthorRequest struct {
 	ID   *uuid.UUID
 	Name string
 }
@@ -20,9 +20,9 @@ type createAuthorHandler struct {
 	repository repository.Repository
 }
 
-type CreateAuthorHandler decorator.CommandHandler[CreateAuthorParams]
+type CreateAuthorHandler decorator.CommandHandler[CreateAuthorRequest]
 
-func (h createAuthorHandler) Handle(c context.Context, params CreateAuthorParams) error {
+func (h createAuthorHandler) Handle(c context.Context, params CreateAuthorRequest) error {
 	dto := authors.NewCreateAuthorDto(params.Name, params.ID)
 
 	err := h.repository.CreateAuthor(c, dto)

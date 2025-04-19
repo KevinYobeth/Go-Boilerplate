@@ -77,7 +77,7 @@ func handleDeleteAuthor(c context.Context, params HandlerParams, event event.Eve
 		params.logger.Errorf("Failed to transform event data: %v", tracerr.Wrap(err))
 	}
 
-	err = params.app.Commands.DeleteBookByAuthor.Handle(c, command.DeleteBookByAuthorParams{
+	err = params.app.Commands.DeleteBookByAuthor.Handle(c, command.DeleteBookByAuthorRequest{
 		AuthorID: data.ID,
 	})
 	if err != nil {
