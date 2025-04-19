@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"context"
 	"fmt"
+	"go-boilerplate/shared/constants"
 	"reflect"
 	"unsafe"
 )
@@ -31,4 +33,12 @@ func PrintContextValues(ctx interface{}, inner bool) {
 	} else {
 		fmt.Printf("context is empty (int)\n")
 	}
+}
+
+func AddToCtx(ctx context.Context, key constants.ContextKey, value interface{}) context.Context {
+	return context.WithValue(ctx, key, value)
+}
+
+func ReadFromCtx(ctx context.Context, key constants.ContextKey) interface{} {
+	return ctx.Value(key)
 }
