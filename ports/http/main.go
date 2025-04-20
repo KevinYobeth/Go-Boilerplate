@@ -11,6 +11,8 @@ import (
 	"go-boilerplate/shared/telemetry"
 	"go-boilerplate/shared/types"
 	"go-boilerplate/shared/utils"
+	authenticationHTTP "go-boilerplate/src/authentication/presentation/http"
+	authenticationService "go-boilerplate/src/authentication/services"
 	authorsHTTP "go-boilerplate/src/authors/presentation/http"
 	authorIntraprocess "go-boilerplate/src/authors/presentation/intraprocess"
 	authorsService "go-boilerplate/src/authors/services"
@@ -116,6 +118,9 @@ func RunHTTPServer() {
 		return nil
 	})
 
+	authenticationService := authenticationService.NewAuthenticationService()
+	authenticationServer := authenticationHTTP.NewAuthenticationHTTPServer(&authenticationService)
+
 	authorsService := authorsService.NewAuthorService()
 	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
 
@@ -126,9 +131,11 @@ func RunHTTPServer() {
 	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
 
 	api := app.Group("/api")
-
-	booksServer.RegisterHTTPRoutes(api)
-	authorsServer.RegisterHTTPRoutes(api)
+	{
+		authenticationServer.RegisterHTTPRoutes(api)
+		booksServer.RegisterHTTPRoutes(api)
+		authorsServer.RegisterHTTPRoutes(api)
+	}
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
