@@ -31,7 +31,7 @@ func (h registerHandler) Handle(c context.Context, params RegisterRequest) error
 		return tracerr.Wrap(err)
 	}
 
-	dto := user.NewRegisterDto(
+	dto := user.NewUserDto(
 		params.FirstName,
 		params.LastName,
 		params.Email,
@@ -45,14 +45,14 @@ func (h registerHandler) Handle(c context.Context, params RegisterRequest) error
 	return nil
 }
 
-func NewRegisterHandler(repositor repository.Repository, logger *zap.SugaredLogger) RegisterHandler {
-	if repositor == nil {
+func NewRegisterHandler(repository repository.Repository, logger *zap.SugaredLogger) RegisterHandler {
+	if repository == nil {
 		panic("repository is required")
 	}
 
 	return decorator.ApplyCommandDecorators(
 		registerHandler{
-			repository: repositor,
+			repository: repository,
 		}, logger,
 	)
 }

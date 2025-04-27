@@ -5,8 +5,9 @@ import (
 )
 
 var ErrorMap = map[ErrorType]int{
-	ErrorTypeIncorrectInput: http.StatusBadRequest,
-	ErrorTypeNotFound:       http.StatusNotFound,
-	ErrorTypeUnknown:        http.StatusInternalServerError,
-	ErrorTypeUnauthorized:   http.StatusForbidden,
+	ErrorTypeIncorrectInput:  http.StatusBadRequest,
+	ErrorTypeNotFound:        http.StatusNotFound,
+	ErrorTypeUnknown:         http.StatusInternalServerError,
+	ErrorTypeUnauthenticated: http.StatusUnauthorized,
+	ErrorTypeUnauthorized:    http.StatusForbidden,
 }

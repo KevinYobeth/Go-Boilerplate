@@ -16,7 +16,6 @@ type User struct {
 
 	valueobjects.AuditAuthor
 	valueobjects.AuditTrail
-	valueobjects.SoftDelete
 }
 
 type VerificationToken struct {
@@ -27,5 +26,4 @@ type VerificationToken struct {
 
 	valueobjects.AuditAuthor
 	valueobjects.AuditTrail
-	valueobjects.SoftDelete
 }

@@ -3,9 +3,11 @@ package repository
 import (
 	"context"
 	"go-boilerplate/shared/database"
+	"go-boilerplate/shared/utils"
 	"go-boilerplate/src/authentication/domain/user"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
 )
 
@@ -19,7 +21,7 @@ func NewAuthenticationPostgresRepository(db database.PostgresDB) Repository {
 	return &PostgresAuthenticationRepo{db}
 }
 
-func (r *PostgresAuthenticationRepo) Register(c context.Context, dto *user.RegisterDto) error {
+func (r *PostgresAuthenticationRepo) Register(c context.Context, dto *user.UserDto) error {
 	query, args, err := psql.Insert("users").
 		Columns("id", "first_name", "last_name", "email", "password", "created_by").
 		Values(dto.ID, dto.FirstName, dto.LastName, dto.Email, dto.Password, dto.ID).
@@ -34,4 +36,46 @@ func (r *PostgresAuthenticationRepo) Register(c context.Context, dto *user.Regis
 	}
 
 	return nil
+}
+
+func (r *PostgresAuthenticationRepo) GetUser(c context.Context, id uuid.UUID) (*user.User, error) {
+	fields := utils.SelectWithAuditTrail("id", "first_name", "last_name", "email", "password")
+	query, args, err := psql.Select(fields...).
+		From("users").
+		Where(sq.Eq{"id": id}).
+		ToSql()
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	row := r.db.QueryRowContext(c, query, args...)
+
+	user := &user.User{}
+	err = row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.CreatedBy, &user.UpdatedBy)
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	return user, nil
+}
+
+func (r *PostgresAuthenticationRepo) GetUserByEmail(c context.Context, email string) (*user.User, error) {
+	fields := utils.SelectWithAuditTrail("id", "first_name", "last_name", "email", "password")
+	query, args, err := psql.Select(fields...).
+		From("users").
+		Where(sq.Eq{"email": email}).
+		ToSql()
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	row := r.db.QueryRowContext(c, query, args...)
+
+	user := &user.User{}
+	err = row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.CreatedBy, &user.UpdatedBy)
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	return user, nil
 }

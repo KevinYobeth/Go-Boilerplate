@@ -10,11 +10,12 @@ import (
 type ErrorType string
 
 var (
-	ErrorTypeUnknown        = ErrorType("unknown")
-	ErrorTypeDatabase       = ErrorType("database")
-	ErrorTypeIncorrectInput = ErrorType("incorrect-input")
-	ErrorTypeNotFound       = ErrorType("not-found")
-	ErrorTypeUnauthorized   = ErrorType("unauthorized")
+	ErrorTypeUnknown         = ErrorType("unknown")
+	ErrorTypeDatabase        = ErrorType("database")
+	ErrorTypeIncorrectInput  = ErrorType("incorrect-input")
+	ErrorTypeNotFound        = ErrorType("not-found")
+	ErrorTypeUnauthorized    = ErrorType("unauthorized")
+	ErrorTypeUnauthenticated = ErrorType("unauthenticated")
 )
 
 type GenericError struct {
@@ -72,6 +73,14 @@ func NewUnauthorizedError(err error, resource string) GenericError {
 		Err:     err,
 		Type:    ErrorTypeUnauthorized,
 		Message: fmt.Sprintf("unauthorized to access %s", resource),
+	}
+}
+
+func NewUnauthenticatedError(err error) GenericError {
+	return GenericError{
+		Err:     err,
+		Type:    ErrorTypeUnauthenticated,
+		Message: "unauthenticated",
 	}
 }
 

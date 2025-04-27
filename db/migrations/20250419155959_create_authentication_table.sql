@@ -2,8 +2,8 @@
 -- +goose StatementBegin
 CREATE TABLE users (
   id UUID NOT NULL PRIMARY KEY,
-  first_name VARCHAR(50) NOT NULL UNIQUE,
-  last_name VARCHAR(50) NOT NULL UNIQUE,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -17,7 +17,7 @@ CREATE TABLE users (
 CREATE TABLE verification_tokens (
   id UUID NOT NULL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES users(id),
-  token VARCHAR(255) NOT NULL UNIQUE,
+  token VARCHAR(255) NOT NULL,
   used_at TIMESTAMP,
   expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),

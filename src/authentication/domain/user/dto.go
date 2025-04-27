@@ -2,7 +2,7 @@ package user
 
 import "github.com/google/uuid"
 
-type RegisterDto struct {
+type UserDto struct {
 	ID        uuid.UUID `json:"id"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
@@ -10,8 +10,8 @@ type RegisterDto struct {
 	Password  string    `json:"password"`
 }
 
-func NewRegisterDto(firstName, lastName, email, password string) *RegisterDto {
-	return &RegisterDto{
+func NewUserDto(firstName, lastName, email, password string) *UserDto {
+	return &UserDto{
 		ID:        uuid.New(),
 		FirstName: firstName,
 		LastName:  lastName,

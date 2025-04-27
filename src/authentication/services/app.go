@@ -5,6 +5,7 @@ import (
 	"go-boilerplate/shared/log"
 	"go-boilerplate/src/authentication/infrastructure/repository"
 	"go-boilerplate/src/authentication/services/command"
+	"go-boilerplate/src/authentication/services/query"
 )
 
 type Application struct {
@@ -17,6 +18,8 @@ type Commands struct {
 }
 
 type Queries struct {
+	Login   query.LoginHandler
+	GetUser query.GetUserHandler
 }
 
 func NewAuthenticationService() Application {
@@ -29,6 +32,9 @@ func NewAuthenticationService() Application {
 		Commands: Commands{
 			Register: command.NewRegisterHandler(repository, logger),
 		},
-		Queries: Queries{},
+		Queries: Queries{
+			Login:   query.NewLoginHandler(repository, logger),
+			GetUser: query.NewGetUserHandler(repository, logger),
+		},
 	}
 }
