@@ -3,8 +3,8 @@ set -e
 
 codegen_version=$(oapi-codegen --version | grep -o 'v[0-9]\+\.[0-9]\+')
 
-if [[ "$codegen_version" != 'v1.15' ]]; then
-    echo "codegen version v1.15 is expected. your version: $codegen_version"
+if [[ "$codegen_version" != 'v2.4' ]]; then
+    echo "codegen version v2.4 is expected. your version: $codegen_version"
     exit 1
 fi
 

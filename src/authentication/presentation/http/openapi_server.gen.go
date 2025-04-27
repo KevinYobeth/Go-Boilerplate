@@ -4,27 +4,23 @@
 package http
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
-	"github.com/oapi-codegen/runtime"
 )
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
-	// (GET /authors)
-	GetAuthors(ctx echo.Context) error
+	// (POST /login)
+	Login(ctx echo.Context) error
 
-	// (POST /authors)
-	CreateAuthor(ctx echo.Context) error
+	// (POST /refresh-token)
+	RefreshToken(ctx echo.Context) error
 
-	// (DELETE /authors/{id})
-	DeleteAuthor(ctx echo.Context, id string) error
+	// (POST /register)
+	Register(ctx echo.Context) error
 
-	// (GET /authors/{id})
-	GetAuthor(ctx echo.Context, id string) error
+	// (GET /user)
+	GetUser(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -32,53 +28,39 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// GetAuthors converts echo context to params.
-func (w *ServerInterfaceWrapper) GetAuthors(ctx echo.Context) error {
+// Login converts echo context to params.
+func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetAuthors(ctx)
+	err = w.Handler.Login(ctx)
 	return err
 }
 
-// CreateAuthor converts echo context to params.
-func (w *ServerInterfaceWrapper) CreateAuthor(ctx echo.Context) error {
+// RefreshToken converts echo context to params.
+func (w *ServerInterfaceWrapper) RefreshToken(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.CreateAuthor(ctx)
+	err = w.Handler.RefreshToken(ctx)
 	return err
 }
 
-// DeleteAuthor converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteAuthor(ctx echo.Context) error {
+// Register converts echo context to params.
+func (w *ServerInterfaceWrapper) Register(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.DeleteAuthor(ctx, id)
+	err = w.Handler.Register(ctx)
 	return err
 }
 
-// GetAuthor converts echo context to params.
-func (w *ServerInterfaceWrapper) GetAuthor(ctx echo.Context) error {
+// GetUser converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUser(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetAuthor(ctx, id)
+	err = w.Handler.GetUser(ctx)
 	return err
 }
 
@@ -110,9 +92,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/authors", wrapper.GetAuthors)
-	router.POST(baseURL+"/authors", wrapper.CreateAuthor)
-	router.DELETE(baseURL+"/authors/:id", wrapper.DeleteAuthor)
-	router.GET(baseURL+"/authors/:id", wrapper.GetAuthor)
+	router.POST(baseURL+"/login", wrapper.Login)
+	router.POST(baseURL+"/refresh-token", wrapper.RefreshToken)
+	router.POST(baseURL+"/register", wrapper.Register)
+	router.GET(baseURL+"/user", wrapper.GetUser)
 
 }
