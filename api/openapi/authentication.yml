@@ -13,6 +13,25 @@ servers:
         default: localhost
 
 paths:
+  /login:
+    post:
+      tags: [Authentication]
+      operationId: login
+      description: login user
+      requestBody:
+        description: login user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: login user success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /register:
     post:
       tags: [Authentication]
@@ -35,6 +54,14 @@ paths:
 
 components:
   schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
     RegisterRequest:
       type: object
       required: [first_name, last_name, email, password]
