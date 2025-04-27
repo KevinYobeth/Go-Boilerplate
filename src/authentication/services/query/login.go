@@ -2,14 +2,12 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/config"
 	"go-boilerplate/shared/decorator"
 	"go-boilerplate/shared/errors"
 	"go-boilerplate/src/authentication/domain/token"
 	"go-boilerplate/src/authentication/infrastructure/repository"
-	"time"
+	"go-boilerplate/src/authentication/services/helper"
 
-	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -39,26 +37,19 @@ func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Tok
 		return nil, errors.NewIncorrectInputError(nil, "wrong email or password")
 	}
 
-	appConfig := config.LoadAppConfig()
-	jwtConfig := config.LoadJWTConfig()
-
-	issuedAt := time.Now().UTC()
-	expiredAt := issuedAt.Add(jwtConfig.JWTShortLife)
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": user.Email,
-		"sub":   user.ID,
-		"iss":   appConfig.AppName,
-		"exp":   jwt.NewNumericDate(expiredAt),
-		"iat":   jwt.NewNumericDate(issuedAt),
+	jwtToken, err := helper.GenerateToken(c, helper.GenerateTokenOpts{
+		Params: helper.GenerateTokenRequest{
+			User: *user,
+		},
 	})
-	tokenString, err := jwtToken.SignedString([]byte(jwtConfig.JWTSecret))
-	if err != nil {
-		return nil, errors.NewGenericError(err, "failed to sign JWT token")
-	}
 
 	return &token.Token{
-		Token:     tokenString,
-		ExpiredAt: expiredAt,
+		Token:     jwtToken.Token,
+		ExpiredAt: jwtToken.ExpiredAt,
+		RefreshToken: token.RefreshToken{
+			Token:     jwtToken.RefreshToken.Token,
+			ExpiredAt: jwtToken.RefreshToken.ExpiredAt,
+		},
 	}, nil
 }
 

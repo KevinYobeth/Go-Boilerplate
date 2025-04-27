@@ -18,8 +18,9 @@ type Commands struct {
 }
 
 type Queries struct {
-	Login   query.LoginHandler
-	GetUser query.GetUserHandler
+	Login        query.LoginHandler
+	RefreshToken query.RefreshTokenHandler
+	GetUser      query.GetUserHandler
 }
 
 func NewAuthenticationService() Application {
@@ -33,8 +34,9 @@ func NewAuthenticationService() Application {
 			Register: command.NewRegisterHandler(repository, logger),
 		},
 		Queries: Queries{
-			Login:   query.NewLoginHandler(repository, logger),
-			GetUser: query.NewGetUserHandler(repository, logger),
+			Login:        query.NewLoginHandler(repository, logger),
+			RefreshToken: query.NewRefreshTokenHandler(repository, logger),
+			GetUser:      query.NewGetUserHandler(repository, logger),
 		},
 	}
 }

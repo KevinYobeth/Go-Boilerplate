@@ -26,6 +26,17 @@ type MessageResponse struct {
 	Message string `json:"message"`
 }
 
+// RefreshToken defines model for RefreshToken.
+type RefreshToken struct {
+	ExpiredAt time.Time `json:"expired_at"`
+	Token     string    `json:"token"`
+}
+
+// RefreshTokenRequest defines model for RefreshTokenRequest.
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
 // RegisterRequest defines model for RegisterRequest.
 type RegisterRequest struct {
 	Email     string `json:"email"`
@@ -36,8 +47,9 @@ type RegisterRequest struct {
 
 // Token defines model for Token.
 type Token struct {
-	ExpiredAt time.Time `json:"expired_at"`
-	Token     string    `json:"token"`
+	ExpiredAt    time.Time    `json:"expired_at"`
+	RefreshToken RefreshToken `json:"refresh_token"`
+	Token        string       `json:"token"`
 }
 
 // User defines model for User.
@@ -56,6 +68,9 @@ type UserResponse struct {
 
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = LoginRequest
+
+// RefreshTokenJSONRequestBody defines body for RefreshToken for application/json ContentType.
+type RefreshTokenJSONRequestBody = RefreshTokenRequest
 
 // RegisterJSONRequestBody defines body for Register for application/json ContentType.
 type RegisterJSONRequestBody = RegisterRequest

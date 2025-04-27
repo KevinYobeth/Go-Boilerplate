@@ -48,10 +48,7 @@ func (h HTTPTransport) Login(c echo.Context) error {
 
 	response.SendHTTP(c, &types.Response{
 		Body: LoginResponse{
-			Data: Token{
-				Token:     token.Token,
-				ExpiredAt: token.ExpiredAt,
-			},
+			Data:    TransformToHTTPToken(token),
 			Message: "success login",
 		},
 	})
@@ -84,6 +81,34 @@ func (h HTTPTransport) Register(c echo.Context) error {
 	response.SendHTTP(c, &types.Response{
 		Body: MessageResponse{
 			Message: "success register",
+		},
+	})
+	return nil
+}
+
+func (h HTTPTransport) RefreshToken(c echo.Context) error {
+	var request RefreshTokenRequest
+	if err := c.Bind(&request); err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	token, err := h.app.Queries.RefreshToken.Handle(c.Request().Context(), query.RefreshTokenRequest{
+		RefreshToken: request.RefreshToken,
+	})
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	response.SendHTTP(c, &types.Response{
+		Body: LoginResponse{
+			Data:    TransformToHTTPToken(token),
+			Message: "success refresh token",
 		},
 	})
 	return nil

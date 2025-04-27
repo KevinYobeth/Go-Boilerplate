@@ -3,9 +3,10 @@ package config
 import "time"
 
 type JWTConfig struct {
-	JWTSecret    string        `env:"JWT_SECRET" validate:"required"`
-	JWTShortLife time.Duration `env:"JWT_SHORT_LIFE" default:"15m" validate:"required"`
-	JWTLongLife  time.Duration `env:"JWT_LONG_LIFE" default:"24h" validate:"required"`
+	JWTSecret        string        `env:"JWT_SECRET" validate:"required"`
+	JWTRefreshSecret string        `env:"JWT_REFRESH_SECRET" validate:"required"`
+	JWTShortLife     time.Duration `env:"JWT_SHORT_LIFE" default:"15m" validate:"required"`
+	JWTLongLife      time.Duration `env:"JWT_LONG_LIFE" default:"24h" validate:"required"`
 }
 
 var jwtConfig JWTConfig

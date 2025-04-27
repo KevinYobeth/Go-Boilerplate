@@ -51,6 +51,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+  /refresh-token:
+    post:
+      tags: [Authentication]
+      operationId: refreshToken
+      description: refresh token
+      requestBody:
+        description: refresh token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: refresh token success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
   /user:
     get:
       tags: [Authentication]
@@ -86,6 +105,12 @@ components:
           type: string
         password:
           type: string
+    RefreshTokenRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
 
     LoginResponse:
       type: object
@@ -114,6 +139,18 @@ components:
     
     Token:
       type: object
+      required: [token, expired_at, refresh_token]
+      properties:
+        token:
+          type: string
+        expired_at:
+          type: string
+          format: date-time
+        refresh_token:
+          type: object
+          $ref: "#/components/schemas/RefreshToken"
+    RefreshToken:
+      type: object
       required: [token, expired_at]
       properties:
         token:
@@ -121,6 +158,7 @@ components:
         expired_at:
           type: string
           format: date-time
+          
     User:
       type: object
       required: [id, first_name, last_name, email]
