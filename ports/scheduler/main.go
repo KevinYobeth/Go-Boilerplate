@@ -1,13 +1,13 @@
 package scheduler
 
 import (
+	authorIntraprocess "go-boilerplate/internal/authors/presentation/intraprocess"
+	authorsService "go-boilerplate/internal/authors/services"
+	"go-boilerplate/internal/books/infrastructure/intraprocess"
+	"go-boilerplate/internal/books/presentation/job"
+	"go-boilerplate/internal/books/services"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
-	authorIntraprocess "go-boilerplate/src/authors/presentation/intraprocess"
-	authorsService "go-boilerplate/src/authors/services"
-	"go-boilerplate/src/books/infrastructure/intraprocess"
-	"go-boilerplate/src/books/presentation/job"
-	"go-boilerplate/src/books/services"
 	"os"
 	"os/signal"
 	"syscall"

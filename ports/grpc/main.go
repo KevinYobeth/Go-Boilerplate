@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"go-boilerplate/config"
+	authorsGRPC "go-boilerplate/internal/authors/presentation/grpc"
+	authorsService "go-boilerplate/internal/authors/services"
 	"go-boilerplate/shared/graceroutine"
 	"go-boilerplate/shared/log"
-	authorsGRPC "go-boilerplate/src/authors/presentation/grpc"
-	authorsService "go-boilerplate/src/authors/services"
 	"net"
 	"os"
 	"os/signal"

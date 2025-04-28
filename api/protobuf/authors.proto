@@ -1,6 +1,6 @@
 syntax="proto3";
 
-option go_package="go-boilerplate/src/authors";
+option go_package="go-boilerplate/internal/authors";
 
 service AuthorService {
   rpc GetAuthors(GetAuthorsRequest) returns (GetAuthorsResponse);

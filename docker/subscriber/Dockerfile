@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine as golang
+FROM golang:1.24-alpine AS golang
 
 ARG SCRIPT_DIR
 
