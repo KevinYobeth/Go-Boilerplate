@@ -1,10 +1,6 @@
 github.com/Masterminds/squirrel v1.5.4 h1:uUcX/aBc8O7Fg9kaISIUsHXdKuqehiXAMQTYX8afzqM=
 github.com/Masterminds/squirrel v1.5.4/go.mod h1:NNaOrjSoIDfDA40n7sr2tPNZRfjzjA400rg+riTZj10=
 github.com/RaveNoX/go-jsoncommentstrip v1.0.0/go.mod h1:78ihd09MekBnJnxpICcwzCMzGrKSKYe4AqU6PDYYpjk=
-github.com/agoda-com/opentelemetry-go/otelzap v0.3.0 h1:mY57MkWXwnoFzes87zJ1Jrj/r28TdmtFU7FGkK7xA6k=
-github.com/agoda-com/opentelemetry-go/otelzap v0.3.0/go.mod h1:eyBC8COKZfojHq8vxEvYkO1GSvqMQJ1mBQsjP2E7RkM=
-github.com/agoda-com/opentelemetry-logs-go v0.6.0 h1:PdnNbW2a5vp4VWasIGVHJ85/4Eu0kZfLs3ySuitLN20=
-github.com/agoda-com/opentelemetry-logs-go v0.6.0/go.mod h1:zPrxWeyxZ8QRWJFNBFJ2zeWjJu0OuGG+Ow4KYEGEA5o=
 github.com/apapsch/go-jsonmerge/v2 v2.0.0 h1:axGnT1gRIfimI7gJifB699GoE/oq+F2MU7Dml6nw9rQ=
 github.com/apapsch/go-jsonmerge/v2 v2.0.0/go.mod h1:lvDnEdqiQrp0O42VQGgmlKpxL1AP2+08jFMw88y4klk=
 github.com/bmatcuk/doublestar v1.1.1/go.mod h1:UD6OnuiIn0yFxxA2le/rnRU1G4RaI4UvFv1sNto9p6w=
