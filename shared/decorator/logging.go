@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go-boilerplate/shared/telemetry"
 	"go-boilerplate/shared/utils"
 	"strings"
 
@@ -23,6 +24,12 @@ func (d commandLoggingDecorator[C]) Handle(ctx context.Context, cmd C) (err erro
 
 	if reqID := utils.GetRequestIDFromContext(ctx); reqID != "" {
 		fields = append(fields, "request_id", reqID)
+	}
+	if traceID := telemetry.GetTraceID(ctx); traceID != "" {
+		fields = append(fields, "trace_id", traceID)
+	}
+	if spanID := telemetry.GetSpanID(ctx); spanID != "" {
+		fields = append(fields, "span_id", spanID)
 	}
 
 	d.logger = d.logger.With(fields...)
@@ -44,6 +51,12 @@ func (d queryLoggingDecorator[Q, R]) Handle(ctx context.Context, qry Q) (result 
 
 	if reqID := utils.GetRequestIDFromContext(ctx); reqID != "" {
 		fields = append(fields, "request_id", reqID)
+	}
+	if traceID := telemetry.GetTraceID(ctx); traceID != "" {
+		fields = append(fields, "trace_id", traceID)
+	}
+	if spanID := telemetry.GetSpanID(ctx); spanID != "" {
+		fields = append(fields, "span_id", spanID)
 	}
 
 	d.logger = d.logger.With(fields...)

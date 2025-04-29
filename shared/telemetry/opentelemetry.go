@@ -7,8 +7,13 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
+	logTrace "go.opentelemetry.io/otel/sdk/log"
+	metricTrace "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdkTrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
@@ -17,6 +22,8 @@ import (
 
 const (
 	RequestIDKey = "request.id"
+	TraceIDKey   = "trace.id"
+	SpanIDKey    = "span.id"
 )
 
 func InitOtel(ctx context.Context) (shutdown func(context.Context) error, err error) {
@@ -47,6 +54,25 @@ func InitOtel(ctx context.Context) (shutdown func(context.Context) error, err er
 
 	otel.SetTracerProvider(tracerProvider)
 
+	meterProvider, err := newMeterProvider()
+	if err != nil {
+		handleErr(err)
+		return
+	}
+	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
+
+	otel.SetMeterProvider(meterProvider)
+
+	loggerProvider, err := newLoggerProvider()
+	if err != nil {
+		handleErr(err)
+		return
+	}
+
+	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
+
+	global.SetLoggerProvider(loggerProvider)
+
 	return
 }
 
@@ -65,6 +91,61 @@ func Resource() *resource.Resource {
 		semconv.ServiceNameKey.String(cfg.AppName),
 		semconv.ServiceVersionKey.String(cfg.AppVersion),
 	)
+}
+
+func newMeterProvider() (*metricTrace.MeterProvider, error) {
+	cfg := config.LoadOpenTelemetryConfig()
+
+	exporter, err := otlpmetricgrpc.New(context.Background(),
+		otlpmetricgrpc.WithEndpointURL(cfg.OtelGRPCEndpoint),
+		otlpmetricgrpc.WithRetry(otlpmetricgrpc.RetryConfig{
+			Enabled:         cfg.OtelRetryEnabled,
+			InitialInterval: cfg.OtelRetryInitialInterval,
+			MaxInterval:     cfg.OtelRetryMaxInterval,
+			MaxElapsedTime:  cfg.OtelRetryMaxElapsedTime,
+		}),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	meterProvider := metricTrace.NewMeterProvider(
+		metricTrace.WithReader(
+			metricTrace.NewPeriodicReader(exporter,
+				metricTrace.WithInterval(5*time.Second),
+			),
+		),
+	)
+
+	return meterProvider, nil
+}
+
+func newLoggerProvider() (*logTrace.LoggerProvider, error) {
+	cfg := config.LoadOpenTelemetryConfig()
+
+	exporter, err := otlploggrpc.New(context.Background(),
+		otlploggrpc.WithEndpointURL(cfg.OtelGRPCEndpoint),
+		otlploggrpc.WithRetry(otlploggrpc.RetryConfig{
+			Enabled:         cfg.OtelRetryEnabled,
+			InitialInterval: cfg.OtelRetryInitialInterval,
+			MaxInterval:     cfg.OtelRetryMaxInterval,
+			MaxElapsedTime:  cfg.OtelRetryMaxElapsedTime,
+		}),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	logProvider := logTrace.NewLoggerProvider(
+		logTrace.WithProcessor(
+			logTrace.NewBatchProcessor(exporter,
+				logTrace.WithExportTimeout(5*time.Second),
+			),
+		),
+		logTrace.WithResource(Resource()),
+	)
+
+	return logProvider, nil
 }
 
 func newTracerProvider() (*sdkTrace.TracerProvider, error) {
@@ -128,4 +209,13 @@ func GetTraceID(ctx context.Context) string {
 	}
 
 	return span.SpanContext().TraceID().String()
+}
+
+func GetSpanID(ctx context.Context) string {
+	span := trace.SpanFromContext(ctx)
+	if span == nil {
+		return ""
+	}
+
+	return span.SpanContext().SpanID().String()
 }

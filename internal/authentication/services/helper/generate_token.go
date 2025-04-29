@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/internal/authentication/domain/token"
 	"go-boilerplate/internal/authentication/domain/user"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/telemetry"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -20,6 +21,9 @@ type GenerateTokenOpts struct {
 }
 
 func GenerateToken(c context.Context, opts GenerateTokenOpts) (*token.Token, error) {
+	_, span := telemetry.NewCQHelperSpan(c)
+	defer span.End()
+
 	appConfig := config.LoadAppConfig()
 	jwtConfig := config.LoadJWTConfig()
 

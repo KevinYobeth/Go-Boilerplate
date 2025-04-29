@@ -36,8 +36,9 @@ func RunHTTPServer() {
 	app := echo.New()
 
 	appConfig := config.LoadAppConfig()
-	logger := log.InitLogger()
 	shutdownOtel, err := telemetry.InitOtel(context.Background())
+	logger := log.InitLogger()
+
 	if err != nil {
 		panic(err)
 	}
@@ -83,6 +84,8 @@ func RunHTTPServer() {
 				"host", v.Host,
 				"remote_ip", v.RemoteIP,
 				"request_id", v.RequestID,
+				"trace_id", telemetry.GetTraceID(c.Request().Context()),
+				"span_id", telemetry.GetSpanID(c.Request().Context()),
 			}
 
 			if v.Error != nil {

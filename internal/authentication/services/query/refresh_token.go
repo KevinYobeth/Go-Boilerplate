@@ -40,13 +40,23 @@ func (h refreshTokenHandler) Handle(c context.Context, params RefreshTokenReques
 	}
 
 	sub, err := jwtRefreshToken.Claims.GetSubject()
+	if err != nil {
+		return nil, errors.NewUnauthenticatedError(err)
+	}
+
 	user, err := h.repository.GetUser(c, uuid.MustParse(sub))
+	if err != nil {
+		return nil, errors.NewGenericError(err, "failed to get user by id")
+	}
 
 	jwtToken, err := helper.GenerateToken(c, helper.GenerateTokenOpts{
 		Params: helper.GenerateTokenRequest{
 			User: *user,
 		},
 	})
+	if err != nil {
+		return nil, errors.NewGenericError(err, "failed to generate token")
+	}
 
 	return &token.Token{
 		Token:     jwtToken.Token,

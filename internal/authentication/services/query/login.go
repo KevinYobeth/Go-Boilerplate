@@ -19,11 +19,13 @@ type LoginRequest struct {
 
 type loginHandler struct {
 	repository repository.Repository
+	logger     *zap.SugaredLogger
 }
 
 type LoginHandler decorator.QueryHandler[LoginRequest, *token.Token]
 
 func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Token, error) {
+
 	user, err := h.repository.GetUserByEmail(c, params.Email)
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user by email")
@@ -42,6 +44,9 @@ func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Tok
 			User: *user,
 		},
 	})
+	if err != nil {
+		return nil, errors.NewGenericError(err, "failed to generate token")
+	}
 
 	return &token.Token{
 		Token:     jwtToken.Token,
@@ -61,6 +66,7 @@ func NewLoginHandler(repository repository.Repository, logger *zap.SugaredLogger
 	return decorator.ApplyQueryDecorators(
 		loginHandler{
 			repository: repository,
+			logger:     logger,
 		}, logger,
 	)
 }
