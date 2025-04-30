@@ -7,6 +7,11 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
+type (
+	BeforeFunc func(ctx context.Context, query string, args ...interface{}) context.Context
+	AfterFunc  func(ctx context.Context, err error, query string, args ...interface{})
+)
+
 type Queryer interface {
 	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row

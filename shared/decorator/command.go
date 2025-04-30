@@ -2,6 +2,7 @@ package decorator
 
 import (
 	"context"
+	"go-boilerplate/shared/metrics"
 
 	"go.uber.org/zap"
 )
@@ -9,11 +10,15 @@ import (
 func ApplyCommandDecorators[H any](
 	handler CommandHandler[H],
 	logger *zap.SugaredLogger,
+	metricsClient metrics.Client,
 ) CommandHandler[H] {
 	return commandOTelDecorator[H]{
 		commandLoggingDecorator[H]{
-			base:   handler,
-			logger: logger,
+			commandMetricDecorator[H]{
+				base:   handler,
+				client: metricsClient,
+			},
+			logger,
 		},
 	}
 }

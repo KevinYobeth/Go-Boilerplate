@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/internal/authors/infrastructure/repository"
 	"go-boilerplate/shared/decorator"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -33,7 +34,7 @@ func (h getAuthorHandler) Handle(c context.Context, params GetAuthorRequest) (*a
 	return author, nil
 }
 
-func NewGetAuthorHandler(repository repository.Repository, logger *zap.SugaredLogger) GetAuthorHandler {
+func NewGetAuthorHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) GetAuthorHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -41,6 +42,6 @@ func NewGetAuthorHandler(repository repository.Repository, logger *zap.SugaredLo
 	return decorator.ApplyQueryDecorators(
 		getAuthorHandler{
 			repository: repository,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

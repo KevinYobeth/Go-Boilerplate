@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/internal/books/services/helper"
 	"go-boilerplate/shared/database"
 	"go-boilerplate/shared/decorator"
+	"go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -50,7 +51,7 @@ func (h deleteBookHandler) Handle(c context.Context, params DeleteBookRequest) e
 	}))
 }
 
-func NewDeleteBookHandler(manager database.TransactionManager, repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger) DeleteBookHandler {
+func NewDeleteBookHandler(manager database.TransactionManager, repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger, metricsClient metrics.Client) DeleteBookHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -63,6 +64,6 @@ func NewDeleteBookHandler(manager database.TransactionManager, repository reposi
 			manager:    manager,
 			repository: repository,
 			cache:      cache,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

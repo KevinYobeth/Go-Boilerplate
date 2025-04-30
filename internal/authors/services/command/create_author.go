@@ -5,6 +5,7 @@ import (
 	"go-boilerplate/internal/authors/domain/authors"
 	"go-boilerplate/internal/authors/infrastructure/repository"
 	"go-boilerplate/shared/decorator"
+	"go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -33,7 +34,7 @@ func (h createAuthorHandler) Handle(c context.Context, params CreateAuthorReques
 	return nil
 }
 
-func NewCreateAuthorHandler(repository repository.Repository, logger *zap.SugaredLogger) CreateAuthorHandler {
+func NewCreateAuthorHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) CreateAuthorHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -41,6 +42,6 @@ func NewCreateAuthorHandler(repository repository.Repository, logger *zap.Sugare
 	return decorator.ApplyCommandDecorators(
 		createAuthorHandler{
 			repository: repository,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

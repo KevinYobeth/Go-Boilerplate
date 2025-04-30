@@ -3,29 +3,71 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"go-boilerplate/shared/constants"
 	"go-boilerplate/shared/telemetry"
+	"go-boilerplate/shared/utils"
 
 	"go.opentelemetry.io/otel/trace"
 )
 
 type DB struct {
-	DB *sql.DB
+	DB     *sql.DB
+	before []BeforeFunc
+	after  []AfterFunc
 }
 
 type Tx struct {
-	tx *sql.Tx
+	tx     *sql.Tx
+	before []BeforeFunc
+	after  []AfterFunc
 }
 
-func (t *Tx) Exec(query string, args ...interface{}) (sql.Result, error) {
-	return t.tx.Exec(query, args...)
+func (t *Tx) Exec(query string, args ...interface{}) (res sql.Result, err error) {
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx := context.WithValue(
+		context.Background(),
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+	t.doBefore(ctx, query, args...)
+	defer t.doAfter(ctx, err, query, args...)
+
+	res, err = t.tx.Exec(query, args...)
+
+	return
 }
 
-func (t *Tx) Query(query string, args ...interface{}) (*sql.Rows, error) {
-	return t.tx.Query(query, args...)
+func (t *Tx) Query(query string, args ...interface{}) (res *sql.Rows, err error) {
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx := context.WithValue(
+		context.Background(),
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+	t.doBefore(ctx, query, args...)
+	defer t.doAfter(ctx, err, query, args...)
+
+	res, err = t.tx.Query(query, args...)
+
+	return
 }
 
 func (t Tx) QueryRow(query string, args ...interface{}) *sql.Row {
-	return t.tx.QueryRow(query, args...)
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx := context.WithValue(
+		context.Background(),
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+	t.doBefore(ctx, query, args...)
+
+	res := t.tx.QueryRow(query, args...)
+	err := res.Err()
+
+	defer t.doAfter(ctx, err, query, args...)
+
+	return res
 }
 
 func (t Tx) QueryContext(
@@ -33,11 +75,36 @@ func (t Tx) QueryContext(
 	query string,
 	args ...interface{},
 ) (res *sql.Rows, err error) {
-	return t.tx.QueryContext(ctx, query, args...)
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx = context.WithValue(
+		ctx,
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+	t.doBefore(ctx, query, args...)
+	defer t.doAfter(ctx, err, query, args...)
+
+	res, err = t.tx.QueryContext(ctx, query, args...)
+
+	return
 }
 
 func (t Tx) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
-	return t.tx.QueryRowContext(ctx, query, args...)
+	fmt.Println("QueryRowContext")
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx = context.WithValue(
+		ctx,
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+	t.doBefore(ctx, query, args...)
+
+	res := t.tx.QueryRowContext(ctx, query, args...)
+	err := res.Err()
+
+	defer t.doAfter(ctx, err, query, args...)
+
+	return res
 }
 
 func (t Tx) ExecContext(
@@ -45,7 +112,18 @@ func (t Tx) ExecContext(
 	query string,
 	args ...interface{},
 ) (res sql.Result, err error) {
-	return t.tx.ExecContext(ctx, query, args...)
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx = context.WithValue(
+		ctx,
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+	t.doBefore(ctx, query, args...)
+	defer t.doAfter(ctx, err, query, args...)
+
+	res, err = t.tx.ExecContext(ctx, query, args...)
+
+	return
 }
 
 func (t Tx) Rollback() error {
@@ -56,8 +134,46 @@ func (t Tx) Commit() error {
 	return t.tx.Commit()
 }
 
-func NewDB(db *sql.DB) DB {
-	return DB{DB: db}
+func (t Tx) doBefore(ctx context.Context, query string, args ...interface{}) {
+	for _, f := range t.before {
+		f(ctx, query, args...)
+	}
+}
+
+func (t Tx) doAfter(ctx context.Context, err error, query string, args ...interface{}) {
+	for _, f := range t.after {
+		f(ctx, err, query, args...)
+	}
+}
+
+func NewDB(db *sql.DB) *DB {
+	return &DB{
+		DB:     db,
+		before: make([]BeforeFunc, 0),
+		after:  make([]AfterFunc, 0),
+	}
+}
+
+func (db *DB) AddBeforeFunc(f BeforeFunc) {
+	db.before = append(db.before, f)
+}
+
+func (db *DB) AddAfterFunc(f AfterFunc) {
+	db.after = append(db.after, f)
+}
+
+func (db DB) doBefore(ctx context.Context, query string, args ...interface{}) context.Context {
+	for _, f := range db.before {
+		ctx = f(ctx, query, args...)
+	}
+
+	return ctx
+}
+
+func (db DB) doAfter(ctx context.Context, err error, query string, args ...interface{}) {
+	for _, f := range db.after {
+		f(ctx, err, query, args...)
+	}
 }
 
 // BeginTx implements PostgresDB.
@@ -88,38 +204,74 @@ func (db DB) Close() error {
 	return db.DB.Close()
 }
 
-func (db DB) Exec(query string, args ...interface{}) (sql.Result, error) {
-	return db.DB.Exec(query, args...)
+func (db DB) Exec(query string, args ...interface{}) (res sql.Result, err error) {
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx := context.WithValue(
+		context.Background(),
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+
+	ctx = db.doBefore(ctx, query, args...)
+	defer db.doAfter(ctx, err, query, args...)
+
+	res, err = db.DB.Exec(query, args...)
+
+	return
 }
 
 func (db DB) ExecContext(c context.Context, query string, args ...interface{}) (res sql.Result, err error) {
 	ctx, span := telemetry.NewDatabaseSpan(c, query)
 	defer span.End()
 
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx = context.WithValue(
+		ctx,
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+
+	ctx = db.doBefore(ctx, query, args...)
+	defer db.doAfter(ctx, err, query, args...)
+
 	res, err = TxFromContext(ctx, db.DB).ExecContext(ctx, query, args...)
 
-	if err != nil {
-		span.RecordError(err, trace.WithStackTrace(true))
-	}
-
-	return res, err
+	return
 }
 
-func (db DB) Query(query string, args ...interface{}) (*sql.Rows, error) {
-	return db.DB.Query(query, args...)
+func (db DB) Query(query string, args ...interface{}) (res *sql.Rows, err error) {
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx := context.WithValue(
+		context.Background(),
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+
+	ctx = db.doBefore(ctx, query, args...)
+	defer db.doAfter(ctx, err, query, args...)
+
+	res, err = db.DB.Query(query, args...)
+
+	return
 }
 
 func (db DB) QueryContext(c context.Context, query string, args ...interface{}) (rows *sql.Rows, err error) {
 	ctx, span := telemetry.NewDatabaseSpan(c, query)
 	defer span.End()
 
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx = context.WithValue(
+		ctx,
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+
+	ctx = db.doBefore(ctx, query, args...)
+	defer db.doAfter(ctx, err, query, args...)
+
 	rows, err = TxFromContext(ctx, db.DB).QueryContext(ctx, query, args...)
 
-	if err != nil {
-		span.RecordError(err, trace.WithStackTrace(true))
-	}
-
-	return rows, err
+	return
 }
 
 func (db DB) QueryRow(query string, args ...interface{}) *sql.Row {
@@ -130,5 +282,19 @@ func (db DB) QueryRowContext(c context.Context, query string, args ...interface{
 	ctx, span := telemetry.NewDatabaseSpan(c, query)
 	defer span.End()
 
-	return TxFromContext(ctx, db.DB).QueryRowContext(ctx, query, args...)
+	callerName := utils.GetFnCallerName(1, 2)
+	ctx = context.WithValue(
+		ctx,
+		constants.ContextKeySqlWrapperCaller,
+		callerName,
+	)
+
+	ctx = db.doBefore(ctx, query, args...)
+
+	res := TxFromContext(ctx, db.DB).QueryRowContext(ctx, query, args...)
+	err := res.Err()
+
+	defer db.doAfter(ctx, err, query, args...)
+
+	return res
 }

@@ -6,6 +6,7 @@ import (
 	"go-boilerplate/internal/authentication/infrastructure/repository"
 	"go-boilerplate/shared/decorator"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -33,10 +34,10 @@ func (h getUserHandler) Handle(c context.Context, params GetUserRequest) (*user.
 	return user, nil
 }
 
-func NewGetUserHandler(repository repository.Repository, logger *zap.SugaredLogger) GetUserHandler {
+func NewGetUserHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) GetUserHandler {
 	return decorator.ApplyQueryDecorators(
 		getUserHandler{
 			repository: repository,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }
