@@ -1,17 +1,35 @@
 package log
 
 import (
+	"context"
 	"go-boilerplate/config"
 	"go-boilerplate/shared/constants"
 	"go-boilerplate/shared/errors"
+	"go-boilerplate/shared/telemetry"
 	"log"
 	"os"
 	"strings"
 
+	"go.opentelemetry.io/contrib/bridges/otelzap"
+	"go.opentelemetry.io/otel/log/global"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var Logger *zap.SugaredLogger
+
+func WithTrace(ctx context.Context, logger *zap.SugaredLogger) *zap.SugaredLogger {
+	fields := []any{}
+
+	if traceID := telemetry.GetTraceID(ctx); traceID != "" {
+		fields = append(fields, "trace_id", traceID)
+	}
+	if spanID := telemetry.GetSpanID(ctx); spanID != "" {
+		fields = append(fields, "span_id", spanID)
+	}
+
+	return logger.With(fields...)
+}
 
 func InitLogger() *zap.SugaredLogger {
 	if Logger != nil {
@@ -19,42 +37,55 @@ func InitLogger() *zap.SugaredLogger {
 	}
 
 	appConfig := config.LoadAppConfig()
+	baseLogger, environment := setupBaseLogger(appConfig.AppEnv)
 
-	if strings.ToUpper(appConfig.AppEnv) == constants.APP_DEVELOPMENT {
-		logDir := "logs"
-		cfg := zap.NewDevelopmentConfig()
+	loggerProvider := global.GetLoggerProvider()
+	otelZapCore := otelzap.NewCore("go-boilerplate",
+		otelzap.WithLoggerProvider(loggerProvider),
+	)
 
-		if err := os.MkdirAll(logDir, 0755); err != nil {
-			log.Fatalf("failed to create log directory: %v", err)
-		}
+	core := zapcore.NewTee(
+		baseLogger.Core(),
+		otelZapCore,
+	)
+	newLogger := zap.New(core)
 
-		cfg.OutputPaths = []string{"logs/development.log", "stderr"}
+	newLogger.Info("logger initialized in " + environment)
 
-		newLogger, err := cfg.Build()
+	Logger = newLogger.Sugar()
+	return Logger
+}
 
-		if err != nil {
-			log.Fatal(errors.NewInitializationError(err, "logger").Message)
-			return nil
-		}
+func setupBaseLogger(appEnv string) (*zap.Logger, string) {
+	if strings.ToUpper(appEnv) == constants.APP_DEVELOPMENT {
+		return setupDevelopmentLogger()
+	}
+	return setupProductionLogger()
+}
 
-		sugar := newLogger.Sugar()
-		Logger = sugar
+func setupDevelopmentLogger() (*zap.Logger, string) {
+	logDir := "logs"
+	cfg := zap.NewDevelopmentConfig()
 
-		sugar.Infow("logger initialized in development mode")
-
-		return sugar
+	if err := os.MkdirAll(logDir, 0755); err != nil {
+		log.Fatalf("failed to create log directory: %v", err)
 	}
 
-	newLogger, err := zap.NewProduction()
+	cfg.OutputPaths = []string{"logs/development.log", "stderr"}
+
+	newLogger, err := cfg.Build()
 	if err != nil {
 		log.Fatal(errors.NewInitializationError(err, "logger").Message)
-		return nil
 	}
 
-	sugar := newLogger.Sugar()
-	Logger = sugar
+	return newLogger, "development"
+}
 
-	sugar.Infow("logger initialized in production mode")
+func setupProductionLogger() (*zap.Logger, string) {
+	prodLogger, err := zap.NewProduction()
+	if err != nil {
+		log.Fatal(errors.NewInitializationError(err, "logger").Message)
+	}
 
-	return sugar
+	return prodLogger, "production"
 }

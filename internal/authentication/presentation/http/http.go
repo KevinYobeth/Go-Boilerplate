@@ -121,6 +121,7 @@ func (h HTTPTransport) GetUser(c echo.Context) error {
 		response.SendHTTP(c, &types.Response{
 			Error: err,
 		})
+		return err
 	}
 
 	user, err := h.app.Queries.GetUser.Handle(ctx, query.GetUserRequest{
