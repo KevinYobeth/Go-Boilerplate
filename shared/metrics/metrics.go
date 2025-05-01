@@ -2,7 +2,8 @@ package metrics
 
 import (
 	"context"
-	"go-boilerplate/shared/telemetry"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"go.opentelemetry.io/otel/metric"
 )

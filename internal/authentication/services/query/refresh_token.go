@@ -9,6 +9,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

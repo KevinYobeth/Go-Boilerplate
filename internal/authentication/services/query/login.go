@@ -8,6 +8,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"

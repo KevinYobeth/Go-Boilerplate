@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"go.uber.org/zap"

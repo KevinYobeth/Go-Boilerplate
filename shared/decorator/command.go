@@ -2,7 +2,8 @@ package decorator
 
 import (
 	"context"
-	"go-boilerplate/shared/metrics"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"go.uber.org/zap"
 )

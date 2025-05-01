@@ -3,9 +3,10 @@ package decorator
 import (
 	"context"
 	"fmt"
-	"go-boilerplate/shared/metrics"
 	"strings"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/samber/lo"
 )
