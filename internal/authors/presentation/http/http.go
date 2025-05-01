@@ -1,14 +1,15 @@
 package http
 
 import (
-	"go-boilerplate/internal/authors/domain/authors"
-	"go-boilerplate/internal/authors/services"
-	"go-boilerplate/internal/authors/services/command"
-	"go-boilerplate/internal/authors/services/query"
-	"go-boilerplate/shared/response"
-	"go-boilerplate/shared/types"
-	"go-boilerplate/shared/utils"
 	"net/http"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/command"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/query"
+	"github.com/kevinyobeth/go-boilerplate/shared/response"
+	"github.com/kevinyobeth/go-boilerplate/shared/types"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/labstack/echo/v4"
 )

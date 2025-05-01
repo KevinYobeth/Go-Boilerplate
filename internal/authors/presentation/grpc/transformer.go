@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"go-boilerplate/internal/authors/domain/authors"
-	grpcAuthors "go-boilerplate/pkg/genproto/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
+	grpcAuthors "github.com/kevinyobeth/go-boilerplate/pkg/genproto/authors"
 )
 
 func TransformToGRPCAuthor(authorObj *authors.Author) *grpcAuthors.Author {

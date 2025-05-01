@@ -2,11 +2,12 @@ package intraprocess
 
 import (
 	"context"
-	"go-boilerplate/internal/authors/domain/authors"
-	"go-boilerplate/internal/authors/services"
-	"go-boilerplate/internal/authors/services/command"
-	"go-boilerplate/internal/authors/services/query"
-	"go-boilerplate/internal/shared/interfaces"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/command"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/query"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"

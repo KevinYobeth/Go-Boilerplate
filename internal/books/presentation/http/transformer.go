@@ -1,7 +1,7 @@
 package http
 
 import (
-	"go-boilerplate/internal/books/domain/books"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
 )
 
 func TransformToHTTPBook(bookObj *books.Book) Book {

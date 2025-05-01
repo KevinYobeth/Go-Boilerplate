@@ -1,7 +1,7 @@
 package books
 
 import (
-	"go-boilerplate/internal/books/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/authors"
 
 	"github.com/google/uuid"
 )

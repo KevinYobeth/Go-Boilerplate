@@ -1,4 +1,4 @@
-module go-boilerplate/pkg
+module github.com/kevinyobeth/go-boilerplate/pkg
 
 go 1.21.1
 

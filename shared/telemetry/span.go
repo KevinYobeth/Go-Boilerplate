@@ -2,8 +2,9 @@ package telemetry
 
 import (
 	"context"
-	"go-boilerplate/shared/utils"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

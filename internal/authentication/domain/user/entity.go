@@ -1,8 +1,9 @@
 package user
 
 import (
-	valueobjects "go-boilerplate/shared/value_objects"
 	"time"
+
+	valueobjects "github.com/kevinyobeth/go-boilerplate/shared/value_objects"
 
 	"github.com/google/uuid"
 )

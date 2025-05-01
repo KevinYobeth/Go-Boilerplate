@@ -2,11 +2,12 @@ package telemetry
 
 import (
 	"context"
-	"go-boilerplate/shared/utils"
 	"net"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/redis/go-redis/extra/rediscmd/v9"
 	"github.com/redis/go-redis/v9"

@@ -3,9 +3,10 @@ package utils
 import (
 	"context"
 	"fmt"
-	"go-boilerplate/shared/constants"
 	"reflect"
 	"unsafe"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 )
 
 func PrintContextValues(ctx interface{}, inner bool) {

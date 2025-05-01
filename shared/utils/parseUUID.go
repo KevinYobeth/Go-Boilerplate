@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 
 	"github.com/google/uuid"
 )

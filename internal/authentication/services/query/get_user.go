@@ -2,10 +2,11 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/internal/authentication/domain/user"
-	"go-boilerplate/internal/authentication/infrastructure/repository"
-	"go-boilerplate/shared/decorator"
-	"go-boilerplate/shared/errors"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

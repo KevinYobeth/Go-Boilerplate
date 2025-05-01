@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"go-boilerplate/internal/books/domain/books"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
 
 	"github.com/google/uuid"
 )

@@ -3,10 +3,11 @@ package event
 import (
 	"context"
 	"fmt"
-	"go-boilerplate/config"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/log"
 	"strings"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"

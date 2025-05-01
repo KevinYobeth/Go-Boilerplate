@@ -2,11 +2,12 @@ package http
 
 import (
 	"context"
-	"go-boilerplate/config"
-	"go-boilerplate/shared/constants"
-	"go-boilerplate/shared/entity"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/utils"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
+	"github.com/kevinyobeth/go-boilerplate/shared/entity"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"

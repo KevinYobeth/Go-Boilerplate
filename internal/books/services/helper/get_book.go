@@ -2,10 +2,11 @@ package helper
 
 import (
 	"context"
-	"go-boilerplate/internal/books/domain/books"
-	"go-boilerplate/internal/books/infrastructure/repository"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/telemetry"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/trace"

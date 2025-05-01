@@ -2,9 +2,10 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/internal/authors/domain/authors"
-	"go-boilerplate/internal/authors/infrastructure/repository"
-	"go-boilerplate/shared/decorator"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"

@@ -2,12 +2,13 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/config"
-	"go-boilerplate/internal/authentication/domain/token"
-	"go-boilerplate/internal/authentication/infrastructure/repository"
-	"go-boilerplate/internal/authentication/services/helper"
-	"go-boilerplate/shared/decorator"
-	"go-boilerplate/shared/errors"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

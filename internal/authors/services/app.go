@@ -1,12 +1,12 @@
 package services
 
 import (
-	"go-boilerplate/internal/authors/infrastructure/repository"
-	"go-boilerplate/internal/authors/services/command"
-	"go-boilerplate/internal/authors/services/query"
-	"go-boilerplate/shared/database"
-	"go-boilerplate/shared/event"
-	"go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/command"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/query"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/event"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 )
 
 type Application struct {
