@@ -1,13 +1,13 @@
 package http
 
 import (
-	"go-boilerplate/internal/books/domain/books"
-	"go-boilerplate/internal/books/services"
-	"go-boilerplate/internal/books/services/command"
-	"go-boilerplate/internal/books/services/query"
-	response "go-boilerplate/shared/response"
-	"go-boilerplate/shared/types"
-	"go-boilerplate/shared/utils"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/command"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/query"
+	response "github.com/kevinyobeth/go-boilerplate/shared/response"
+	"github.com/kevinyobeth/go-boilerplate/shared/types"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/labstack/echo/v4"
 )

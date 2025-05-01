@@ -1,14 +1,13 @@
 package services
 
 import (
-	"go-boilerplate/internal/books/infrastructure/intraprocess"
-	"go-boilerplate/internal/books/infrastructure/repository"
-	"go-boilerplate/internal/books/services/command"
-	"go-boilerplate/internal/books/services/query"
-	"go-boilerplate/shared/cache"
-	"go-boilerplate/shared/database"
-	"go-boilerplate/shared/log"
-	"go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/command"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/query"
+	"github.com/kevinyobeth/go-boilerplate/shared/cache"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 )
 
 type Application struct {

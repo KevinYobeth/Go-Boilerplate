@@ -1,8 +1,8 @@
 package http
 
 import (
-	"go-boilerplate/internal/authentication/domain/token"
-	"go-boilerplate/internal/authentication/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 )
 
 func TransformToHTTPToken(tokenObj *token.Token) Token {

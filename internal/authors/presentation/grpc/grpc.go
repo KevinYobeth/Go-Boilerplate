@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"context"
-	"go-boilerplate/pkg/genproto/authors"
 
-	"go-boilerplate/internal/authors/services"
-	"go-boilerplate/internal/authors/services/query"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/services/query"
+	"github.com/kevinyobeth/go-boilerplate/pkg/genproto/authors"
 
 	"google.golang.org/grpc"
 )

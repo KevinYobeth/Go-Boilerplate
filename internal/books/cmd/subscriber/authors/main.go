@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
-	authorIntraprocess "go-boilerplate/internal/authors/presentation/intraprocess"
-	authorsService "go-boilerplate/internal/authors/services"
-	"go-boilerplate/internal/books/domain/authors"
-	"go-boilerplate/internal/books/infrastructure/intraprocess"
-	"go-boilerplate/internal/books/services"
-	"go-boilerplate/internal/books/services/command"
-	"go-boilerplate/shared/event"
-	"go-boilerplate/shared/graceroutine"
-	"go-boilerplate/shared/log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	authorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/intraprocess"
+	authorsService "github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/command"
+	"github.com/kevinyobeth/go-boilerplate/shared/event"
+	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"

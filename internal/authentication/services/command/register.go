@@ -6,7 +6,6 @@ import (
 	"go-boilerplate/internal/authentication/infrastructure/repository"
 	"go-boilerplate/shared/decorator"
 	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/metrics"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"

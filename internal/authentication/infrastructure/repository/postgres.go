@@ -2,9 +2,10 @@ package repository
 
 import (
 	"context"
-	"go-boilerplate/internal/authentication/domain/user"
-	"go-boilerplate/shared/database"
-	"go-boilerplate/shared/utils"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"

@@ -1,7 +1,7 @@
 package http
 
 import (
-	"go-boilerplate/internal/authors/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
 )
 
 func TransformToHTTPAuthor(authorObj *authors.Author) Author {

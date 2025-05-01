@@ -2,12 +2,12 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/internal/authentication/domain/token"
-	"go-boilerplate/internal/authentication/infrastructure/repository"
-	"go-boilerplate/internal/authentication/services/helper"
-	"go-boilerplate/shared/decorator"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/metrics"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"

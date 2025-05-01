@@ -2,8 +2,9 @@ package repository
 
 import (
 	"context"
-	"go-boilerplate/internal/books/domain/books"
-	"go-boilerplate/shared/utils"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/ztrue/tracerr"

@@ -4,12 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"go-boilerplate/config"
-	"go-boilerplate/shared/constants"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/log"
-	"strings"
-	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
 	_ "github.com/lib/pq"
 )

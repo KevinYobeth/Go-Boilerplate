@@ -2,8 +2,9 @@ package client
 
 import (
 	"errors"
-	"go-boilerplate/pkg/genproto/authors"
 	"os"
+
+	"github.com/kevinyobeth/go-boilerplate/pkg/genproto/authors"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -1,12 +1,11 @@
 package services
 
 import (
-	"go-boilerplate/internal/authentication/infrastructure/repository"
-	"go-boilerplate/internal/authentication/services/command"
-	"go-boilerplate/internal/authentication/services/query"
-	"go-boilerplate/shared/database"
-	"go-boilerplate/shared/log"
-	"go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 )
 
 type Application struct {

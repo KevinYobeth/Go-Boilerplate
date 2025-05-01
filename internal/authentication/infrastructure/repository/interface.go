@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"go-boilerplate/internal/authentication/domain/user"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 
 	"github.com/google/uuid"
 )

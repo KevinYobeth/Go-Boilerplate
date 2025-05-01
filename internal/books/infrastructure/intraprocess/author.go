@@ -2,9 +2,10 @@ package intraprocess
 
 import (
 	"context"
-	"go-boilerplate/internal/books/domain/authors"
-	"go-boilerplate/internal/shared/interfaces"
-	"go-boilerplate/shared/telemetry"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"github.com/ztrue/tracerr"
 )

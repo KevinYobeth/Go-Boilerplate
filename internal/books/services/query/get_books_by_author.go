@@ -2,11 +2,11 @@ package query
 
 import (
 	"context"
-	"go-boilerplate/internal/books/domain/books"
-	"go-boilerplate/internal/books/infrastructure/repository"
-	"go-boilerplate/internal/books/services/helper"
-	"go-boilerplate/shared/decorator"
-	"go-boilerplate/shared/metrics"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"

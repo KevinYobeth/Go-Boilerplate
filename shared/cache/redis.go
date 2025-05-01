@@ -2,10 +2,11 @@ package cache
 
 import (
 	"context"
-	"go-boilerplate/config"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/telemetry"
 	"log"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"github.com/redis/go-redis/v9"
 )

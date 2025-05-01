@@ -2,13 +2,14 @@ package log
 
 import (
 	"context"
-	"go-boilerplate/config"
-	"go-boilerplate/shared/constants"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/telemetry"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"go.opentelemetry.io/contrib/bridges/otelzap"
 	"go.opentelemetry.io/otel/log/global"
@@ -40,7 +41,7 @@ func InitLogger() *zap.SugaredLogger {
 	baseLogger, environment := setupBaseLogger(appConfig.AppEnv)
 
 	loggerProvider := global.GetLoggerProvider()
-	otelZapCore := otelzap.NewCore("go-boilerplate",
+	otelZapCore := otelzap.NewCore("github.com/kevinyobeth/go-boilerplate",
 		otelzap.WithLoggerProvider(loggerProvider),
 	)
 

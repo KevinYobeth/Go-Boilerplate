@@ -3,10 +3,8 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"go-boilerplate/shared/constants"
-	"go-boilerplate/shared/telemetry"
-	"go-boilerplate/shared/utils"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"go.opentelemetry.io/otel/trace"
 )

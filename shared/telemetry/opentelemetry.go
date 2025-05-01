@@ -3,8 +3,9 @@ package telemetry
 import (
 	"context"
 	"errors"
-	"go-boilerplate/config"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"

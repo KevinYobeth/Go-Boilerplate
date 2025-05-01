@@ -2,10 +2,11 @@ package response
 
 import (
 	"encoding/json"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/telemetry"
-	"go-boilerplate/shared/types"
 	"net/http"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/shared/types"
 
 	"github.com/labstack/echo/v4"
 )

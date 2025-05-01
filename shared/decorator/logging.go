@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go-boilerplate/shared/log"
-	"go-boilerplate/shared/utils"
 	"strings"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"go.uber.org/zap"
 )
