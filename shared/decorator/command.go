@@ -13,12 +13,14 @@ func ApplyCommandDecorators[H any](
 	metricsClient metrics.Client,
 ) CommandHandler[H] {
 	return commandOTelDecorator[H]{
-		commandLoggingDecorator[H]{
-			commandMetricDecorator[H]{
-				base:   handler,
-				client: metricsClient,
+		commandErrorDecorator[H]{
+			commandLoggingDecorator[H]{
+				commandMetricDecorator[H]{
+					base:   handler,
+					client: metricsClient,
+				},
+				logger,
 			},
-			logger,
 		},
 	}
 }

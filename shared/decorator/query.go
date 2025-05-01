@@ -13,12 +13,14 @@ func ApplyQueryDecorators[H any, R any](
 	metricsClient metrics.Client,
 ) QueryHandler[H, R] {
 	return queryOTelDecorator[H, R]{
-		queryLoggingDecorator[H, R]{
-			queryMetricDecorator[H, R]{
-				base:   handler,
-				client: metricsClient,
+		queryErrorDecorator[H, R]{
+			queryLoggingDecorator[H, R]{
+				queryMetricDecorator[H, R]{
+					base:   handler,
+					client: metricsClient,
+				},
+				logger,
 			},
-			logger,
 		},
 	}
 }
