@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/log/global"
+	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	logTrace "go.opentelemetry.io/otel/sdk/log"
 	metricTrace "go.opentelemetry.io/otel/sdk/metric"
@@ -116,6 +117,7 @@ func newMeterProvider() (*metricTrace.MeterProvider, error) {
 				metricTrace.WithInterval(5*time.Second),
 			),
 		),
+		metricTrace.WithResource(Resource()),
 	)
 
 	return meterProvider, nil
@@ -187,6 +189,15 @@ func GetTracer() trace.Tracer {
 	tracer := otel.GetTracerProvider().Tracer(cfg.AppName,
 		trace.WithInstrumentationVersion(cfg.AppVersion))
 	return tracer
+}
+
+func GetMetric() metric.Meter {
+	cfg := config.LoadAppConfig()
+
+	meter := otel.GetMeterProvider().Meter(cfg.AppName,
+		metric.WithInstrumentationVersion(cfg.AppVersion),
+	)
+	return meter
 }
 
 func StartSpan(

@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
 	"github.com/kevinyobeth/go-boilerplate/shared/event"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 )
 
 type Application struct {
@@ -27,6 +28,7 @@ type Queries struct {
 func NewAuthorService() Application {
 	db := database.InitPostgres()
 	logger := log.InitLogger()
+	metricsClient := metrics.InitClient()
 
 	repository := repository.NewAuthorsPostgresRepository(db)
 	publisher := event.InitPublisher(event.PublisherOptions{
@@ -35,12 +37,12 @@ func NewAuthorService() Application {
 
 	return Application{
 		Commands: Commands{
-			CreateAuthor: command.NewCreateAuthorHandler(repository, logger),
-			DeleteAuthor: command.NewDeleteAuthorHandler(repository, publisher, logger),
+			CreateAuthor: command.NewCreateAuthorHandler(repository, logger, metricsClient),
+			DeleteAuthor: command.NewDeleteAuthorHandler(repository, publisher, logger, metricsClient),
 		},
 		Queries: Queries{
-			GetAuthors: query.NewGetAuthorsHandler(repository, logger),
-			GetAuthor:  query.NewGetAuthorHandler(repository, logger),
+			GetAuthors: query.NewGetAuthorsHandler(repository, logger, metricsClient),
+			GetAuthor:  query.NewGetAuthorHandler(repository, logger, metricsClient),
 		},
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/cache"
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 )
 
 type Application struct {
@@ -35,22 +36,23 @@ func NewBookService(authorService intraprocess.BookAuthorIntraprocess) Applicati
 	db := database.InitPostgres()
 	manager := database.NewTransactionManager(db)
 	logger := log.InitLogger()
+	metricsClient := metrics.InitClient()
 
 	repo := repository.NewBooksPostgresRepository(db)
 	cache := repository.NewBooksRedisCache(lru)
 
 	return Application{
 		Commands: Commands{
-			CreateBook:         command.NewCreateBookHandler(manager, repo, cache, authorService, logger),
-			UpdateBook:         command.NewUpdateBookHandler(repo, cache, logger),
-			DeleteBook:         command.NewDeleteBookHandler(manager, repo, cache, logger),
-			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repo, logger),
-			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repo, logger),
+			CreateBook:         command.NewCreateBookHandler(manager, repo, cache, authorService, logger, metricsClient),
+			UpdateBook:         command.NewUpdateBookHandler(repo, cache, logger, metricsClient),
+			DeleteBook:         command.NewDeleteBookHandler(manager, repo, cache, logger, metricsClient),
+			DeleteBookByAuthor: command.NewDeleteBookByAuthorHandler(manager, repo, logger, metricsClient),
+			CreateAuthorBook:   command.NewCreateAuthorBookHandler(repo, logger, metricsClient),
 		},
 		Queries: Queries{
-			GetBooks:         query.NewGetBooksHandler(repo, cache, logger),
-			GetBook:          query.NewGetBookHandler(repo, logger),
-			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo, logger),
+			GetBooks:         query.NewGetBooksHandler(repo, cache, logger, metricsClient),
+			GetBook:          query.NewGetBookHandler(repo, logger, metricsClient),
+			GetBooksByAuthor: query.NewGetBooksByAuthorHandler(repo, logger, metricsClient),
 		},
 	}
 }

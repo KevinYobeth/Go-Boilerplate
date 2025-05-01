@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"go.uber.org/zap"
@@ -26,15 +26,10 @@ func (d commandLoggingDecorator[C]) Handle(ctx context.Context, cmd C) (err erro
 	if reqID := utils.GetRequestIDFromContext(ctx); reqID != "" {
 		fields = append(fields, "request_id", reqID)
 	}
-	if traceID := telemetry.GetTraceID(ctx); traceID != "" {
-		fields = append(fields, "trace_id", traceID)
-	}
-	if spanID := telemetry.GetSpanID(ctx); spanID != "" {
-		fields = append(fields, "span_id", spanID)
-	}
 
-	d.logger = d.logger.With(fields...)
-	d.logger.Debug("executing command")
+	logger := log.WithTrace(ctx, d.logger).With(fields...)
+
+	logger.Debug("executing command")
 
 	return d.base.Handle(ctx, cmd)
 }
@@ -53,15 +48,10 @@ func (d queryLoggingDecorator[Q, R]) Handle(ctx context.Context, qry Q) (result 
 	if reqID := utils.GetRequestIDFromContext(ctx); reqID != "" {
 		fields = append(fields, "request_id", reqID)
 	}
-	if traceID := telemetry.GetTraceID(ctx); traceID != "" {
-		fields = append(fields, "trace_id", traceID)
-	}
-	if spanID := telemetry.GetSpanID(ctx); spanID != "" {
-		fields = append(fields, "span_id", spanID)
-	}
 
-	d.logger = d.logger.With(fields...)
-	d.logger.Debug("executing query")
+	logger := log.WithTrace(ctx, d.logger).With(fields...)
+
+	logger.Debug("executing command")
 
 	return d.base.Handle(ctx, qry)
 }
@@ -76,6 +66,10 @@ func generateActionName(handler any) string {
 }
 
 func getLogBodyParam(param any) any {
+	redactedFields := []string{
+		"password",
+	}
+
 	var body any = fmt.Sprintf("%#v", param)
 
 	jsonBytes, err := json.Marshal(param)
@@ -83,6 +77,12 @@ func getLogBodyParam(param any) any {
 		var param map[string]any
 		if err := json.Unmarshal(jsonBytes, &param); err == nil {
 			body = param
+		}
+	}
+
+	for _, field := range redactedFields {
+		if _, ok := body.(map[string]any)[field]; ok {
+			body.(map[string]any)[field] = "************"
 		}
 	}
 

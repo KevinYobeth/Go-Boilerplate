@@ -8,4 +8,7 @@ const (
 	ContextKeySpanID    ContextKey = "span_id"
 
 	ContextKeyClaims ContextKey = "claims"
+
+	ContextKeySqlWrapperCaller ContextKey = "SqlCaller"
+	ContextKeyQueryStartKey    ContextKey = "QueryStartKey"
 )

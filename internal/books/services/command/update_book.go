@@ -6,6 +6,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
 	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -41,7 +42,7 @@ func (h updateBookHandler) Handle(c context.Context, params UpdateBookRequest) e
 	return nil
 }
 
-func NewUpdateBookHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger) UpdateBookHandler {
+func NewUpdateBookHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger, metricsClient metrics.Client) UpdateBookHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -53,6 +54,6 @@ func NewUpdateBookHandler(repository repository.Repository, cache repository.Cac
 		updateBookHandler{
 			repository: repository,
 			cache:      cache,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

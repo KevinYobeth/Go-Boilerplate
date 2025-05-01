@@ -9,6 +9,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -69,7 +70,7 @@ func (h refreshTokenHandler) Handle(c context.Context, params RefreshTokenReques
 	}, nil
 }
 
-func NewRefreshTokenHandler(repository repository.Repository, logger *zap.SugaredLogger) RefreshTokenHandler {
+func NewRefreshTokenHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) RefreshTokenHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -77,6 +78,6 @@ func NewRefreshTokenHandler(repository repository.Repository, logger *zap.Sugare
 	return decorator.ApplyQueryDecorators(
 		refreshTokenHandler{
 			repository: repository,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

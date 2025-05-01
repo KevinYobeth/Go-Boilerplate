@@ -8,6 +8,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -59,7 +60,7 @@ func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Tok
 	}, nil
 }
 
-func NewLoginHandler(repository repository.Repository, logger *zap.SugaredLogger) LoginHandler {
+func NewLoginHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -68,7 +69,7 @@ func NewLoginHandler(repository repository.Repository, logger *zap.SugaredLogger
 		loginHandler{
 			repository: repository,
 			logger:     logger,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }
 
