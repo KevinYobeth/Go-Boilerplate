@@ -2,12 +2,13 @@ package helper
 
 import (
 	"context"
-	"go-boilerplate/config"
-	"go-boilerplate/internal/authentication/domain/token"
-	"go-boilerplate/internal/authentication/domain/user"
-	"go-boilerplate/shared/errors"
-	"go-boilerplate/shared/telemetry"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 
 	"github.com/golang-jwt/jwt/v5"
 )

@@ -1,8 +1,6 @@
-module go-boilerplate
+module github.com/kevinyobeth/go-boilerplate
 
-go 1.22.0
-
-toolchain go1.23.5
+go 1.23.2
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
@@ -11,6 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/kevinyobeth/go-boilerplate/pkg v0.0.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/lib/pq v1.10.9
 	github.com/mitchellh/mapstructure v1.5.1-0.20231216201459-8508981c8b6c
@@ -22,7 +21,6 @@ require (
 	github.com/redis/go-redis/v9 v9.7.3
 	github.com/spf13/viper v1.18.2
 	github.com/ztrue/tracerr v0.4.0
-	go-boilerplate/pkg v0.0.0
 	go.opentelemetry.io/contrib/bridges/otelzap v0.10.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.60.0
 	go.opentelemetry.io/otel v1.35.0
@@ -39,7 +37,7 @@ require (
 	google.golang.org/grpc v1.71.0
 )
 
-replace go-boilerplate/pkg => ./pkg
+replace github.com/kevinyobeth/go-boilerplate/pkg => ./pkg
 
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect

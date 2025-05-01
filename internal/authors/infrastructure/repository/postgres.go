@@ -3,9 +3,10 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"go-boilerplate/internal/authors/domain/authors"
-	"go-boilerplate/shared/database"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"

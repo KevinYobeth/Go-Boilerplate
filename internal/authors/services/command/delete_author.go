@@ -2,10 +2,11 @@ package command
 
 import (
 	"context"
-	"go-boilerplate/internal/authors/domain/authors"
-	"go-boilerplate/internal/authors/infrastructure/repository"
-	"go-boilerplate/shared/decorator"
-	"go-boilerplate/shared/event"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/domain/authors"
+	"github.com/kevinyobeth/go-boilerplate/internal/authors/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/event"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"

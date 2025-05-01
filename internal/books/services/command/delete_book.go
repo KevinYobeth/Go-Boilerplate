@@ -2,10 +2,11 @@ package command
 
 import (
 	"context"
-	"go-boilerplate/internal/books/infrastructure/repository"
-	"go-boilerplate/internal/books/services/helper"
-	"go-boilerplate/shared/database"
-	"go-boilerplate/shared/decorator"
+
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"

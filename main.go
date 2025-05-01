@@ -1,10 +1,10 @@
 package main
 
 import (
-	"go-boilerplate/config"
-	"go-boilerplate/ports/grpc"
-	"go-boilerplate/ports/http"
-	"go-boilerplate/ports/scheduler"
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/ports/grpc"
+	"github.com/kevinyobeth/go-boilerplate/ports/http"
+	"github.com/kevinyobeth/go-boilerplate/ports/scheduler"
 )
 
 func main() {

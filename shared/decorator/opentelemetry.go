@@ -2,9 +2,10 @@ package decorator
 
 import (
 	"context"
-	"go-boilerplate/shared/telemetry"
-	"go-boilerplate/shared/utils"
 	"time"
+
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

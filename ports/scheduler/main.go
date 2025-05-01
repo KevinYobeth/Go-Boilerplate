@@ -1,16 +1,17 @@
 package scheduler
 
 import (
-	authorIntraprocess "go-boilerplate/internal/authors/presentation/intraprocess"
-	authorsService "go-boilerplate/internal/authors/services"
-	"go-boilerplate/internal/books/infrastructure/intraprocess"
-	"go-boilerplate/internal/books/presentation/job"
-	"go-boilerplate/internal/books/services"
-	"go-boilerplate/shared/graceroutine"
-	"go-boilerplate/shared/log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	authorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/intraprocess"
+	authorsService "github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/presentation/job"
+	"github.com/kevinyobeth/go-boilerplate/internal/books/services"
+	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
 	"github.com/go-co-op/gocron/v2"
 )

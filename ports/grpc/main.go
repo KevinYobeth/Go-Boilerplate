@@ -1,15 +1,16 @@
 package grpc
 
 import (
-	"go-boilerplate/config"
-	authorsGRPC "go-boilerplate/internal/authors/presentation/grpc"
-	authorsService "go-boilerplate/internal/authors/services"
-	"go-boilerplate/shared/graceroutine"
-	"go-boilerplate/shared/log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/kevinyobeth/go-boilerplate/config"
+	authorsGRPC "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/grpc"
+	authorsService "github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
 	GoogleGRPC "google.golang.org/grpc"
 )
