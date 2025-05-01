@@ -98,6 +98,10 @@ func Resource() *resource.Resource {
 func newMeterProvider() (*metricTrace.MeterProvider, error) {
 	cfg := config.LoadOpenTelemetryConfig()
 
+	if cfg.OtelDisabled {
+		return metricTrace.NewMeterProvider(), nil
+	}
+
 	exporter, err := otlpmetricgrpc.New(context.Background(),
 		otlpmetricgrpc.WithEndpointURL(cfg.OtelGRPCEndpoint),
 		otlpmetricgrpc.WithRetry(otlpmetricgrpc.RetryConfig{
@@ -125,6 +129,10 @@ func newMeterProvider() (*metricTrace.MeterProvider, error) {
 
 func newLoggerProvider() (*logTrace.LoggerProvider, error) {
 	cfg := config.LoadOpenTelemetryConfig()
+
+	if cfg.OtelDisabled {
+		return logTrace.NewLoggerProvider(), nil
+	}
 
 	exporter, err := otlploggrpc.New(context.Background(),
 		otlploggrpc.WithEndpointURL(cfg.OtelGRPCEndpoint),
@@ -155,9 +163,7 @@ func newTracerProvider() (*sdkTrace.TracerProvider, error) {
 	cfg := config.LoadOpenTelemetryConfig()
 
 	if cfg.OtelDisabled {
-		return sdkTrace.NewTracerProvider(
-			sdkTrace.WithResource(Resource()),
-		), nil
+		return sdkTrace.NewTracerProvider(), nil
 	}
 
 	exporter, err := otlptracegrpc.New(context.Background(),
