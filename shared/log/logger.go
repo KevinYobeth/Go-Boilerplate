@@ -40,15 +40,20 @@ func InitLogger() *zap.SugaredLogger {
 	appConfig := config.LoadAppConfig()
 	baseLogger, environment := setupBaseLogger(appConfig.AppEnv)
 
-	loggerProvider := global.GetLoggerProvider()
-	otelZapCore := otelzap.NewCore("github.com/kevinyobeth/go-boilerplate",
-		otelzap.WithLoggerProvider(loggerProvider),
-	)
+	core := baseLogger.Core()
 
-	core := zapcore.NewTee(
-		baseLogger.Core(),
-		otelZapCore,
-	)
+	cfg := config.LoadOpenTelemetryConfig()
+	if !cfg.OtelDisabled {
+		loggerProvider := global.GetLoggerProvider()
+		otelZapCore := otelzap.NewCore("github.com/kevinyobeth/go-boilerplate",
+			otelzap.WithLoggerProvider(loggerProvider),
+		)
+
+		core = zapcore.NewTee(
+			baseLogger.Core(),
+			otelZapCore,
+		)
+	}
 	newLogger := zap.New(core)
 
 	newLogger.Info("logger initialized in " + environment)
