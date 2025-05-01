@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
@@ -46,7 +47,7 @@ func (h registerHandler) Handle(c context.Context, params RegisterRequest) error
 	return nil
 }
 
-func NewRegisterHandler(repository repository.Repository, logger *zap.SugaredLogger) RegisterHandler {
+func NewRegisterHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -54,7 +55,7 @@ func NewRegisterHandler(repository repository.Repository, logger *zap.SugaredLog
 	return decorator.ApplyCommandDecorators(
 		registerHandler{
 			repository: repository,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }
 

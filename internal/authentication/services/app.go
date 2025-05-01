@@ -6,6 +6,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 )
 
 type Application struct {
@@ -26,17 +27,18 @@ type Queries struct {
 func NewAuthenticationService() Application {
 	db := database.InitPostgres()
 	logger := log.InitLogger()
+	metricsClient := metrics.InitClient()
 
 	repository := repository.NewAuthenticationPostgresRepository(db)
 
 	return Application{
 		Commands: Commands{
-			Register: command.NewRegisterHandler(repository, logger),
+			Register: command.NewRegisterHandler(repository, logger, metricsClient),
 		},
 		Queries: Queries{
-			Login:        query.NewLoginHandler(repository, logger),
-			RefreshToken: query.NewRefreshTokenHandler(repository, logger),
-			GetUser:      query.NewGetUserHandler(repository, logger),
+			Login:        query.NewLoginHandler(repository, logger, metricsClient),
+			RefreshToken: query.NewRefreshTokenHandler(repository, logger, metricsClient),
+			GetUser:      query.NewGetUserHandler(repository, logger, metricsClient),
 		},
 	}
 }

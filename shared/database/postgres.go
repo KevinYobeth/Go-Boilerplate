@@ -1,10 +1,14 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
@@ -14,7 +18,7 @@ import (
 type PostgresDB SqlDatabase
 
 func InitPostgres() PostgresDB {
-	log := log.InitLogger()
+	logger := log.InitLogger()
 	cfg := config.LoadPostgresDBConfig()
 
 	connStr := fmt.Sprintf(
@@ -28,7 +32,7 @@ func InitPostgres() PostgresDB {
 	)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	db.SetConnMaxLifetime(cfg.PostgresConnMaxLifeTime)
@@ -38,10 +42,49 @@ func InitPostgres() PostgresDB {
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(errors.NewInitializationError(err, "postgres").Message)
+		logger.Fatal(errors.NewInitializationError(err, "postgres").Message)
 	}
 
 	wrappedDB := NewDB(db)
 
+	wrappedDB.AddBeforeFunc(func(ctx context.Context, query string, args ...interface{}) context.Context {
+		ctx = context.WithValue(ctx, constants.ContextKeyQueryStartKey, time.Now())
+		return ctx
+	})
+
+	wrappedDB.AddAfterFunc(func(ctx context.Context, err error, query string, args ...interface{}) {
+		query = strings.ReplaceAll(query, "\n", " ")
+		query = strings.ReplaceAll(query, "\t", " ")
+
+		logger := log.WithTrace(ctx, logger).With(
+			"exec_time_elapsed", GetRequestDuration(ctx)/time.Millisecond,
+			"query", query,
+			"args", args,
+			"caller", ctx.Value(constants.ContextKeySqlWrapperCaller),
+		)
+
+		logger.Debug("after executing query")
+
+		if err != nil {
+			logger.With("error", err).Error("error on executing query")
+		}
+	})
+
 	return wrappedDB
+}
+
+func GetRequestDuration(ctx context.Context) time.Duration {
+	now := time.Now()
+
+	start := ctx.Value(constants.ContextKeyQueryStartKey)
+	if start == nil {
+		return 0
+	}
+
+	startTime, ok := start.(time.Time)
+	if !ok {
+		return 0
+	}
+
+	return now.Sub(startTime)
 }

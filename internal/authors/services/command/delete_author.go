@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authors/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/event"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -38,7 +39,7 @@ func (h deleteAuthorHandler) Handle(c context.Context, params DeleteAuthorReques
 	return nil
 }
 
-func NewDeleteAuthorHandler(database repository.Repository, publisher event.PublisherInterface, logger *zap.SugaredLogger) DeleteAuthorHandler {
+func NewDeleteAuthorHandler(database repository.Repository, publisher event.PublisherInterface, logger *zap.SugaredLogger, metricsClient metrics.Client) DeleteAuthorHandler {
 	if database == nil {
 		panic("database is required")
 	}
@@ -51,6 +52,6 @@ func NewDeleteAuthorHandler(database repository.Repository, publisher event.Publ
 		deleteAuthorHandler{
 			repository: database,
 			publisher:  publisher,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

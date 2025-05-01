@@ -10,6 +10,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/books/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
@@ -67,7 +68,7 @@ func (h createBookHandler) Handle(c context.Context, params CreateBookRequest) e
 	}))
 }
 
-func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService intraprocess.BookAuthorIntraprocess, logger *zap.SugaredLogger) CreateBookHandler {
+func NewCreateBookHandler(manager database.TransactionManager, database repository.Repository, cache repository.Cache, authorService intraprocess.BookAuthorIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) CreateBookHandler {
 	if database == nil {
 		panic("nil database")
 	}
@@ -85,6 +86,6 @@ func NewCreateBookHandler(manager database.TransactionManager, database reposito
 			cache:      cache,
 
 			authorService: authorService,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

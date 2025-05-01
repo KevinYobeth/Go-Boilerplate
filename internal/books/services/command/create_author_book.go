@@ -6,6 +6,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/books/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/google/uuid"
 	"github.com/ztrue/tracerr"
@@ -37,7 +38,7 @@ func (h createAuthorBookHandler) Handle(c context.Context, params CreateAuthorBo
 	return nil
 }
 
-func NewCreateAuthorBookHandler(repository repository.Repository, logger *zap.SugaredLogger) CreateAuthorBookHandler {
+func NewCreateAuthorBookHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) CreateAuthorBookHandler {
 	if repository == nil {
 		panic("nil repository")
 	}
@@ -45,6 +46,6 @@ func NewCreateAuthorBookHandler(repository repository.Repository, logger *zap.Su
 	return decorator.ApplyCommandDecorators(
 		createAuthorBookHandler{
 			repository: repository,
-		}, logger,
+		}, logger, metricsClient,
 	)
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/books/domain/books"
 	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
@@ -47,7 +48,7 @@ func (h getBooksHandler) Handle(c context.Context, params GetBooksRequest) ([]bo
 	return booksObj, nil
 }
 
-func NewGetBooksHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger) GetBooksHandler {
+func NewGetBooksHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger, metricsClient metrics.Client) GetBooksHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -59,5 +60,6 @@ func NewGetBooksHandler(repository repository.Repository, cache repository.Cache
 		getBooksHandler{
 			repository: repository,
 			cache:      cache,
-		}, logger)
+		}, logger, metricsClient,
+	)
 }
