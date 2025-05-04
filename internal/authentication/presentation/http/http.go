@@ -35,7 +35,7 @@ func (h HTTPTransport) Login(c echo.Context) error {
 		return err
 	}
 
-	token, err := h.app.Queries.Login.Handle(c.Request().Context(), query.LoginRequest{
+	token, err := h.app.Queries.Login.Handle(c.Request().Context(), &query.LoginRequest{
 		Email:    request.Email,
 		Password: request.Password,
 	})
@@ -95,7 +95,7 @@ func (h HTTPTransport) RefreshToken(c echo.Context) error {
 		return err
 	}
 
-	token, err := h.app.Queries.RefreshToken.Handle(c.Request().Context(), query.RefreshTokenRequest{
+	token, err := h.app.Queries.RefreshToken.Handle(c.Request().Context(), &query.RefreshTokenRequest{
 		RefreshToken: request.RefreshToken,
 	})
 	if err != nil {
@@ -124,7 +124,7 @@ func (h HTTPTransport) GetUser(c echo.Context) error {
 		return err
 	}
 
-	user, err := h.app.Queries.GetUser.Handle(ctx, query.GetUserRequest{
+	user, err := h.app.Queries.GetUser.Handle(ctx, &query.GetUserRequest{
 		ID: uuid.MustParse(claims.Subject),
 	})
 	if err != nil {

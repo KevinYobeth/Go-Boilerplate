@@ -21,9 +21,9 @@ type getUserHandler struct {
 	repository repository.Repository
 }
 
-type GetUserHandler decorator.QueryHandler[GetUserRequest, *user.User]
+type GetUserHandler decorator.QueryHandler[*GetUserRequest, *user.User]
 
-func (h getUserHandler) Handle(c context.Context, params GetUserRequest) (*user.User, error) {
+func (h getUserHandler) Handle(c context.Context, params *GetUserRequest) (*user.User, error) {
 	user, err := h.repository.GetUser(c, params.ID)
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user")

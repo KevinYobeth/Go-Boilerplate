@@ -25,9 +25,9 @@ type loginHandler struct {
 	logger     *zap.SugaredLogger
 }
 
-type LoginHandler decorator.QueryHandler[LoginRequest, *token.Token]
+type LoginHandler decorator.QueryHandler[*LoginRequest, *token.Token]
 
-func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Token, error) {
+func (h loginHandler) Handle(c context.Context, params *LoginRequest) (*token.Token, error) {
 	if err := validator.ValidateStruct(params); err != nil {
 		return nil, errors.NewIncorrectInputError(err, err.Error())
 	}
@@ -36,7 +36,6 @@ func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Tok
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user by email")
 	}
-
 	if user == nil {
 		return nil, errors.NewIncorrectInputError(nil, "wrong email or password")
 	}
