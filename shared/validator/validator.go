@@ -51,5 +51,8 @@ func ValidateStruct(s any) error {
 		return nil
 	}
 
-	return errors.NewValidatorError(err.(validator.ValidationErrors).Translate(trans))
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		return errors.NewValidatorError(validationErrors.Translate(trans))
+	}
+	return errors.NewGenericError(err, "unexpected error during validation")
 }
