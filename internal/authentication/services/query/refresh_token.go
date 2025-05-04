@@ -10,6 +10,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/validator"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -17,7 +18,7 @@ import (
 )
 
 type RefreshTokenRequest struct {
-	RefreshToken string `json:"refresh_token"`
+	RefreshToken string `validate:"required"`
 }
 
 type refreshTokenHandler struct {
@@ -27,6 +28,10 @@ type refreshTokenHandler struct {
 type RefreshTokenHandler decorator.QueryHandler[RefreshTokenRequest, *token.Token]
 
 func (h refreshTokenHandler) Handle(c context.Context, params RefreshTokenRequest) (*token.Token, error) {
+	if err := validator.ValidateStruct(params); err != nil {
+		return nil, errors.NewIncorrectInputError(err, err.Error())
+	}
+
 	jwtConfig := config.LoadJWTConfig()
 	jwtRefreshToken, err := jwt.Parse(params.RefreshToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {

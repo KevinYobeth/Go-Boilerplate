@@ -8,6 +8,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/validator"
 
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
@@ -15,19 +16,23 @@ import (
 )
 
 type RegisterRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	FirstName string `conform:"trim" validate:"required,min=3,max=255"`
+	LastName  string `conform:"trim" validate:"required,min=3,max=255"`
+	Email     string `conform:"trim" validate:"required,email,min=3,max=255"`
+	Password  string `validate:"required,min=8,max=255"`
 }
 
 type registerHandler struct {
 	repository repository.Repository
 }
 
-type RegisterHandler decorator.CommandHandler[RegisterRequest]
+type RegisterHandler decorator.CommandHandler[*RegisterRequest]
 
-func (h registerHandler) Handle(c context.Context, params RegisterRequest) error {
+func (h registerHandler) Handle(c context.Context, params *RegisterRequest) error {
+	if err := validator.ValidateStruct(params); err != nil {
+		return tracerr.Wrap(err)
+	}
+
 	hashedPassword, err := hashPassword(params.Password)
 	if err != nil {
 		return tracerr.Wrap(err)

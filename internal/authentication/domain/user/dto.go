@@ -1,6 +1,8 @@
 package user
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type UserDto struct {
 	ID        uuid.UUID `json:"id"`

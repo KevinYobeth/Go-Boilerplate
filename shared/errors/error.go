@@ -19,9 +19,10 @@ var (
 )
 
 type GenericError struct {
-	Err     error
-	Type    ErrorType
-	Message string
+	Err      error
+	Type     ErrorType
+	Message  string
+	Metadata any
 }
 
 func (e GenericError) Unwrap() error {
@@ -65,6 +66,15 @@ func NewIncorrectInputError(err error, message string) GenericError {
 		Err:     err,
 		Type:    ErrorTypeIncorrectInput,
 		Message: message,
+	}
+}
+
+func NewIncorrectInputWithMetadataError(err error, message string, metadata any) GenericError {
+	return GenericError{
+		Err:      err,
+		Type:     ErrorTypeIncorrectInput,
+		Message:  message,
+		Metadata: metadata,
 	}
 }
 

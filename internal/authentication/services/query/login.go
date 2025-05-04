@@ -9,14 +9,15 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/validator"
 
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `conform:"trim" validate:"required,email,min=3,max=255"`
+	Password string `validate:"required,min=8,max=255"`
 }
 
 type loginHandler struct {
@@ -27,6 +28,9 @@ type loginHandler struct {
 type LoginHandler decorator.QueryHandler[LoginRequest, *token.Token]
 
 func (h loginHandler) Handle(c context.Context, params LoginRequest) (*token.Token, error) {
+	if err := validator.ValidateStruct(params); err != nil {
+		return nil, errors.NewIncorrectInputError(err, err.Error())
+	}
 
 	user, err := h.repository.GetUserByEmail(c, params.Email)
 	if err != nil {
