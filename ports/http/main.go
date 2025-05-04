@@ -18,6 +18,8 @@ import (
 	booksAuthorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
 	booksHTTP "github.com/kevinyobeth/go-boilerplate/internal/books/presentation/http"
 	booksService "github.com/kevinyobeth/go-boilerplate/internal/books/services"
+	linkHTTP "github.com/kevinyobeth/go-boilerplate/internal/link/presentation/http"
+	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
@@ -125,6 +127,9 @@ func RunHTTPServer() {
 	authenticationService := authenticationService.NewAuthenticationService()
 	authenticationServer := authenticationHTTP.NewAuthenticationHTTPServer(&authenticationService)
 
+	linkService := linkService.NewLinkService()
+	linkServer := linkHTTP.NewLinkHTTPServer(&linkService)
+
 	authorsService := authorsService.NewAuthorService()
 	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
 
@@ -139,6 +144,7 @@ func RunHTTPServer() {
 		authenticationServer.RegisterHTTPRoutes(api)
 		booksServer.RegisterHTTPRoutes(api)
 		authorsServer.RegisterHTTPRoutes(api)
+		linkServer.RegisterHTTPRoutes(api)
 	}
 
 	signals := make(chan os.Signal, 1)

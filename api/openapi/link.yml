@@ -1,0 +1,110 @@
+openapi: "3.0.0"
+info:
+  version: 0.1.0
+  title: Link API
+  description: Link API Definition
+  contact:
+    name: Kevin Yobeth
+    url: https://github.com/kevinyobeth
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+
+paths:
+  /links:
+    post:
+      tags: [Link]
+      operationId: createLink
+      description: create link
+      requestBody:
+        description: create link
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLinkRequest"
+      responses:
+        "200":
+          description: create link success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+    get:
+      tags: [Link]
+      operationId: getLinks
+      description: get links
+      responses:
+        "200":
+          description: get links success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLinksResponse"
+  /links/{slug}:
+    get:
+      tags: [Link]
+      operationId: getLink
+      description: get link
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: link slug
+      responses:
+        "302":
+          description: get link by slug success
+
+components:
+  schemas:
+    CreateLinkRequest:
+      type: object
+      required: [slug, url, description]
+      properties:
+        slug:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+
+    GetLinksResponse:
+      type: object
+      required: [data, message]
+      properties:
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          
+    Link:
+      type: object
+      required: [id, slug, url, description, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
