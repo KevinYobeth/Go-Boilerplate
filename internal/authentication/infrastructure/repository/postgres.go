@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
@@ -75,6 +76,10 @@ func (r *PostgresAuthenticationRepo) GetUserByEmail(c context.Context, email str
 	user := &user.User{}
 	err = row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.CreatedBy, &user.UpdatedBy)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
 		return nil, tracerr.Wrap(err)
 	}
 

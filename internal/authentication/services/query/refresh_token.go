@@ -25,9 +25,9 @@ type refreshTokenHandler struct {
 	repository repository.Repository
 }
 
-type RefreshTokenHandler decorator.QueryHandler[RefreshTokenRequest, *token.Token]
+type RefreshTokenHandler decorator.QueryHandler[*RefreshTokenRequest, *token.Token]
 
-func (h refreshTokenHandler) Handle(c context.Context, params RefreshTokenRequest) (*token.Token, error) {
+func (h refreshTokenHandler) Handle(c context.Context, params *RefreshTokenRequest) (*token.Token, error) {
 	if err := validator.ValidateStruct(params); err != nil {
 		return nil, errors.NewIncorrectInputError(err, err.Error())
 	}
