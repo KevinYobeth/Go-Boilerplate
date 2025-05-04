@@ -3,7 +3,10 @@ package response
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
+	"github.com/kevinyobeth/go-boilerplate/config"
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 	"github.com/kevinyobeth/go-boilerplate/shared/types"
@@ -12,6 +15,8 @@ import (
 )
 
 func SendHTTP(c echo.Context, response *types.Response) error {
+	cfg := config.LoadAppConfig()
+
 	body := types.ResponseBody{}
 	jsonBytes, err := json.Marshal(response.Body)
 	if err != nil {
@@ -32,8 +37,12 @@ func SendHTTP(c echo.Context, response *types.Response) error {
 		errObj := errors.GetGenericError(response.Error)
 		body.Message = errObj.Message
 
-		if errObj.Unwrap() != nil {
+		if strings.ToUpper(cfg.AppEnv) != constants.APP_PRODUCTION && errObj.Unwrap() != nil {
 			body.Error = errObj.Unwrap().Error()
+		}
+
+		if errObj.Metadata != nil {
+			body.Metadata = errObj.Metadata
 		}
 
 		if response.StatusCode == 0 {

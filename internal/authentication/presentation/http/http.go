@@ -65,7 +65,7 @@ func (h HTTPTransport) Register(c echo.Context) error {
 		return err
 	}
 
-	err := h.app.Commands.Register.Handle(c.Request().Context(), command.RegisterRequest{
+	err := h.app.Commands.Register.Handle(c.Request().Context(), &command.RegisterRequest{
 		FirstName: request.FirstName,
 		LastName:  request.LastName,
 		Email:     request.Email,
