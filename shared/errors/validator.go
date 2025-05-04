@@ -10,7 +10,10 @@ func NewValidatorError(err validator.ValidationErrorsTranslations) error {
 	metadata := make(map[string]string)
 
 	for key, value := range err {
-		metadata[strings.Split(key, ".")[1]] = value
+		parts := strings.Split(key, ".")
+		if len(parts) > 1 {
+			metadata[parts[1]] = value
+		}
 	}
 
 	return NewIncorrectInputWithMetadataError(nil, "validation error", metadata)
