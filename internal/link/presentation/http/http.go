@@ -19,9 +19,14 @@ func NewLinkHTTPServer(app *services.Application) HTTPTransport {
 	return HTTPTransport{app: app}
 }
 
-func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group) {
+func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group, root *echo.Echo) {
 	api := r.Group("/v1")
 	RegisterHandlers(api, h)
+
+	root.GET("/:slug", func(c echo.Context) error {
+		slug := c.Param("slug")
+		return h.GetLink(c, slug)
+	})
 }
 
 // POST /links
@@ -92,7 +97,7 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 	return nil
 }
 
-// GET /links/:slug
+// GET /:slug
 func (h HTTPTransport) GetLink(c echo.Context, slug string) error {
 	link, err := h.app.Queries.GetRedirectLink.Handle(c.Request().Context(), &query.GetRedirectLinkRequest{
 		Slug: slug,

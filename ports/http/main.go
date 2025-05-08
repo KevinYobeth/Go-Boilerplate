@@ -144,7 +144,7 @@ func RunHTTPServer() {
 		authenticationServer.RegisterHTTPRoutes(api)
 		booksServer.RegisterHTTPRoutes(api)
 		authorsServer.RegisterHTTPRoutes(api)
-		linkServer.RegisterHTTPRoutes(api)
+		linkServer.RegisterHTTPRoutes(api, app)
 	}
 
 	signals := make(chan os.Signal, 1)
