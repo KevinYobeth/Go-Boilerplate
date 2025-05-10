@@ -11,4 +11,6 @@ type Repository interface {
 	CreateLink(c context.Context, request *link.LinkDTO) error
 	GetLinks(c context.Context, userID uuid.UUID) ([]link.Link, error)
 	GetLinkBySlug(c context.Context, slug string) (*link.RedirectLink, error)
+
+	CreateLinkVisitEvent(c context.Context, dto *link.LinkVisitEventDTO) error
 }

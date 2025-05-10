@@ -1,6 +1,8 @@
 package http
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
@@ -101,6 +103,14 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 func (h HTTPTransport) GetLink(c echo.Context, slug string) error {
 	link, err := h.app.Queries.GetRedirectLink.Handle(c.Request().Context(), &query.GetRedirectLinkRequest{
 		Slug: slug,
+		Metadata: query.LinkVisitEventMetadata{
+			IPAddress:   c.RealIP(),
+			UserAgent:   c.Request().UserAgent(),
+			Referer:     c.Request().Header.Get("Referer"),
+			CountryCode: c.Request().Header.Get("X-Country-Code"),
+			DeviceType:  c.Request().Header.Get("X-Device-Type"),
+			Browser:     c.Request().Header.Get("X-Browser"),
+		},
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
@@ -108,6 +118,8 @@ func (h HTTPTransport) GetLink(c echo.Context, slug string) error {
 		})
 		return err
 	}
+
+	fmt.Println(c.RealIP())
 
 	c.Redirect(302, link.URL)
 	return nil
