@@ -15,5 +15,6 @@ type Repository interface {
 	DeleteLink(c context.Context, id uuid.UUID) error
 	UpdateLink(c context.Context, id uuid.UUID, request *link.LinkDTO) error
 
-	CreateLinkVisitEvent(c context.Context, dto *link.LinkVisitEventDTO) error
+	CreateLinkVisit(c context.Context, dto *link.LinkVisitEventDTO) error
+	CreateLinkVisitSnapshot(c context.Context, dto *link.LinkVisitSnapshotDTO) error
 }

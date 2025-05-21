@@ -43,13 +43,10 @@ func (h getRedirectLinkHandler) Handle(c context.Context, params *GetRedirectLin
 	}
 
 	dto := link.NewLinkVisitEventDTO(redirectLink.ID,
+		params.Slug,
 		params.Metadata.IPAddress,
-		params.Metadata.UserAgent,
-		params.Metadata.Referer,
-		params.Metadata.CountryCode,
-		params.Metadata.DeviceType,
-		params.Metadata.Browser)
-	err = h.repository.CreateLinkVisitEvent(c, dto)
+		params.Metadata.UserAgent)
+	err = h.repository.CreateLinkVisit(c, dto)
 	if err != nil {
 		h.logger.Error("failed to create link visit event", zap.Error(err))
 	}

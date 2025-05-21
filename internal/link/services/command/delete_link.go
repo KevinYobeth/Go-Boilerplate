@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
@@ -37,7 +38,7 @@ func (h deleteLinkHandler) Handle(c context.Context, params *DeleteLinkRequest) 
 
 	err = h.repository.DeleteLink(c, link.ID)
 	if err != nil {
-		return err
+		return errors.NewGenericError(err, "failed to delete link")
 	}
 
 	return nil

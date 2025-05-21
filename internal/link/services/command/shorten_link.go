@@ -58,6 +58,16 @@ func (h shortenLinkHandler) Handle(c context.Context, params *ShortenLinkRequest
 		return errors.NewGenericError(err, "failed to create link")
 	}
 
+	err = helper.CreateLinkVisitSnapshot(c, helper.CreateLinkVisitSnapshotOpts{
+		Params: helper.CreateLinkVisitSnapshotRequest{
+			ID: dto.ID,
+		},
+		LinkRepository: h.repository,
+	})
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+
 	return nil
 }
 

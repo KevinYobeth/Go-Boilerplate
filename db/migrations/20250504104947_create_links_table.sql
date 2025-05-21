@@ -13,19 +13,24 @@ CREATE TABLE links (
   deleted_by VARCHAR(50)
 );
 
-CREATE TABLE link_visit_events (
+CREATE TABLE link_visits (
   id UUID NOT NULL PRIMARY KEY,
   link_id UUID NOT NULL REFERENCES links(id),
+  slug VARCHAR(100) NOT NULL,
   ip_address INET,
   user_agent TEXT,
-  referer TEXT,
-  country_code VARCHAR(2),
-  device_type VARCHAR(50),
-  browser VARCHAR(50),
   visited_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-);  
+);
+
+CREATE TABLE link_visit_snapshots (
+  id UUID NOT NULL PRIMARY KEY,
+  link_id UUID NOT NULL REFERENCES links(id),
+  total INT NOT NULL,
+  last_snapshot_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 
 CREATE INDEX idx_links_slug ON links(slug);
+CREATE INDEX idx_link_visits_link_id ON link_visits(link_id);
 -- +goose StatementEnd
 
 -- +goose Down
@@ -34,4 +39,5 @@ DROP TABLE IF EXISTS link_visit_events;
 DROP TABLE IF EXISTS links;
 
 DROP INDEX IF EXISTS idx_links_slug;
+DROP INDEX IF EXISTS idx_link_visits_link_id;
 -- +goose StatementEnd
