@@ -34,8 +34,8 @@ CREATE INDEX idx_verification_tokens_user_id ON verification_tokens(user_id);
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS verification_tokens;
+DROP TABLE IF EXISTS users;
 
 DROP INDEX IF EXISTS idx_users_email;
 DROP INDEX IF EXISTS idx_verification_tokens_user_id;

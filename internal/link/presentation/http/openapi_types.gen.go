@@ -16,6 +16,12 @@ type CreateLinkRequest struct {
 	Url         string `json:"url"`
 }
 
+// GetLinkResponse defines model for GetLinkResponse.
+type GetLinkResponse struct {
+	Data    Link   `json:"data"`
+	Message string `json:"message"`
+}
+
 // GetLinksResponse defines model for GetLinksResponse.
 type GetLinksResponse struct {
 	Data    []Link `json:"data"`
@@ -37,5 +43,15 @@ type MessageResponse struct {
 	Message string `json:"message"`
 }
 
+// UpdateLinkRequest defines model for UpdateLinkRequest.
+type UpdateLinkRequest struct {
+	Description string `json:"description"`
+	Slug        string `json:"slug"`
+	Url         string `json:"url"`
+}
+
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.
 type CreateLinkJSONRequestBody = CreateLinkRequest
+
+// UpdateLinkJSONRequestBody defines body for UpdateLink for application/json ContentType.
+type UpdateLinkJSONRequestBody = UpdateLinkRequest

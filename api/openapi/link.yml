@@ -43,25 +43,85 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetLinksResponse"
-  /links/{slug}:
+  /links/{id}:
     get:
       tags: [Link]
       operationId: getLink
       description: get link
       parameters:
         - in: path
-          name: slug
+          name: id
           schema:
             type: string
+            format: uuid
           required: true
           description: link slug
       responses:
-        "302":
-          description: get link by slug success
+        "200":
+          description: get link success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLinkResponse"
+    put:
+      tags: [Link]
+      operationId: updateLink
+      description: update link
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: link slug
+      requestBody:
+        description: update link
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLinkRequest"
+      responses:
+        "200":
+          description: update link success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+    delete:
+      tags: [Link]
+      operationId: deleteLink
+      description: delete link
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: link slug
+      responses:
+        "200":
+          description: delete link success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
 
 components:
   schemas:
     CreateLinkRequest:
+      type: object
+      required: [slug, url, description]
+      properties:
+        slug:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+    UpdateLinkRequest:
       type: object
       required: [slug, url, description]
       properties:
@@ -82,6 +142,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Link"
+    GetLinkResponse:
+      type: object
+      required: [data, message]
+      properties:
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Link"
     MessageResponse:
       type: object
       required: [message]

@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE links (
   id UUID NOT NULL PRIMARY KEY,
-  slug VARCHAR(100) NOT NULL UNIQUE,
+  slug VARCHAR(100) NOT NULL,
   url TEXT NOT NULL,
   description TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),

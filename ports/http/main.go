@@ -93,7 +93,14 @@ func RunHTTPServer() {
 
 			if v.Error != nil {
 				fields = append(fields, "error", v.Error)
+				fields = append(fields, "error_raw", errors.GetGenericError(v.Error).Unwrap())
+				fields = append(fields, "error_type", errors.GetGenericError(v.Error).Type)
+				fields = append(fields, "error_metadata", errors.GetGenericError(v.Error).Metadata)
 				fields = append(fields, "trace", tracerr.StackTrace(errors.GetTracerrErr(v.Error)))
+			}
+
+			if strings.ToUpper(appConfig.AppEnv) == constants.APP_DEVELOPMENT {
+				tracerr.PrintSourceColor(errors.GetTracerrErr(v.Error), 3, 3)
 			}
 
 			s := v.Status

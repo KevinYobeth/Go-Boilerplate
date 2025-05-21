@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // ServerInterface represents all server handlers.
@@ -20,8 +21,14 @@ type ServerInterface interface {
 	// (POST /links)
 	CreateLink(ctx echo.Context) error
 
-	// (GET /links/{slug})
-	GetLink(ctx echo.Context, slug string) error
+	// (DELETE /links/{id})
+	DeleteLink(ctx echo.Context, id openapi_types.UUID) error
+
+	// (GET /links/{id})
+	GetLink(ctx echo.Context, id openapi_types.UUID) error
+
+	// (PUT /links/{id})
+	UpdateLink(ctx echo.Context, id openapi_types.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -47,19 +54,51 @@ func (w *ServerInterfaceWrapper) CreateLink(ctx echo.Context) error {
 	return err
 }
 
-// GetLink converts echo context to params.
-func (w *ServerInterfaceWrapper) GetLink(ctx echo.Context) error {
+// DeleteLink converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteLink(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "slug" -------------
-	var slug string
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
 
-	err = runtime.BindStyledParameterWithOptions("simple", "slug", ctx.Param("slug"), &slug, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter slug: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetLink(ctx, slug)
+	err = w.Handler.DeleteLink(ctx, id)
+	return err
+}
+
+// GetLink converts echo context to params.
+func (w *ServerInterfaceWrapper) GetLink(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetLink(ctx, id)
+	return err
+}
+
+// UpdateLink converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateLink(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateLink(ctx, id)
 	return err
 }
 
@@ -93,6 +132,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/links", wrapper.GetLinks)
 	router.POST(baseURL+"/links", wrapper.CreateLink)
-	router.GET(baseURL+"/links/:slug", wrapper.GetLink)
+	router.DELETE(baseURL+"/links/:id", wrapper.DeleteLink)
+	router.GET(baseURL+"/links/:id", wrapper.GetLink)
+	router.PUT(baseURL+"/links/:id", wrapper.UpdateLink)
 
 }

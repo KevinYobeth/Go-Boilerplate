@@ -22,6 +22,15 @@ func NewLinkDTO(slug, url, description string, createdBy uuid.UUID) *LinkDTO {
 	}
 }
 
+func NewUpdateLinkDTO(slug, url, description string, createdBy uuid.UUID) *LinkDTO {
+	return &LinkDTO{
+		Slug:        slug,
+		URL:         url,
+		Description: description,
+		CreatedBy:   createdBy,
+	}
+}
+
 type LinkVisitEventDTO struct {
 	ID          uuid.UUID
 	LinkID      uuid.UUID
@@ -34,7 +43,6 @@ type LinkVisitEventDTO struct {
 }
 
 func NewLinkVisitEventDTO(linkID uuid.UUID, ipAddress, userAgent, referer, countryCode, deviceType, browser string) *LinkVisitEventDTO {
-
 	return &LinkVisitEventDTO{
 		ID:          uuid.New(),
 		LinkID:      linkID,

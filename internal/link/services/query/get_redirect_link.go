@@ -38,6 +38,10 @@ func (h getRedirectLinkHandler) Handle(c context.Context, params *GetRedirectLin
 		return nil, errors.NewGenericError(err, "failed to get link")
 	}
 
+	if redirectLink == nil {
+		return nil, errors.NewNotFoundError(nil, "redirect link")
+	}
+
 	dto := link.NewLinkVisitEventDTO(redirectLink.ID,
 		params.Metadata.IPAddress,
 		params.Metadata.UserAgent,

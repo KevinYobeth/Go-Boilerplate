@@ -1,8 +1,6 @@
 package http
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
@@ -27,7 +25,7 @@ func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group, root *echo.Echo) {
 
 	root.GET("/:slug", func(c echo.Context) error {
 		slug := c.Param("slug")
-		return h.GetLink(c, slug)
+		return h.GetRedirectLink(c, slug)
 	})
 }
 
@@ -99,8 +97,107 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 	return nil
 }
 
+// GET /links/:id
+func (h HTTPTransport) GetLink(c echo.Context, id uuid.UUID) error {
+	claims, ctx, err := http.AuthenticatedMiddleware(c)
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	link, err := h.app.Queries.GetLink.Handle(ctx, &query.GetLinkRequest{
+		ID:     id,
+		UserID: uuid.MustParse(claims.Subject),
+	})
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	response.SendHTTP(c, &types.Response{
+		Body: GetLinkResponse{
+			Data:    TransformToHTTPLink(link),
+			Message: "success get link",
+		},
+	})
+	return nil
+}
+
+// PUT /links/:id
+func (h HTTPTransport) UpdateLink(c echo.Context, id uuid.UUID) error {
+	claims, ctx, err := http.AuthenticatedMiddleware(c)
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	var request UpdateLinkRequest
+	if err := c.Bind(&request); err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	err = h.app.Commands.UpdateLink.Handle(ctx, &command.UpdateLinkRequest{
+		ID:          id,
+		UserID:      uuid.MustParse(claims.Subject),
+		Slug:        request.Slug,
+		URL:         request.Url,
+		Description: request.Description,
+	})
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	response.SendHTTP(c, &types.Response{
+		Body: MessageResponse{
+			Message: "success update link",
+		},
+	})
+	return nil
+}
+
+// DELETE /links/:id
+func (h HTTPTransport) DeleteLink(c echo.Context, id uuid.UUID) error {
+	claims, ctx, err := http.AuthenticatedMiddleware(c)
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	err = h.app.Commands.DeleteLink.Handle(ctx, &command.DeleteLinkRequest{
+		UserID: uuid.MustParse(claims.Subject),
+		ID:     id,
+	})
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	response.SendHTTP(c, &types.Response{
+		Body: MessageResponse{
+			Message: "success delete link",
+		},
+	})
+	return nil
+}
+
 // GET /:slug
-func (h HTTPTransport) GetLink(c echo.Context, slug string) error {
+func (h HTTPTransport) GetRedirectLink(c echo.Context, slug string) error {
 	link, err := h.app.Queries.GetRedirectLink.Handle(c.Request().Context(), &query.GetRedirectLinkRequest{
 		Slug: slug,
 		Metadata: query.LinkVisitEventMetadata{
@@ -118,8 +215,6 @@ func (h HTTPTransport) GetLink(c echo.Context, slug string) error {
 		})
 		return err
 	}
-
-	fmt.Println(c.RealIP())
 
 	c.Redirect(302, link.URL)
 	return nil
