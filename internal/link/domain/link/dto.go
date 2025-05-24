@@ -1,8 +1,6 @@
 package link
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
@@ -52,17 +50,27 @@ func NewLinkVisitEventDTO(linkID uuid.UUID, slug, ipAddress, userAgent string) *
 }
 
 type LinkVisitSnapshotDTO struct {
-	ID             uuid.UUID
-	LinkID         uuid.UUID
-	Total          int
-	LastSnapshotAt time.Time
+	ID     uuid.UUID
+	LinkID uuid.UUID
+	Total  int
 }
 
 func NewLinkVisitSnapshotDTO(linkID uuid.UUID) *LinkVisitSnapshotDTO {
 	return &LinkVisitSnapshotDTO{
-		ID:             uuid.New(),
-		Total:          0,
-		LinkID:         linkID,
-		LastSnapshotAt: time.Now().UTC(),
+		ID:     uuid.New(),
+		Total:  0,
+		LinkID: linkID,
+	}
+}
+
+type UpdateLinkVisitSnapshotDTO struct {
+	LinkID    uuid.UUID
+	NewVisits int
+}
+
+func NewUpdateLinkVisitSnapshotDTO(linkID uuid.UUID, newVisits int) *UpdateLinkVisitSnapshotDTO {
+	return &UpdateLinkVisitSnapshotDTO{
+		LinkID:    linkID,
+		NewVisits: newVisits,
 	}
 }

@@ -15,6 +15,8 @@ type Repository interface {
 	DeleteLink(c context.Context, id uuid.UUID) error
 	UpdateLink(c context.Context, id uuid.UUID, request *link.LinkDTO) error
 
+	GetNewVisitsCount(c context.Context) ([]link.NewVisitCountModel, error)
+	UpdateLinkVisitSnapshot(c context.Context, dto []link.UpdateLinkVisitSnapshotDTO) error
 	CreateLinkVisit(c context.Context, dto *link.LinkVisitEventDTO) error
 	CreateLinkVisitSnapshot(c context.Context, dto *link.LinkVisitSnapshotDTO) error
 }

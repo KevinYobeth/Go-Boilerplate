@@ -15,9 +15,10 @@ type Application struct {
 }
 
 type Commands struct {
-	ShortenLink command.ShortenLinkHandler
-	UpdateLink  command.UpdateLinkHandler
-	DeleteLink  command.DeleteLinkHandler
+	ShortenLink             command.ShortenLinkHandler
+	UpdateLink              command.UpdateLinkHandler
+	DeleteLink              command.DeleteLinkHandler
+	UpdateLinkVisitSnapshot command.UpdateLinkVisitSnapshot
 }
 
 type Queries struct {
@@ -35,9 +36,10 @@ func NewLinkService() Application {
 
 	return Application{
 		Commands: Commands{
-			ShortenLink: command.NewShortenLinkHandler(repository, logger, metricsClient),
-			UpdateLink:  command.NewUpdateLinkHandler(repository, logger, metricsClient),
-			DeleteLink:  command.NewDeleteLinkHandler(repository, logger, metricsClient),
+			ShortenLink:             command.NewShortenLinkHandler(repository, logger, metricsClient),
+			UpdateLink:              command.NewUpdateLinkHandler(repository, logger, metricsClient),
+			DeleteLink:              command.NewDeleteLinkHandler(repository, logger, metricsClient),
+			UpdateLinkVisitSnapshot: command.NewUpdateLinkVisitSnapshotHandler(repository, logger, metricsClient),
 		},
 		Queries: Queries{
 			GetLinks:        query.NewGetLinksHandler(repository, logger, metricsClient),

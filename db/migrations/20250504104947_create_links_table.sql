@@ -26,7 +26,7 @@ CREATE TABLE link_visit_snapshots (
   id UUID NOT NULL PRIMARY KEY,
   link_id UUID NOT NULL REFERENCES links(id),
   total INT NOT NULL,
-  last_snapshot_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+  last_snapshot_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE INDEX idx_links_slug ON links(slug);
@@ -35,7 +35,8 @@ CREATE INDEX idx_link_visits_link_id ON link_visits(link_id);
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS link_visit_events;
+DROP TABLE IF EXISTS link_visit_snapshots;
+DROP TABLE IF EXISTS link_visits;
 DROP TABLE IF EXISTS links;
 
 DROP INDEX IF EXISTS idx_links_slug;
