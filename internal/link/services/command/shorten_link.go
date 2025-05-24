@@ -24,6 +24,8 @@ type ShortenLinkRequest struct {
 
 type shortenLinkHandler struct {
 	repository repository.Repository
+	cache      repository.Cache
+	logger     *zap.SugaredLogger
 }
 
 type ShortenLinkHandler decorator.CommandHandler[*ShortenLinkRequest]
@@ -58,6 +60,15 @@ func (h shortenLinkHandler) Handle(c context.Context, params *ShortenLinkRequest
 		return errors.NewGenericError(err, "failed to create link")
 	}
 
+	err = h.cache.SetRedirectLink(c, dto.Slug, link.RedirectLink{
+		ID:   dto.ID,
+		Slug: dto.Slug,
+		URL:  dto.URL,
+	})
+	if err != nil {
+		h.logger.Errorw("failed to set redirect link in cache", "slug", dto.Slug, "error", err)
+	}
+
 	err = helper.CreateLinkVisitSnapshot(c, helper.CreateLinkVisitSnapshotOpts{
 		Params: helper.CreateLinkVisitSnapshotRequest{
 			ID: dto.ID,
@@ -71,14 +82,20 @@ func (h shortenLinkHandler) Handle(c context.Context, params *ShortenLinkRequest
 	return nil
 }
 
-func NewShortenLinkHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) ShortenLinkHandler {
+func NewShortenLinkHandler(repository repository.Repository, cache repository.Cache, logger *zap.SugaredLogger, metricsClient metrics.Client) ShortenLinkHandler {
 	if repository == nil {
 		panic("repository is required")
+	}
+
+	if cache == nil {
+		panic("cache is required")
 	}
 
 	return decorator.ApplyCommandDecorators(
 		shortenLinkHandler{
 			repository: repository,
+			cache:      cache,
+			logger:     logger,
 		}, logger, metricsClient,
 	)
 }

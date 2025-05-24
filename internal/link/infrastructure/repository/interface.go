@@ -21,3 +21,9 @@ type Repository interface {
 	CreateLinkVisit(c context.Context, dto *link.LinkVisitEventDTO) error
 	CreateLinkVisitSnapshot(c context.Context, dto *link.LinkVisitSnapshotDTO) error
 }
+
+type Cache interface {
+	GetRedirectLink(c context.Context, slug string) (*link.RedirectLink, error)
+	SetRedirectLink(c context.Context, slug string, value link.RedirectLink) error
+	ClearRedirectLink(c context.Context, slug string) error
+}
