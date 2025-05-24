@@ -92,7 +92,6 @@ func (r *PostgresLinkRepo) UpdateLinkVisitSnapshot(c context.Context, dto []link
 	}
 
 	now := time.Now().UTC()
-
 	query, args, err := psql.Update("link_visit_snapshots").
 		Set("total", caseStmt).
 		Set("last_snapshot_at", now).
