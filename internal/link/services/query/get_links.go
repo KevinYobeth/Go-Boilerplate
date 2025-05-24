@@ -9,6 +9,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/samber/lo"
 	"go.uber.org/zap"
 )
 
@@ -28,7 +29,36 @@ func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) ([]l
 		return nil, errors.NewGenericError(err, "failed to get links")
 	}
 
-	return links, nil
+	linkIDs := lo.Map(links, func(link link.LinkModel, _ int) uuid.UUID {
+		return link.ID
+	})
+	linkSnapshot, err := h.repository.GetLinksVisitSnapshot(c, linkIDs)
+	if err != nil {
+		return nil, errors.NewGenericError(err, "failed to get links visit snapshot")
+	}
+	linkSnapshotMap := lo.SliceToMap(linkSnapshot, func(snapshot link.LinkVisitSnapshot) (uuid.UUID, link.LinkVisitSnapshot) {
+		return snapshot.LinkID, snapshot
+	})
+
+	linksResult := lo.Map(links, func(model link.LinkModel, _ int) link.Link {
+		total := 0
+		snapshot, ok := linkSnapshotMap[model.ID]
+		if ok {
+			total = snapshot.Total
+		}
+
+		return link.Link{
+			ID:          model.ID,
+			Slug:        model.Slug,
+			URL:         model.URL,
+			Description: model.Description,
+			Total:       total,
+			AuditAuthor: model.AuditAuthor,
+			AuditTrail:  model.AuditTrail,
+		}
+	})
+
+	return linksResult, nil
 }
 
 func NewGetLinksHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) GetLinksHandler {

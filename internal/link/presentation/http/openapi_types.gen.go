@@ -34,6 +34,7 @@ type Link struct {
 	Description string             `json:"description"`
 	Id          openapi_types.UUID `json:"id"`
 	Slug        string             `json:"slug"`
+	Total       int                `json:"total"`
 	UpdatedAt   *time.Time         `json:"updated_at,omitempty"`
 	Url         string             `json:"url"`
 }

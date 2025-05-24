@@ -159,7 +159,7 @@ components:
           
     Link:
       type: object
-      required: [id, slug, url, description, created_at]
+      required: [id, slug, url, description, total, created_at]
       properties:
         id:
           type: string
@@ -170,6 +170,8 @@ components:
           type: string
         description:
           type: string
+        total:
+          type: integer
         created_at:
           type: string
           format: date-time

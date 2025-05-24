@@ -41,7 +41,7 @@ func (r *PostgresLinkRepo) CreateLink(c context.Context, dto *link.LinkDTO) erro
 	return nil
 }
 
-func (r *PostgresLinkRepo) GetLinks(c context.Context, userID uuid.UUID) ([]link.Link, error) {
+func (r *PostgresLinkRepo) GetLinks(c context.Context, userID uuid.UUID) ([]link.LinkModel, error) {
 	fields := utils.SelectWithAuditTrail("id", "slug", "url", "description")
 	query, args, err := psql.Select(fields...).
 		From("links").
@@ -57,9 +57,9 @@ func (r *PostgresLinkRepo) GetLinks(c context.Context, userID uuid.UUID) ([]link
 	}
 	defer rows.Close()
 
-	var linksResult []link.Link
+	var linksResult []link.LinkModel
 	for rows.Next() {
-		var link link.Link
+		var link link.LinkModel
 		err = rows.Scan(&link.ID, &link.Slug, &link.URL, &link.Description, &link.CreatedAt, &link.UpdatedAt, &link.CreatedBy, &link.UpdatedBy)
 		if err != nil {
 			return nil, tracerr.Wrap(err)
@@ -157,4 +157,33 @@ func (r *PostgresLinkRepo) UpdateLink(c context.Context, id uuid.UUID, dto *link
 	}
 
 	return nil
+}
+
+func (r *PostgresLinkRepo) GetLinksVisitSnapshot(c context.Context, linkIDs []uuid.UUID) ([]link.LinkVisitSnapshot, error) {
+	query, args, err := psql.Select("id", "link_id", "total", "last_snapshot_at").
+		From("link_visit_snapshots").
+		Where(sq.Eq{"link_id": linkIDs}).
+		ToSql()
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	rows, err := r.db.QueryContext(c, query, args...)
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+	defer rows.Close()
+
+	var linkVisitSnapshotResult []link.LinkVisitSnapshot
+	for rows.Next() {
+		var link link.LinkVisitSnapshot
+		err = rows.Scan(&link.ID, &link.LinkID, &link.Total, &link.LastSnapshotAt)
+		if err != nil {
+			return nil, tracerr.Wrap(err)
+		}
+
+		linkVisitSnapshotResult = append(linkVisitSnapshotResult, link)
+	}
+
+	return linkVisitSnapshotResult, nil
 }

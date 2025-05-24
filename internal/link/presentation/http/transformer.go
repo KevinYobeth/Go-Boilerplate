@@ -2,14 +2,13 @@ package http
 
 import "github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 
-// func TransformToHTTPLinks(links)
-
 func TransformToHTTPLink(linkObj *link.Link) Link {
 	return Link{
 		Id:          linkObj.ID,
 		Slug:        linkObj.Slug,
 		Url:         linkObj.URL,
 		Description: linkObj.Description,
+		Total:       linkObj.Total,
 		CreatedAt:   linkObj.CreatedAt,
 		UpdatedAt:   linkObj.UpdatedAt,
 	}
