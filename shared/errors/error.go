@@ -26,7 +26,7 @@ type GenericError struct {
 }
 
 func (e GenericError) Unwrap() error {
-	return e.Err
+return e.Err
 }
 
 func (e GenericError) Error() string {

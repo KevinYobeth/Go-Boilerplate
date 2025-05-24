@@ -1,30 +1,23 @@
 package scheduler
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
 
-	authorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/intraprocess"
-	authorsService "github.com/kevinyobeth/go-boilerplate/internal/authors/services"
-	"github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
-	"github.com/kevinyobeth/go-boilerplate/internal/books/presentation/job"
-	"github.com/kevinyobeth/go-boilerplate/internal/books/services"
+	"github.com/kevinyobeth/go-boilerplate/internal/link/presentation/job"
+	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/go-co-op/gocron/v2"
 )
 
 func RunScheduler() {
 	logger := log.InitLogger()
-	authorsService := authorsService.NewAuthorService()
-	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
-
-	booksAuthorIntraprocess := intraprocess.NewBookAuthorIntraprocessService(authorIntraprocess)
-
-	app := services.NewBookService(booksAuthorIntraprocess)
-
 	s, err := gocron.NewScheduler()
 
 	if err != nil {
@@ -34,9 +27,13 @@ func RunScheduler() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
-	jobs := job.NewJob(s, app, logger)
+	linkServices := linkService.NewLinkService()
+	linkJob := job.NewJob(s, linkServices, logger)
 
-	jobs.Run()
+	ctx := context.Background()
+	c := context.WithValue(ctx, constants.ContextKeyRequestID, utils.RandomString(10))
+
+	linkJob.Run(c)
 
 	<-signals
 

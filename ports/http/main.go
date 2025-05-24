@@ -18,6 +18,8 @@ import (
 	booksAuthorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
 	booksHTTP "github.com/kevinyobeth/go-boilerplate/internal/books/presentation/http"
 	booksService "github.com/kevinyobeth/go-boilerplate/internal/books/services"
+	linkHTTP "github.com/kevinyobeth/go-boilerplate/internal/link/presentation/http"
+	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
@@ -91,7 +93,14 @@ func RunHTTPServer() {
 
 			if v.Error != nil {
 				fields = append(fields, "error", v.Error)
+				fields = append(fields, "error_raw", errors.GetGenericError(v.Error).Unwrap())
+				fields = append(fields, "error_type", errors.GetGenericError(v.Error).Type)
+				fields = append(fields, "error_metadata", errors.GetGenericError(v.Error).Metadata)
 				fields = append(fields, "trace", tracerr.StackTrace(errors.GetTracerrErr(v.Error)))
+			}
+
+			if strings.ToUpper(appConfig.AppEnv) == constants.APP_DEVELOPMENT {
+				tracerr.PrintSourceColor(errors.GetTracerrErr(v.Error), 3, 3)
 			}
 
 			s := v.Status
@@ -125,6 +134,9 @@ func RunHTTPServer() {
 	authenticationService := authenticationService.NewAuthenticationService()
 	authenticationServer := authenticationHTTP.NewAuthenticationHTTPServer(&authenticationService)
 
+	linkService := linkService.NewLinkService()
+	linkServer := linkHTTP.NewLinkHTTPServer(&linkService)
+
 	authorsService := authorsService.NewAuthorService()
 	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
 
@@ -139,6 +151,7 @@ func RunHTTPServer() {
 		authenticationServer.RegisterHTTPRoutes(api)
 		booksServer.RegisterHTTPRoutes(api)
 		authorsServer.RegisterHTTPRoutes(api)
+		linkServer.RegisterHTTPRoutes(api, app)
 	}
 
 	signals := make(chan os.Signal, 1)
