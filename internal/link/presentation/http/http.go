@@ -1,6 +1,8 @@
 package http
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
@@ -21,6 +23,7 @@ func NewLinkHTTPServer(app *services.Application) HTTPTransport {
 
 func (h HTTPTransport) RegisterHTTPRoutes(r *echo.Group, root *echo.Echo) {
 	api := r.Group("/v1")
+
 	RegisterHandlers(api, h)
 
 	root.GET("/:slug", func(c echo.Context) error {
@@ -47,11 +50,13 @@ func (h HTTPTransport) CreateLink(c echo.Context) error {
 		return err
 	}
 
-	err = h.app.Commands.ShortenLink.Handle(ctx, &command.ShortenLinkRequest{
-		Slug:        request.Slug,
-		URL:         request.Url,
-		Description: request.Description,
-		UserID:      uuid.MustParse(claims.Subject),
+	err = http.TransactionMiddleware(ctx, func(ctx context.Context) error {
+		return h.app.Commands.ShortenLink.Handle(ctx, &command.ShortenLinkRequest{
+			Slug:        request.Slug,
+			URL:         request.Url,
+			Description: request.Description,
+			UserID:      uuid.MustParse(claims.Subject),
+		})
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
