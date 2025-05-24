@@ -83,10 +83,6 @@ func (r *PostgresLinkRepo) GetNewVisitsCount(c context.Context) ([]link.NewVisit
 }
 
 func (r *PostgresLinkRepo) UpdateLinkVisitSnapshot(c context.Context, dto []link.UpdateLinkVisitSnapshotDTO) error {
-	if len(dto) == 0 {
-		return nil
-	}
-
 	caseStmt := sq.Case("link_id")
 	linkIDs := make([]string, 0, len(dto))
 
