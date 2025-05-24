@@ -8,8 +8,9 @@ import (
 
 type Config struct {
 	OpenTelemetry OpenTelemetryConfig
-	Database      PostgresConfig
-	Cache         RedisConfig
+	Postgres      PostgresConfig
+	Redis         RedisConfig
+	Cache         CacheConfig
 	Server        ServerConfig
 	App           AppConfig
 	Event         RabbitMQConfig
@@ -50,21 +51,23 @@ func loadConfig(dest interface{}) {
 }
 
 func InitConfig() Config {
-	dbConfig := LoadPostgresDBConfig()
+	postgresConfig := LoadPostgresDBConfig()
 	serverConfig := LoadServerConfig()
 	appConfig := LoadAppConfig()
-	cacheConfig := LoadRedisCacheConfig()
+	redisConfig := LoadRedisCacheConfig()
 	eventConfig := LoadRabbitMQConfig()
 	openTelemetryConfig := LoadOpenTelemetryConfig()
 	settingConfig := LoadSettingConfig()
+	cacheConfig := LoadCacheConfig()
 
 	return Config{
-		Database:      dbConfig,
-		Cache:         cacheConfig,
+		Postgres:      postgresConfig,
+		Redis:         redisConfig,
 		Server:        serverConfig,
 		App:           appConfig,
 		Event:         eventConfig,
 		OpenTelemetry: openTelemetryConfig,
 		Setting:       settingConfig,
+		Cache:         cacheConfig,
 	}
 }

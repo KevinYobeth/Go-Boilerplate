@@ -1,20 +1,19 @@
 package config
 
-type RedisConfig struct {
-	RedisHost     string `env:"REDIS_HOST" default:"localhost" validate:"required"`
-	RedisPort     string `env:"REDIS_PORT" default:"6379" validate:"required"`
-	RedisPassword string `env:"REDIS_PASS" default:""`
-	RedisDB       int    `env:"REDIS_DB" default:"0"`
+import "time"
+
+type CacheConfig struct {
+	CacheRedirectLinkTTL time.Duration `env:"CACHE_REDIRECT_LINK_TTL" default:"24h"`
 }
 
-var redisConfig RedisConfig
+var cacheConfig CacheConfig
 
-func LoadRedisCacheConfig() RedisConfig {
-	if redisConfig != (RedisConfig{}) {
-		return redisConfig
+func LoadCacheConfig() CacheConfig {
+	if cacheConfig != (CacheConfig{}) {
+		return cacheConfig
 	}
 
-	loadConfig(&redisConfig)
+	loadConfig(&cacheConfig)
 
-	return redisConfig
+	return cacheConfig
 }

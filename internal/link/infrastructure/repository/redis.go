@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"time"
 
+	"github.com/kevinyobeth/go-boilerplate/config"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 	"github.com/redis/go-redis/v9"
@@ -41,13 +41,14 @@ func (r *RedisLinkCache) GetRedirectLink(c context.Context, slug string) (*link.
 
 func (r *RedisLinkCache) SetRedirectLink(c context.Context, slug string, value link.RedirectLink) error {
 	key := RedirectLinkKey(slug)
+	config := config.LoadCacheConfig()
 
 	redirectLink, err := utils.ToJsonString(value)
 	if err != nil {
 		return tracerr.Wrap(err)
 	}
 
-	err = r.cache.Set(c, key, redirectLink, time.Minute*60).Err()
+	err = r.cache.Set(c, key, redirectLink, config.CacheRedirectLinkTTL).Err()
 	if err != nil {
 		return tracerr.Wrap(err)
 	}
