@@ -55,7 +55,7 @@ paths:
             type: string
             format: uuid
           required: true
-          description: link slug
+          description: link id
       responses:
         "200":
           description: get link success

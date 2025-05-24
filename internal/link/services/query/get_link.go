@@ -36,6 +36,21 @@ func (h getLinkHandler) Handle(c context.Context, params *GetLinkRequest) (*link
 		return nil, tracerr.Wrap(err)
 	}
 
+	linkSnapshotMap, err := helper.GetLinkVisitSnapshot(c, helper.GetLinkVisitSnapshotOpts{
+		Params: helper.GetLinkVisitSnapshotRequest{
+			LinkIDs: []uuid.UUID{link.ID},
+		},
+		LinkRepository: h.repository,
+	})
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	snapshot, ok := linkSnapshotMap[link.ID]
+	if ok {
+		link.Total = snapshot.Total
+	}
+
 	return link, nil
 }
 

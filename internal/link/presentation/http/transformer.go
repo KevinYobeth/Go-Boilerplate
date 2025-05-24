@@ -15,7 +15,7 @@ func TransformToHTTPLink(linkObj *link.Link) Link {
 }
 
 func TransformToHTTPLinks(linksObj []link.Link) []Link {
-	var links []Link = make([]Link, 0)
+	var links []Link = make([]Link, 0, len(linksObj))
 	for _, link := range linksObj {
 		links = append(links, TransformToHTTPLink(&link))
 	}

@@ -6,10 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/link/services/helper"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 	"github.com/samber/lo"
+	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
 )
 
@@ -32,13 +34,15 @@ func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) ([]l
 	linkIDs := lo.Map(links, func(link link.LinkModel, _ int) uuid.UUID {
 		return link.ID
 	})
-	linkSnapshot, err := h.repository.GetLinksVisitSnapshot(c, linkIDs)
-	if err != nil {
-		return nil, errors.NewGenericError(err, "failed to get links visit snapshot")
-	}
-	linkSnapshotMap := lo.SliceToMap(linkSnapshot, func(snapshot link.LinkVisitSnapshot) (uuid.UUID, link.LinkVisitSnapshot) {
-		return snapshot.LinkID, snapshot
+	linkSnapshotMap, err := helper.GetLinkVisitSnapshot(c, helper.GetLinkVisitSnapshotOpts{
+		Params: helper.GetLinkVisitSnapshotRequest{
+			LinkIDs: linkIDs,
+		},
+		LinkRepository: h.repository,
 	})
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
 
 	linksResult := lo.Map(links, func(model link.LinkModel, _ int) link.Link {
 		total := 0

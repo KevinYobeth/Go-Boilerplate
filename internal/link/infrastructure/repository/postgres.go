@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -102,7 +101,6 @@ func (r *PostgresLinkRepo) GetLink(c context.Context, id, userID uuid.UUID) (*li
 		Where(sq.Eq{"id": id, "created_by": userID, "deleted_at": nil}).
 		ToSql()
 	if err != nil {
-		fmt.Println("fail to scan")
 		return nil, tracerr.Wrap(err)
 	}
 

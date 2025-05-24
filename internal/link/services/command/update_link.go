@@ -53,7 +53,7 @@ func (h updateLinkHandler) Handle(c context.Context, params *UpdateLinkRequest) 
 	)
 	err = h.repository.UpdateLink(c, dbLink.ID, dto)
 	if err != nil {
-		return errors.NewGenericError(err, "failed to create link")
+		return errors.NewGenericError(err, "failed to update link")
 	}
 
 	return nil
