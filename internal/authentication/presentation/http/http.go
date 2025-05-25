@@ -1,6 +1,8 @@
 package http
 
 import (
+	"context"
+
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
@@ -65,11 +67,13 @@ func (h HTTPTransport) Register(c echo.Context) error {
 		return err
 	}
 
-	err := h.app.Commands.Register.Handle(c.Request().Context(), &command.RegisterRequest{
-		FirstName: request.FirstName,
-		LastName:  request.LastName,
-		Email:     request.Email,
-		Password:  request.Password,
+	err := http.TransactionMiddleware(c.Request().Context(), func(ctx context.Context) error {
+		return h.app.Commands.Register.Handle(ctx, &command.RegisterRequest{
+			FirstName: request.FirstName,
+			LastName:  request.LastName,
+			Email:     request.Email,
+			Password:  request.Password,
+		})
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{

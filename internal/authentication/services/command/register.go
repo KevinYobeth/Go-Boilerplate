@@ -8,6 +8,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/notification"
 	"github.com/kevinyobeth/go-boilerplate/shared/validator"
 
 	"github.com/ztrue/tracerr"
@@ -47,6 +48,18 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 	err = h.repository.Register(c, dto)
 	if err != nil {
 		return errors.NewGenericError(err, "failed to register user")
+	}
+
+	emailStrategy, err := notification.NewEmailNotificationStrategy()
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+	notification := notification.NewNotification(emailStrategy)
+
+	err = notification.Send("me@kevinyobeth.com", []string{params.Email}, "Welcome to Go Boilerplate",
+		"Hello "+params.FirstName+",\n\nThank you for registering with Go Boilerplate.\n\nBest regards,\nGo Boilerplate Team")
+	if err != nil {
+		return tracerr.Wrap(err)
 	}
 
 	return nil

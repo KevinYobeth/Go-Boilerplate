@@ -15,6 +15,8 @@ type Config struct {
 	App           AppConfig
 	Event         RabbitMQConfig
 	Setting       SettingConfig
+	Notification  NotificationConfig
+	SMTP          SMTPConfig
 }
 
 func validateConfig(dest interface{}) error {
@@ -51,23 +53,16 @@ func loadConfig(dest interface{}) {
 }
 
 func InitConfig() Config {
-	postgresConfig := LoadPostgresDBConfig()
-	serverConfig := LoadServerConfig()
-	appConfig := LoadAppConfig()
-	redisConfig := LoadRedisCacheConfig()
-	eventConfig := LoadRabbitMQConfig()
-	openTelemetryConfig := LoadOpenTelemetryConfig()
-	settingConfig := LoadSettingConfig()
-	cacheConfig := LoadCacheConfig()
-
 	return Config{
-		Postgres:      postgresConfig,
-		Redis:         redisConfig,
-		Server:        serverConfig,
-		App:           appConfig,
-		Event:         eventConfig,
-		OpenTelemetry: openTelemetryConfig,
-		Setting:       settingConfig,
-		Cache:         cacheConfig,
+		Postgres:      LoadPostgresDBConfig(),
+		Redis:         LoadRedisCacheConfig(),
+		Server:        LoadServerConfig(),
+		App:           LoadAppConfig(),
+		Event:         LoadRabbitMQConfig(),
+		OpenTelemetry: LoadOpenTelemetryConfig(),
+		Setting:       LoadSettingConfig(),
+		Cache:         LoadCacheConfig(),
+		Notification:  LoadNotificationConfig(),
+		SMTP:          LoadSMTPConfig(),
 	}
 }
