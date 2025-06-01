@@ -6,8 +6,8 @@ import (
 )
 
 type Event struct {
-	Event string
-	Data  any
+	Event string `json:"event"`
+	Data  any    `json:"data"`
 }
 
 func NewEvent(event string, data any) Event {

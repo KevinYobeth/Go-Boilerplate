@@ -62,6 +62,34 @@ func InitPublisher(options PublisherOptions) PublisherInterface {
 		logger.Fatalf("Failed to declare an exchange: %v", err)
 	}
 
+	var qName string = fmt.Sprint("queue-", options.Topic)
+	if options.Queue != nil {
+		qName = *options.Queue
+	}
+
+	q, err := ch.QueueDeclare(
+		qName,
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		logger.Fatalf("Failed to declare an queue: %v", err)
+	}
+
+	err = ch.QueueBind(
+		q.Name,
+		"",
+		options.Topic,
+		false,
+		nil,
+	)
+	if err != nil {
+		logger.Fatalf("Failed to bind a queue: %v", err)
+	}
+
 	return Publisher{
 		channel: ch,
 		logger:  logger,
