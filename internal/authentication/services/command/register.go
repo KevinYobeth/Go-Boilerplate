@@ -52,8 +52,9 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 	}
 
 	err = h.publisher.UserRegistered(c, interfaces.UserRegistered{
-		ID:    dto.ID,
-		Email: dto.Email,
+		UserID: dto.ID,
+		Email:  dto.Email,
+		Name:   dto.FirstName + " " + dto.LastName,
 	})
 	if err != nil {
 		return errors.NewGenericError(err, "failed to publish user registered event")

@@ -7,7 +7,7 @@ COPY . .
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /server .$SCRIPT_DIR
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /server $SCRIPT_DIR
 
 FROM gcr.io/distroless/static-debian12
 

@@ -18,7 +18,7 @@ func NewRabbitMQAuthenticationPublisher(publisher event.PublisherInterface) Publ
 
 func (p *RabbitMQAuthenticationPublisher) UserRegistered(c context.Context, payload interfaces.UserRegistered) error {
 	err := p.publisher.Publish(c, event.Event{
-		Event: interfaces.UserRegisteredTopic,
+		Event: interfaces.UserRegisteredEvent,
 		Data:  payload,
 	})
 	if err != nil {

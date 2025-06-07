@@ -2,9 +2,10 @@ package interfaces
 
 import "github.com/google/uuid"
 
-const UserRegisteredTopic = "user.registered"
+const UserRegisteredEvent = "user.registered"
 
 type UserRegistered struct {
-	ID    uuid.UUID `json:"id"`
-	Email string    `json:"email"`
+	UserID uuid.UUID `json:"user_id"`
+	Name   string    `json:"name"`
+	Email  string    `json:"email"`
 }

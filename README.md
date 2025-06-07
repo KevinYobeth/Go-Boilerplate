@@ -8,3 +8,13 @@ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/insta
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 ```
+
+## Docker
+### Building the docker image for subscriber
+To build the Docker image for the subscriber service, use the following command, replacing the `SCRIPT_DIR` argument with the appropriate path to your script directory:
+```
+docker build -t notification-authentication-subs:latest \
+  -f ./docker/subscriber/Dockerfile \
+  --build-arg SCRIPT_DIR=./internal/notification/presentation/subscriber/authentication \
+  .
+```
