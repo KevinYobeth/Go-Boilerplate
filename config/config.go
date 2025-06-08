@@ -15,7 +15,6 @@ type Config struct {
 	App           AppConfig
 	Event         RabbitMQConfig
 	Setting       SettingConfig
-	Notification  NotificationConfig
 	SMTP          SMTPConfig
 }
 
@@ -62,7 +61,6 @@ func InitConfig() Config {
 		OpenTelemetry: LoadOpenTelemetryConfig(),
 		Setting:       LoadSettingConfig(),
 		Cache:         LoadCacheConfig(),
-		Notification:  LoadNotificationConfig(),
 		SMTP:          LoadSMTPConfig(),
 	}
 }
