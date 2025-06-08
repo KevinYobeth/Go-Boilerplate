@@ -28,22 +28,26 @@ type sendWelcomeNotificationHandler struct {
 type SendWelcomeNotificationHandler decorator.CommandHandler[*SendWelcomeNotificationRequest]
 
 func (h sendWelcomeNotificationHandler) Handle(c context.Context, params *SendWelcomeNotificationRequest) error {
-	template, err := template.ParseFiles("internal/shared/templates/mail/welcome_mail.html")
+	tmpl, err := template.ParseFiles("internal/shared/templates/mail/welcome_mail.html")
 	if err != nil {
 		return tracerr.Wrap(err)
 	}
 
+	smtpConfig := config.LoadSMTPConfig()
 	config := config.LoadAppConfig()
 
 	var buf bytes.Buffer
-	template.Execute(&buf, mail_template.WelcomeMail{
+	err = tmpl.Execute(&buf, mail_template.WelcomeMail{
 		Name:    params.Name,
 		AppName: config.AppName,
 	})
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
 
 	err = h.Notification.
 		To(params.Email).
-		From("leokeviny@gmail.com").
+		From(smtpConfig.SMTPEmailFrom).
 		Subject("Welcome to " + config.AppName).
 		BodyHTML(buf.String()).
 		Send()

@@ -74,6 +74,7 @@ func onUserRegistered(c context.Context, params HandlerParams, e event.Event) er
 
 	if err != nil {
 		params.logger.Errorf("Failed to transform event data: %v", tracerr.Wrap(err))
+		return tracerr.Wrap(err)
 	}
 
 	err = params.app.Commands.SendWelcomeNotification.Handle(c, &command.SendWelcomeNotificationRequest{
