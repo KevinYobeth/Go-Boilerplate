@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/kevinyobeth/go-boilerplate/shared/constants"
 	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
@@ -91,7 +90,6 @@ func (t Tx) QueryContext(
 }
 
 func (t Tx) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
-	fmt.Println("QueryRowContext")
 	callerName := utils.GetFnCallerName(1, 2)
 	ctx = context.WithValue(
 		ctx,

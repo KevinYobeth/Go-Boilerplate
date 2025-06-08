@@ -7,13 +7,28 @@ import (
 )
 
 func GetRequestIDFromContext(ctx context.Context) string {
-	return ReadFromCtx(ctx, constants.ContextKeyRequestID).(string)
+	val := ReadFromCtx(ctx, constants.ContextKeyRequestID)
+	if val == nil {
+		return ""
+	}
+
+	return val.(string)
 }
 
 func GetTraceIDFromContext(ctx context.Context) string {
-	return ReadFromCtx(ctx, constants.ContextKeyTraceID).(string)
+	val := ReadFromCtx(ctx, constants.ContextKeyTraceID)
+	if val == nil {
+		return ""
+	}
+
+	return val.(string)
 }
 
 func GetSpanIDFromContext(ctx context.Context) string {
-	return ReadFromCtx(ctx, constants.ContextKeySpanID).(string)
+	val := ReadFromCtx(ctx, constants.ContextKeySpanID)
+	if val == nil {
+		return ""
+	}
+
+	return val.(string)
 }

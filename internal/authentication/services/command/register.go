@@ -5,6 +5,7 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
+	interfaces "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
@@ -24,6 +25,7 @@ type RegisterRequest struct {
 
 type registerHandler struct {
 	repository repository.Repository
+	publisher  repository.Publisher
 }
 
 type RegisterHandler decorator.CommandHandler[*RegisterRequest]
@@ -49,17 +51,31 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 		return errors.NewGenericError(err, "failed to register user")
 	}
 
+	err = h.publisher.UserRegistered(c, interfaces.UserRegistered{
+		UserID: dto.ID,
+		Email:  dto.Email,
+		Name:   dto.FirstName + " " + dto.LastName,
+	})
+	if err != nil {
+		return errors.NewGenericError(err, "failed to publish user registered event")
+	}
+
 	return nil
 }
 
-func NewRegisterHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
+func NewRegisterHandler(repository repository.Repository, publisher repository.Publisher, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
 	if repository == nil {
 		panic("repository is required")
+	}
+
+	if publisher == nil {
+		panic("publisher is required")
 	}
 
 	return decorator.ApplyCommandDecorators(
 		registerHandler{
 			repository: repository,
+			publisher:  publisher,
 		}, logger, metricsClient,
 	)
 }

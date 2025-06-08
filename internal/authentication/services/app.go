@@ -4,7 +4,10 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/queue"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/event"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 )
@@ -28,12 +31,17 @@ func NewAuthenticationService() Application {
 	db := database.InitPostgres()
 	logger := log.InitLogger()
 	metricsClient := metrics.InitClient()
+	publish := event.InitPublisher(event.PublisherOptions{
+		Topic: topic.AuthenticationTopic,
+		Queue: queue.AuthenticationQueue,
+	})
 
+	publisher := repository.NewRabbitMQAuthenticationPublisher(publish)
 	repository := repository.NewAuthenticationPostgresRepository(db)
 
 	return Application{
 		Commands: Commands{
-			Register: command.NewRegisterHandler(repository, logger, metricsClient),
+			Register: command.NewRegisterHandler(repository, publisher, logger, metricsClient),
 		},
 		Queries: Queries{
 			Login:        query.NewLoginHandler(repository, logger, metricsClient),
