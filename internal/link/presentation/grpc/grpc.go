@@ -44,6 +44,6 @@ func (g GRPCTransport) GetLink(c context.Context, params *link.GetLinkRequest) (
 
 	return &link.GetLinkResponse{
 		Data:    TransformToGRPCLink(linksObj),
-		Message: "success get links",
+		Message: "success get link",
 	}, nil
 }
