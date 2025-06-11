@@ -4,9 +4,18 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.1
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/segmentio/golines@latest
 go install github.com/bombsimon/wsl/v4/cmd...@master
+```
+
+## Installing Protobuf and gRPC
+To install Protobuf and gRPC, follow these steps:
+1. Install the Protobuf compiler:
+   - For Linux: `sudo apt install protobuf-compiler`
+   - For macOS: `brew install protobuf`
+  
+```
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 | export PATH="$PATH:$(go env GOPATH)/bin"
 ```
 
 ## Docker
