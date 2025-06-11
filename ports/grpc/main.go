@@ -7,8 +7,8 @@ import (
 	"syscall"
 
 	"github.com/kevinyobeth/go-boilerplate/config"
-	authorsGRPC "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/grpc"
-	authorsService "github.com/kevinyobeth/go-boilerplate/internal/authors/services"
+	linkGRPC "github.com/kevinyobeth/go-boilerplate/internal/link/presentation/grpc"
+	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
 	"github.com/kevinyobeth/go-boilerplate/shared/log"
 
@@ -28,10 +28,10 @@ func RunGRPCServer() {
 
 	server := GoogleGRPC.NewServer()
 
-	authorsService := authorsService.NewAuthorService()
-	authorsServer := authorsGRPC.NewAuthorsGRPCServer(&authorsService)
+	linkService := linkService.NewLinkService()
+	linkServer := linkGRPC.NewLinkGRPCServer(&linkService)
 
-	authorsServer.RegisterGRPCRoutes(server)
+	linkServer.RegisterGRPCRoutes(server)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)

@@ -1,0 +1,25 @@
+syntax="proto3";
+
+option go_package="github.com/kevinyobeth/go-boilerplate/internal/link";
+
+service LinkService {
+  rpc GetLink(GetLinkRequest) returns (GetLinkResponse);
+}
+
+message GetLinkRequest {
+  string id = 1;
+  string userId = 2;
+}
+
+message GetLinkResponse {
+  Link data = 1;
+  string message = 2;
+}
+
+message Link {
+  string id = 1;
+  string slug = 2;
+  string url = 3;
+  string description = 4;
+  int32 total = 5;
+}

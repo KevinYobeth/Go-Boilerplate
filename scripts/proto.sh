@@ -6,8 +6,8 @@ mkdir -p pkg/genproto/$service
 directory="api/protobuf"
 
 function codegen {
-  readonly service="$1"
-  readonly output_dir=pkg/genproto
+  service="$1"
+  output_dir=pkg/genproto
 
   [ -d "$output_dir/$service" ] || mkdir -p "$output_dir/$service"
 
