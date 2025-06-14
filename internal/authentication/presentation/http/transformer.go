@@ -2,7 +2,6 @@ package http
 
 import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
-	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 )
 
 func TransformToHTTPToken(tokenObj *token.Token) Token {
@@ -13,14 +12,5 @@ func TransformToHTTPToken(tokenObj *token.Token) Token {
 			Token:     tokenObj.RefreshToken.Token,
 			ExpiredAt: tokenObj.RefreshToken.ExpiredAt,
 		},
-	}
-}
-
-func TransformToHTTPUser(userObj *user.User) User {
-	return User{
-		Id:        userObj.ID,
-		Email:     userObj.Email,
-		FirstName: userObj.FirstName,
-		LastName:  userObj.LastName,
 	}
 }

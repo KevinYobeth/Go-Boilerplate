@@ -1,0 +1,55 @@
+openapi: "3.0.4"
+info:
+  version: 0.1.0
+  title: User API
+  description: User API Definition
+  contact:
+    name: Kevin Yobeth
+    url: https://github.com/kevinyobeth
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+
+paths:
+  /profile:
+    get:
+      tags: [User]
+      operationId: getProfile
+      description: get user profile
+      responses:
+        "200":
+          description: get user profile success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+        "404":
+          description: User not found
+
+components:
+  schemas:
+    ProfileResponse:
+      type: object
+      required: [data, message]
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, first_name, last_name, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string

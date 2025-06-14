@@ -3,18 +3,20 @@ package query
 import (
 	"context"
 
-	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
-	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
+	"github.com/kevinyobeth/go-boilerplate/internal/user/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/internal/user/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/ztrue/tracerr"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
 type GetUserRequest struct {
-	ID uuid.UUID
+	ID    uuid.UUID
+	Email *string
 }
 
 type getUserHandler struct {
@@ -24,7 +26,21 @@ type getUserHandler struct {
 type GetUserHandler decorator.QueryHandler[*GetUserRequest, *user.User]
 
 func (h getUserHandler) Handle(c context.Context, params *GetUserRequest) (*user.User, error) {
-	user, err := h.repository.GetUser(c, params.ID)
+	if err := validateRequest(params); err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	var user *user.User
+	var err error
+
+	if params.ID != uuid.Nil {
+		user, err = h.repository.GetUser(c, params.ID)
+	}
+
+	if params.Email != nil {
+		user, err = h.repository.GetUserByEmail(c, *params.Email)
+	}
+
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user")
 	}
@@ -41,4 +57,16 @@ func NewGetUserHandler(repository repository.Repository, logger *zap.SugaredLogg
 			repository: repository,
 		}, logger, metricsClient,
 	)
+}
+
+func validateRequest(request *GetUserRequest) error {
+	if request.ID == uuid.Nil && request.Email == nil {
+		return errors.NewGenericError(nil, "either ID or Email must be provided")
+	}
+
+	if request.ID != uuid.Nil && request.Email != nil {
+		return errors.NewGenericError(nil, "only one of ID or Email should be provided")
+	}
+
+	return nil
 }

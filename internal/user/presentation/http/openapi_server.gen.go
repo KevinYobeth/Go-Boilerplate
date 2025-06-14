@@ -10,14 +10,8 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
-	// (POST /login)
-	Login(ctx echo.Context) error
-
-	// (POST /refresh-token)
-	RefreshToken(ctx echo.Context) error
-
-	// (POST /register)
-	Register(ctx echo.Context) error
+	// (GET /profile)
+	GetProfile(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -25,30 +19,12 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// Login converts echo context to params.
-func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
+// GetProfile converts echo context to params.
+func (w *ServerInterfaceWrapper) GetProfile(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Login(ctx)
-	return err
-}
-
-// RefreshToken converts echo context to params.
-func (w *ServerInterfaceWrapper) RefreshToken(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.RefreshToken(ctx)
-	return err
-}
-
-// Register converts echo context to params.
-func (w *ServerInterfaceWrapper) Register(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Register(ctx)
+	err = w.Handler.GetProfile(ctx)
 	return err
 }
 
@@ -80,8 +56,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.POST(baseURL+"/login", wrapper.Login)
-	router.POST(baseURL+"/refresh-token", wrapper.RefreshToken)
-	router.POST(baseURL+"/register", wrapper.Register)
+	router.GET(baseURL+"/profile", wrapper.GetProfile)
 
 }

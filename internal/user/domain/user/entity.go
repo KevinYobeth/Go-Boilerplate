@@ -14,6 +14,9 @@ type User struct {
 	LastName  string    `json:"last_name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
+
+	valueobjects.AuditAuthor
+	valueobjects.AuditTrail
 }
 
 type VerificationToken struct {

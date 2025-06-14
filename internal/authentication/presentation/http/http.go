@@ -10,7 +10,6 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/shared/response"
 	"github.com/kevinyobeth/go-boilerplate/shared/types"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -113,35 +112,6 @@ func (h HTTPTransport) RefreshToken(c echo.Context) error {
 		Body: LoginResponse{
 			Data:    TransformToHTTPToken(token),
 			Message: "success refresh token",
-		},
-	})
-	return nil
-}
-
-// GET /user
-func (h HTTPTransport) GetUser(c echo.Context) error {
-	claims, ctx, err := http.AuthenticatedMiddleware(c)
-	if err != nil {
-		response.SendHTTP(c, &types.Response{
-			Error: err,
-		})
-		return err
-	}
-
-	user, err := h.app.Queries.GetUser.Handle(ctx, &query.GetUserRequest{
-		ID: uuid.MustParse(claims.Subject),
-	})
-	if err != nil {
-		response.SendHTTP(c, &types.Response{
-			Error: err,
-		})
-		return err
-	}
-
-	response.SendHTTP(c, &types.Response{
-		Body: UserResponse{
-			Data:    TransformToHTTPUser(user),
-			Message: "success get user",
 		},
 	})
 	return nil

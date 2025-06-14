@@ -5,8 +5,6 @@ package http
 
 import (
 	"time"
-
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // LoginRequest defines model for LoginRequest.
@@ -50,20 +48,6 @@ type Token struct {
 	ExpiredAt    time.Time    `json:"expired_at"`
 	RefreshToken RefreshToken `json:"refresh_token"`
 	Token        string       `json:"token"`
-}
-
-// User defines model for User.
-type User struct {
-	Email     string             `json:"email"`
-	FirstName string             `json:"first_name"`
-	Id        openapi_types.UUID `json:"id"`
-	LastName  string             `json:"last_name"`
-}
-
-// UserResponse defines model for UserResponse.
-type UserResponse struct {
-	Data    User   `json:"data"`
-	Message string `json:"message"`
 }
 
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
