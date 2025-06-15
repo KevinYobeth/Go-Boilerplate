@@ -10,20 +10,15 @@ import (
 	"github.com/ztrue/tracerr"
 )
 
-type AuthenticationUserIntraprocessService struct {
+type AuthenticationUserIntraprocess struct {
 	intraprocess interfaces.UserIntraprocess
 }
 
-type AuthenticationUserIntraprocess interface {
-	GetUser(ctx context.Context, id uuid.UUID) (*user.User, error)
-	GetUserByEmail(ctx context.Context, email string) (*user.User, error)
+func NewAuthenticationUserIntraprocessService(intraprocess interfaces.UserIntraprocess) UserIntraprocess {
+	return &AuthenticationUserIntraprocess{intraprocess: intraprocess}
 }
 
-func NewAuthenticationUserIntraprocessService(intraprocess interfaces.UserIntraprocess) AuthenticationUserIntraprocess {
-	return &AuthenticationUserIntraprocessService{intraprocess: intraprocess}
-}
-
-func (i *AuthenticationUserIntraprocessService) GetUser(ctx context.Context, id uuid.UUID) (*user.User, error) {
+func (i *AuthenticationUserIntraprocess) GetUser(ctx context.Context, id uuid.UUID) (*user.User, error) {
 	ctx, span := telemetry.NewIntraprocessSpan(ctx)
 	defer span.End()
 
@@ -35,7 +30,7 @@ func (i *AuthenticationUserIntraprocessService) GetUser(ctx context.Context, id 
 	return transformIntraprocessUserToDomainUser(user), nil
 }
 
-func (i *AuthenticationUserIntraprocessService) GetUserByEmail(ctx context.Context, email string) (*user.User, error) {
+func (i *AuthenticationUserIntraprocess) GetUserByEmail(ctx context.Context, email string) (*user.User, error) {
 	ctx, span := telemetry.NewIntraprocessSpan(ctx)
 	defer span.End()
 
