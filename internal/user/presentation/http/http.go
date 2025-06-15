@@ -46,7 +46,7 @@ func (h HTTPTransport) GetProfile(c echo.Context) error {
 	response.SendHTTP(c, &types.Response{
 		Body: ProfileResponse{
 			Data:    TransformToHTTPUser(user),
-			Message: "success get user",
+			Message: "success get profile",
 		},
 	})
 	return nil

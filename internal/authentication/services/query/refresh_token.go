@@ -89,6 +89,10 @@ func NewRefreshTokenHandler(repository repository.Repository, userService interf
 		panic("repository is required")
 	}
 
+	if userService == nil {
+		panic("userService is required")
+	}
+
 	return decorator.ApplyQueryDecorators(
 		refreshTokenHandler{
 			repository:  repository,
