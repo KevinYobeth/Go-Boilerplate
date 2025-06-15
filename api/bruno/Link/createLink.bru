@@ -1,0 +1,19 @@
+meta {
+  name: createLink
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/links
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "slug": "",
+    "url": "",
+    "description": ""
+  }
+}
