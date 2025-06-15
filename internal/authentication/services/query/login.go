@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
@@ -21,8 +23,9 @@ type LoginRequest struct {
 }
 
 type loginHandler struct {
-	repository repository.Repository
-	logger     *zap.SugaredLogger
+	repository  repository.Repository
+	userService interfaces.UserIntraprocess
+	logger      *zap.SugaredLogger
 }
 
 type LoginHandler decorator.QueryHandler[*LoginRequest, *token.Token]
@@ -32,21 +35,27 @@ func (h loginHandler) Handle(c context.Context, params *LoginRequest) (*token.To
 		return nil, errors.NewIncorrectInputError(err, err.Error())
 	}
 
-	user, err := h.repository.GetUserByEmail(c, params.Email)
+	userObj, err := h.userService.GetUserByEmail(c, params.Email)
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user by email")
 	}
-	if user == nil {
+	if userObj == nil {
 		return nil, errors.NewIncorrectInputError(nil, "wrong email or password")
 	}
 
-	if err := comparePassword(user.Password, params.Password); err != nil {
+	if err := comparePassword(userObj.Password, params.Password); err != nil {
 		return nil, errors.NewIncorrectInputError(nil, "wrong email or password")
 	}
 
 	jwtToken, err := helper.GenerateToken(c, helper.GenerateTokenOpts{
 		Params: helper.GenerateTokenRequest{
-			User: *user,
+			User: user.User{
+				ID:        userObj.ID,
+				FirstName: userObj.FirstName,
+				LastName:  userObj.LastName,
+				Email:     userObj.Email,
+				Password:  userObj.Password,
+			},
 		},
 	})
 	if err != nil {
@@ -63,15 +72,16 @@ func (h loginHandler) Handle(c context.Context, params *LoginRequest) (*token.To
 	}, nil
 }
 
-func NewLoginHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
+func NewLoginHandler(repository repository.Repository, userService interfaces.UserIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
 
 	return decorator.ApplyQueryDecorators(
 		loginHandler{
-			repository: repository,
-			logger:     logger,
+			repository:  repository,
+			userService: userService,
+			logger:      logger,
 		}, logger, metricsClient,
 	)
 }

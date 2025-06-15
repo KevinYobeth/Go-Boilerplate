@@ -4,6 +4,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/queue"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
 	"github.com/kevinyobeth/go-boilerplate/shared/database"
@@ -24,10 +25,9 @@ type Commands struct {
 type Queries struct {
 	Login        query.LoginHandler
 	RefreshToken query.RefreshTokenHandler
-	GetUser      query.GetUserHandler
 }
 
-func NewAuthenticationService() Application {
+func NewAuthenticationService(userService interfaces.UserIntraprocess) Application {
 	db := database.InitPostgres()
 	logger := log.InitLogger()
 	metricsClient := metrics.InitClient()
@@ -44,9 +44,8 @@ func NewAuthenticationService() Application {
 			Register: command.NewRegisterHandler(repository, publisher, logger, metricsClient),
 		},
 		Queries: Queries{
-			Login:        query.NewLoginHandler(repository, logger, metricsClient),
-			RefreshToken: query.NewRefreshTokenHandler(repository, logger, metricsClient),
-			GetUser:      query.NewGetUserHandler(repository, logger, metricsClient),
+			Login:        query.NewLoginHandler(repository, userService, logger, metricsClient),
+			RefreshToken: query.NewRefreshTokenHandler(repository, userService, logger, metricsClient),
 		},
 	}
 }

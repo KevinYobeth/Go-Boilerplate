@@ -5,8 +5,10 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/config"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
@@ -22,7 +24,8 @@ type RefreshTokenRequest struct {
 }
 
 type refreshTokenHandler struct {
-	repository repository.Repository
+	repository  repository.Repository
+	userService interfaces.UserIntraprocess
 }
 
 type RefreshTokenHandler decorator.QueryHandler[*RefreshTokenRequest, *token.Token]
@@ -51,14 +54,20 @@ func (h refreshTokenHandler) Handle(c context.Context, params *RefreshTokenReque
 		return nil, errors.NewUnauthenticatedError(err)
 	}
 
-	user, err := h.repository.GetUser(c, uuid.MustParse(sub))
+	userObj, err := h.userService.GetUser(c, uuid.MustParse(sub))
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user by id")
 	}
 
 	jwtToken, err := helper.GenerateToken(c, helper.GenerateTokenOpts{
 		Params: helper.GenerateTokenRequest{
-			User: *user,
+			User: user.User{
+				ID:        userObj.ID,
+				FirstName: userObj.FirstName,
+				LastName:  userObj.LastName,
+				Email:     userObj.Email,
+				Password:  userObj.Password,
+			},
 		},
 	})
 	if err != nil {
@@ -75,14 +84,19 @@ func (h refreshTokenHandler) Handle(c context.Context, params *RefreshTokenReque
 	}, nil
 }
 
-func NewRefreshTokenHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) RefreshTokenHandler {
+func NewRefreshTokenHandler(repository repository.Repository, userService interfaces.UserIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) RefreshTokenHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
 
+	if userService == nil {
+		panic("userService is required")
+	}
+
 	return decorator.ApplyQueryDecorators(
 		refreshTokenHandler{
-			repository: repository,
+			repository:  repository,
+			userService: userService,
 		}, logger, metricsClient,
 	)
 }
