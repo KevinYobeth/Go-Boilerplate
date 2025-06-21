@@ -5,7 +5,8 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
-	interfaces "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
+	event "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
@@ -24,8 +25,9 @@ type RegisterRequest struct {
 }
 
 type registerHandler struct {
-	repository repository.Repository
-	publisher  repository.Publisher
+	repository  repository.Repository
+	userService interfaces.UserIntraprocess
+	publisher   repository.Publisher
 }
 
 type RegisterHandler decorator.CommandHandler[*RegisterRequest]
@@ -33,6 +35,14 @@ type RegisterHandler decorator.CommandHandler[*RegisterRequest]
 func (h registerHandler) Handle(c context.Context, params *RegisterRequest) error {
 	if err := validator.ValidateStruct(params); err != nil {
 		return tracerr.Wrap(err)
+	}
+
+	userObj, err := h.userService.GetUserByEmail(c, params.Email)
+	if err != nil {
+		return errors.NewGenericError(err, "failed to get user by email")
+	}
+	if userObj != nil {
+		return errors.NewIncorrectInputError(nil, "user with this email already exists")
 	}
 
 	hashedPassword, err := hashPassword(params.Password)
@@ -51,7 +61,7 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 		return errors.NewGenericError(err, "failed to register user")
 	}
 
-	err = h.publisher.UserRegistered(c, interfaces.UserRegistered{
+	err = h.publisher.UserRegistered(c, event.UserRegistered{
 		UserID: dto.ID,
 		Email:  dto.Email,
 		Name:   dto.FirstName + " " + dto.LastName,
@@ -63,9 +73,13 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 	return nil
 }
 
-func NewRegisterHandler(repository repository.Repository, publisher repository.Publisher, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
+func NewRegisterHandler(repository repository.Repository, userService interfaces.UserIntraprocess, publisher repository.Publisher, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
 	if repository == nil {
 		panic("repository is required")
+	}
+
+	if userService == nil {
+		panic("userService is required")
 	}
 
 	if publisher == nil {
@@ -74,8 +88,9 @@ func NewRegisterHandler(repository repository.Repository, publisher repository.P
 
 	return decorator.ApplyCommandDecorators(
 		registerHandler{
-			repository: repository,
-			publisher:  publisher,
+			repository:  repository,
+			userService: userService,
+			publisher:   publisher,
 		}, logger, metricsClient,
 	)
 }
