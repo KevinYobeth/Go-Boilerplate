@@ -7,7 +7,7 @@ info:
     name: Kevin Yobeth
     url: https://github.com/kevinyobeth
 servers:
-  - url: https://{hostname}/api
+  - url: http://{hostname}/api/v1
     variables:
       hostname:
         default: localhost
