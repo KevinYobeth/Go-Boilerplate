@@ -43,12 +43,12 @@ services:
     env_file: .env.docker
     environment:
       SERVER_TYPE: scheduler
-  books-authors-subscriber:
+  notification-authentication-subscriber:
     build:
       context: .
       dockerfile: docker/subscriber/Dockerfile
       args:
-        - SCRIPT_DIR=/src/books/cmd/subscriber/authors
+        - SCRIPT_DIR=./internal/notification/presentation/subscriber/authentication
     restart: unless-stopped
     depends_on:
       - rabbitmq

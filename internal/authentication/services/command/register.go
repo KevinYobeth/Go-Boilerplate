@@ -39,7 +39,7 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 
 	userObj, err := h.userService.GetUserByEmail(c, params.Email)
 	if err != nil {
-		return errors.NewGenericError(err, "failed to get user by email")
+		return tracerr.Wrap(err)
 	}
 	if userObj != nil {
 		return errors.NewIncorrectInputError(nil, "user with this email already exists")

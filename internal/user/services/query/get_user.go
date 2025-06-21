@@ -15,8 +15,9 @@ import (
 )
 
 type GetUserRequest struct {
-	ID    uuid.UUID
-	Email *string
+	ID             uuid.UUID
+	Email          *string
+	SilentNotFound bool
 }
 
 type getUserHandler struct {
@@ -44,7 +45,7 @@ func (h getUserHandler) Handle(c context.Context, params *GetUserRequest) (*user
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get user")
 	}
-	if user == nil {
+	if !params.SilentNotFound && user == nil {
 		return nil, errors.NewGenericError(nil, "user not found")
 	}
 

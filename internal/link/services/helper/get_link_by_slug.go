@@ -26,14 +26,14 @@ func GetLinkBySlug(c context.Context, opts GetLinkBySlugOpts) (*link.RedirectLin
 	defer span.End()
 
 	link, err := opts.LinkRepository.GetLinkBySlug(ctx, opts.Params.Slug)
-	if !opts.SilentNotFound && link == nil {
-		span.RecordError(err, trace.WithStackTrace(true))
-		return nil, tracerr.Wrap(errors.NewNotFoundError(nil, "link"))
-	}
-
 	if err != nil {
 		span.RecordError(err, trace.WithStackTrace(true))
 		return nil, tracerr.Wrap(errors.NewGenericError(err, "failed to get link"))
+	}
+
+	if !opts.SilentNotFound && link == nil {
+		span.RecordError(err, trace.WithStackTrace(true))
+		return nil, tracerr.Wrap(errors.NewNotFoundError(nil, "link"))
 	}
 
 	return link, nil

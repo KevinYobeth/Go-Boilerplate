@@ -31,7 +31,8 @@ func (i *UserIntraprocess) GetUser(ctx context.Context, id uuid.UUID) (*interfac
 
 func (i *UserIntraprocess) GetUserByEmail(ctx context.Context, email string) (*interfaces.User, error) {
 	user, err := i.service.Queries.GetUser.Handle(ctx, &query.GetUserRequest{
-		Email: &email,
+		Email:          &email,
+		SilentNotFound: true,
 	})
 	if err != nil {
 		return nil, tracerr.Wrap(err)
