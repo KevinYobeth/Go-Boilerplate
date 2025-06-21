@@ -12,12 +12,6 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/config"
 	authenticationHTTP "github.com/kevinyobeth/go-boilerplate/internal/authentication/presentation/http"
 	authenticationService "github.com/kevinyobeth/go-boilerplate/internal/authentication/services"
-	authorsHTTP "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/http"
-	authorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/authors/presentation/intraprocess"
-	authorsService "github.com/kevinyobeth/go-boilerplate/internal/authors/services"
-	booksAuthorIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/books/infrastructure/intraprocess"
-	booksHTTP "github.com/kevinyobeth/go-boilerplate/internal/books/presentation/http"
-	booksService "github.com/kevinyobeth/go-boilerplate/internal/books/services"
 	linkHTTP "github.com/kevinyobeth/go-boilerplate/internal/link/presentation/http"
 	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	userHTTP "github.com/kevinyobeth/go-boilerplate/internal/user/presentation/http"
@@ -144,20 +138,9 @@ func RunHTTPServer() {
 	linkService := linkService.NewLinkService()
 	linkServer := linkHTTP.NewLinkHTTPServer(&linkService)
 
-	authorsService := authorsService.NewAuthorService()
-	authorIntraprocess := authorIntraprocess.NewAuthorIntraprocessService(authorsService)
-
-	booksAuthorIntraprocess := booksAuthorIntraprocess.NewBookAuthorIntraprocessService(authorIntraprocess)
-	booksService := booksService.NewBookService(booksAuthorIntraprocess)
-	booksServer := booksHTTP.NewBooksHTTPServer(&booksService)
-
-	authorsServer := authorsHTTP.NewAuthorsHTTPServer(&authorsService)
-
 	api := app.Group("/api")
 	{
 		authenticationServer.RegisterHTTPRoutes(api)
-		booksServer.RegisterHTTPRoutes(api)
-		authorsServer.RegisterHTTPRoutes(api)
 		userServer.RegisterHTTPRoutes(api)
 		linkServer.RegisterHTTPRoutes(api, app)
 	}
