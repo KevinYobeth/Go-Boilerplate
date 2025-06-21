@@ -41,7 +41,7 @@ func NewAuthenticationService(userService interfaces.UserIntraprocess) Applicati
 
 	return Application{
 		Commands: Commands{
-			Register: command.NewRegisterHandler(repository, publisher, logger, metricsClient),
+			Register: command.NewRegisterHandler(repository, userService, publisher, logger, metricsClient),
 		},
 		Queries: Queries{
 			Login:        query.NewLoginHandler(repository, userService, logger, metricsClient),
