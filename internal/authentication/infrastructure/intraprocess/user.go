@@ -5,16 +5,16 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
-	"github.com/kevinyobeth/go-boilerplate/internal/shared/contract"
+	intraprocesscontract "github.com/kevinyobeth/go-boilerplate/internal/shared/intraprocess_contract"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/telemetry"
 	"github.com/ztrue/tracerr"
 )
 
 type AuthenticationUserIntraprocess struct {
-	intraprocess contract.UserIntraprocess
+	intraprocess intraprocesscontract.UserInterface
 }
 
-func NewAuthenticationUserIntraprocessService(intraprocess contract.UserIntraprocess) UserIntraprocess {
+func NewAuthenticationUserIntraprocessService(intraprocess intraprocesscontract.UserInterface) UserIntraprocess {
 	return &AuthenticationUserIntraprocess{intraprocess: intraprocess}
 }
 
@@ -42,7 +42,7 @@ func (i *AuthenticationUserIntraprocess) GetUserByEmail(ctx context.Context, ema
 	return transformIntraprocessUserToDomainUser(user), nil
 }
 
-func transformIntraprocessUserToDomainUser(userObj *contract.User) *user.User {
+func transformIntraprocessUserToDomainUser(userObj *intraprocesscontract.User) *user.User {
 	if userObj == nil {
 		return nil
 	}

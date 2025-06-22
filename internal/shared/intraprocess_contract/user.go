@@ -1,4 +1,4 @@
-package contract
+package intraprocess_contract
 
 import (
 	"context"
@@ -14,7 +14,7 @@ type User struct {
 	Password  string    `json:"password"`
 }
 
-type UserIntraprocess interface {
+type UserInterface interface {
 	GetUser(ctx context.Context, id uuid.UUID) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 }

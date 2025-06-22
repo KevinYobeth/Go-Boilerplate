@@ -4,7 +4,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
-	"github.com/kevinyobeth/go-boilerplate/internal/shared/contract"
+	intraprocesscontract "github.com/kevinyobeth/go-boilerplate/internal/shared/intraprocess_contract"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/queue"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
@@ -27,7 +27,7 @@ type Queries struct {
 	RefreshToken query.RefreshTokenHandler
 }
 
-func NewAuthenticationService(userService contract.UserIntraprocess) Application {
+func NewAuthenticationService(userService intraprocesscontract.UserInterface) Application {
 	db := database.InitPostgres()
 	logger := log.InitLogger()
 	metricsClient := metrics.InitClient()

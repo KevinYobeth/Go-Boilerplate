@@ -8,7 +8,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
-	"github.com/kevinyobeth/go-boilerplate/internal/shared/contract"
+	intraprocesscontract "github.com/kevinyobeth/go-boilerplate/internal/shared/intraprocess_contract"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
@@ -25,7 +25,7 @@ type RefreshTokenRequest struct {
 
 type refreshTokenHandler struct {
 	repository  repository.Repository
-	userService contract.UserIntraprocess
+	userService intraprocesscontract.UserInterface
 }
 
 type RefreshTokenHandler decorator.QueryHandler[*RefreshTokenRequest, *token.Token]
@@ -84,7 +84,7 @@ func (h refreshTokenHandler) Handle(c context.Context, params *RefreshTokenReque
 	}, nil
 }
 
-func NewRefreshTokenHandler(repository repository.Repository, userService contract.UserIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) RefreshTokenHandler {
+func NewRefreshTokenHandler(repository repository.Repository, userService intraprocesscontract.UserInterface, logger *zap.SugaredLogger, metricsClient metrics.Client) RefreshTokenHandler {
 	if repository == nil {
 		panic("repository is required")
 	}

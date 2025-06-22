@@ -1,16 +1,16 @@
 package intraprocess
 
 import (
-	"github.com/kevinyobeth/go-boilerplate/internal/shared/contract"
+	intraprocesscontract "github.com/kevinyobeth/go-boilerplate/internal/shared/intraprocess_contract"
 	"github.com/kevinyobeth/go-boilerplate/internal/user/domain/user"
 )
 
-func TransformToIntraprocessUser(userObj *user.User) *contract.User {
+func TransformToIntraprocessUser(userObj *user.User) *intraprocesscontract.User {
 	if userObj == nil {
 		return nil
 	}
 
-	return &contract.User{
+	return &intraprocesscontract.User{
 		ID:        userObj.ID,
 		FirstName: userObj.FirstName,
 		LastName:  userObj.LastName,

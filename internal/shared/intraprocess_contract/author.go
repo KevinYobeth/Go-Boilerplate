@@ -1,4 +1,4 @@
-package contract
+package intraprocess_contract
 
 import (
 	"context"
@@ -11,7 +11,7 @@ type Author struct {
 	Name string    `json:"author_name"`
 }
 
-type AuthorIntraprocess interface {
+type AuthorInterface interface {
 	GetAuthors(c context.Context, name *string) ([]Author, error)
 	CreateAuthor(c context.Context, name string) (*Author, error)
 }
