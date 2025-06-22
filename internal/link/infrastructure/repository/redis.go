@@ -5,7 +5,7 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/config"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
-	"github.com/kevinyobeth/go-boilerplate/shared/utils"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/utils"
 	"github.com/redis/go-redis/v9"
 	"github.com/ztrue/tracerr"
 )

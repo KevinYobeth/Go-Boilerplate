@@ -7,9 +7,9 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/query"
-	"github.com/kevinyobeth/go-boilerplate/shared/middlewares/http"
-	"github.com/kevinyobeth/go-boilerplate/shared/response"
-	"github.com/kevinyobeth/go-boilerplate/shared/types"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/middlewares/http"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/response"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/types"
 	"github.com/labstack/echo/v4"
 )
 

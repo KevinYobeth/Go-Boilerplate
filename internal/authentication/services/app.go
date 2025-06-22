@@ -7,10 +7,10 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/queue"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
-	"github.com/kevinyobeth/go-boilerplate/shared/database"
-	"github.com/kevinyobeth/go-boilerplate/shared/event"
-	"github.com/kevinyobeth/go-boilerplate/shared/log"
-	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
 )
 
 type Application struct {
