@@ -1,4 +1,4 @@
-package repository
+package publisher
 
 import (
 	"context"

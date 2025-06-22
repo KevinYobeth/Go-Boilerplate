@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/publisher"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
@@ -36,7 +37,7 @@ func NewAuthenticationService(userService intraprocesscontract.UserInterface) Ap
 		Queue: queue.AuthenticationQueue,
 	})
 
-	publisher := repository.NewRabbitMQAuthenticationPublisher(publish)
+	publisher := publisher.NewRabbitMQAuthenticationPublisher(publish)
 	repository := repository.NewAuthenticationPostgresRepository(db)
 
 	return Application{
