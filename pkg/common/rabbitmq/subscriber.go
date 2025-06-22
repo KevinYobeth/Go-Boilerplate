@@ -1,4 +1,4 @@
-package event
+package rabbitmq
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/config"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -24,7 +25,7 @@ type SubscriberOptions struct {
 	Queue *string
 }
 
-func InitSubscriber(options SubscriberOptions) SubscriberInterface {
+func InitSubscriber(options SubscriberOptions) event.SubscriberInterface {
 	logger := log.InitLogger()
 	cfg := config.LoadRabbitMQConfig()
 
@@ -99,7 +100,7 @@ func InitSubscriber(options SubscriberOptions) SubscriberInterface {
 	}
 }
 
-func (s Subscriber) Subscribe(c context.Context, fn func(c context.Context, event Event) error) error {
+func (s Subscriber) Subscribe(c context.Context, fn func(c context.Context, event event.Event) error) error {
 	msgs, err := s.channel.Consume(
 		s.queue,
 		"",

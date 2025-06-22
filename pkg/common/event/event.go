@@ -1,7 +1,6 @@
 package event
 
 import (
-	"bytes"
 	"encoding/json"
 )
 
@@ -10,26 +9,7 @@ type Event struct {
 	Data  any    `json:"data"`
 }
 
-func NewEvent(event string, data any) Event {
-	return Event{event, data}
-}
-
-func Serialize(event Event) ([]byte, error) {
-	var b bytes.Buffer
-	encoder := json.NewEncoder(&b)
-	err := encoder.Encode(event)
-	return b.Bytes(), err
-}
-
-func Deserialize(b []byte) (Event, error) {
-	var event Event
-	buf := bytes.NewBuffer(b)
-	decoder := json.NewDecoder(buf)
-	err := decoder.Decode(&event)
-	return event, err
-}
-
-func (e Event) TransformTo(data interface{}) error {
+func (e Event) TransformTo(data any) error {
 	b, err := json.Marshal(e.Data)
 	if err != nil {
 		return err

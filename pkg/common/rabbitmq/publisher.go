@@ -1,4 +1,4 @@
-package event
+package rabbitmq
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/config"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -24,7 +25,7 @@ type PublisherOptions struct {
 	Queue *string
 }
 
-func InitPublisher(options PublisherOptions) PublisherInterface {
+func InitPublisher(options PublisherOptions) event.PublisherInterface {
 	logger := log.InitLogger()
 	cfg := config.LoadRabbitMQConfig()
 
@@ -97,7 +98,7 @@ func InitPublisher(options PublisherOptions) PublisherInterface {
 	}
 }
 
-func (p Publisher) Publish(c context.Context, event Event) error {
+func (p Publisher) Publish(c context.Context, event event.Event) error {
 	body, err := Serialize(event)
 	if err != nil {
 		p.logger.Fatalf("Failed to serialize event: %v", err)
