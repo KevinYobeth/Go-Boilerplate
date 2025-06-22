@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
-	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
 )
 
 type CreateLinkVisitSnapshotRequest struct {

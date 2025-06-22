@@ -2,9 +2,9 @@ package services
 
 import (
 	"github.com/kevinyobeth/go-boilerplate/internal/notification/services/command"
-	"github.com/kevinyobeth/go-boilerplate/shared/builder/notification"
-	"github.com/kevinyobeth/go-boilerplate/shared/log"
-	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/notification"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
 )
 
 type Application struct {

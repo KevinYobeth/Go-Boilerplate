@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
-	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/telemetry"
 	"github.com/ztrue/tracerr"
 )
 

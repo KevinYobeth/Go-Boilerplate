@@ -10,9 +10,10 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/notification/services/command"
 	interfaces "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
-	"github.com/kevinyobeth/go-boilerplate/shared/event"
-	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
-	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/graceroutine"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/rabbitmq"
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
 )
@@ -29,7 +30,9 @@ func main() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
-	subscriber := event.InitSubscriber(event.SubscriberOptions{Topic: topic.AuthenticationTopic})
+	subscriber := rabbitmq.InitSubscriber(rabbitmq.SubscriberOptions{
+		Topic: topic.AuthenticationTopic,
+	})
 	app := services.NewNotificationService()
 
 	go func() {

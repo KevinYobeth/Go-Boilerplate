@@ -9,8 +9,8 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/config"
 	linkGRPC "github.com/kevinyobeth/go-boilerplate/internal/link/presentation/grpc"
 	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
-	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
-	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/graceroutine"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
 
 	GoogleGRPC "google.golang.org/grpc"
 )

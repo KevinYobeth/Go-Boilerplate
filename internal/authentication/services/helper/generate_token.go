@@ -7,8 +7,8 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/config"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
-	"github.com/kevinyobeth/go-boilerplate/shared/errors"
-	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/telemetry"
 
 	"github.com/golang-jwt/jwt/v5"
 )

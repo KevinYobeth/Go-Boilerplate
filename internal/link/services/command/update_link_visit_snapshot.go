@@ -5,8 +5,8 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
-	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
-	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
 )
@@ -25,6 +25,11 @@ func (h updateLinkVisitSnapshotHandler) Handle(c context.Context, params *Update
 	count, err := h.repository.GetNewVisitsCount(c)
 	if err != nil {
 		return tracerr.Wrap(err)
+	}
+
+	if len(count) == 0 {
+		h.logger.Info("No new visits to update")
+		return nil
 	}
 
 	dto := make([]link.UpdateLinkVisitSnapshotDTO, 0, len(count))

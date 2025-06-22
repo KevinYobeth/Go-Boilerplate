@@ -7,8 +7,8 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/helper"
-	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
-	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
 )

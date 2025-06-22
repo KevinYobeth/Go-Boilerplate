@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
-	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/ztrue/tracerr"

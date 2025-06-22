@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	valueobjects "github.com/kevinyobeth/go-boilerplate/shared/value_objects"
+	valueobjects "github.com/kevinyobeth/go-boilerplate/pkg/common/value_objects"
 )
 
 type LinkModel struct {

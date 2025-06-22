@@ -3,7 +3,7 @@ package user
 import (
 	"time"
 
-	valueobjects "github.com/kevinyobeth/go-boilerplate/shared/value_objects"
+	valueobjects "github.com/kevinyobeth/go-boilerplate/pkg/common/value_objects"
 
 	"github.com/google/uuid"
 )
