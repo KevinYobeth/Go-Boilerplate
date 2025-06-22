@@ -21,15 +21,15 @@ type Publisher struct {
 }
 
 type PublisherOptions struct {
-	Topic string
-	Queue *string
+	Topic event.Topic
+	Queue string
 }
 
 func InitPublisher(options PublisherOptions) event.PublisherInterface {
 	logger := log.InitLogger()
 	cfg := config.LoadRabbitMQConfig()
 
-	if strings.TrimSpace(options.Topic) == "" {
+	if strings.TrimSpace(string(options.Topic)) == "" {
 		logger.Fatal("Topic cannot be empty")
 	}
 
@@ -51,7 +51,7 @@ func InitPublisher(options PublisherOptions) event.PublisherInterface {
 	}
 
 	err = ch.ExchangeDeclare(
-		options.Topic,
+		string(options.Topic),
 		"fanout",
 		true,
 		false,
@@ -64,8 +64,8 @@ func InitPublisher(options PublisherOptions) event.PublisherInterface {
 	}
 
 	var qName string = fmt.Sprint("queue-", options.Topic)
-	if options.Queue != nil {
-		qName = *options.Queue
+	if options.Queue != "" {
+		qName = options.Queue
 	}
 
 	q, err := ch.QueueDeclare(
@@ -83,7 +83,7 @@ func InitPublisher(options PublisherOptions) event.PublisherInterface {
 	err = ch.QueueBind(
 		q.Name,
 		"",
-		options.Topic,
+		string(options.Topic),
 		false,
 		nil,
 	)
@@ -94,7 +94,7 @@ func InitPublisher(options PublisherOptions) event.PublisherInterface {
 	return Publisher{
 		channel: ch,
 		logger:  logger,
-		topic:   options.Topic,
+		topic:   string(options.Topic),
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/query"
-	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/contract"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/queue"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
@@ -27,12 +27,12 @@ type Queries struct {
 	RefreshToken query.RefreshTokenHandler
 }
 
-func NewAuthenticationService(userService interfaces.UserIntraprocess) Application {
+func NewAuthenticationService(userService contract.UserIntraprocess) Application {
 	db := database.InitPostgres()
 	logger := log.InitLogger()
 	metricsClient := metrics.InitClient()
 	publish := rabbitmq.InitPublisher(rabbitmq.PublisherOptions{
-		Topic: topic.AuthenticationTopic,
+		Topic: topic.Authentication,
 		Queue: queue.AuthenticationQueue,
 	})
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/notification/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/notification/services/command"
-	interfaces "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
+	eventcontract "github.com/kevinyobeth/go-boilerplate/internal/shared/event_contract"
 	"github.com/kevinyobeth/go-boilerplate/internal/shared/topic"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/graceroutine"
@@ -31,7 +31,7 @@ func main() {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
 	subscriber := rabbitmq.InitSubscriber(rabbitmq.SubscriberOptions{
-		Topic: topic.AuthenticationTopic,
+		Topic: topic.Authentication,
 	})
 	app := services.NewNotificationService()
 
@@ -41,7 +41,7 @@ func main() {
 			var err error
 
 			switch e.Event {
-			case interfaces.UserRegisteredEvent:
+			case eventcontract.UserRegisteredEvent:
 				err = onUserRegistered(ctx, HandlerParams{logger, &app}, e)
 			default:
 				logger.Infof("Event %s is not handled", e.Event)
@@ -72,7 +72,7 @@ func main() {
 }
 
 func onUserRegistered(c context.Context, params HandlerParams, e event.Event) error {
-	var data interfaces.UserRegistered
+	var data eventcontract.UserRegistered
 	err := e.TransformTo(&data)
 
 	if err != nil {

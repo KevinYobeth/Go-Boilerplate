@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
-	interfaces "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
+	eventcontract "github.com/kevinyobeth/go-boilerplate/internal/shared/event_contract"
 )
 
 type Repository interface {
@@ -12,5 +12,5 @@ type Repository interface {
 }
 
 type Publisher interface {
-	UserRegistered(c context.Context, payload interfaces.UserRegistered) error
+	UserRegistered(c context.Context, payload eventcontract.UserRegistered) error
 }

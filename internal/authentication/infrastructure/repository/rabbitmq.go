@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	interfaces "github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces/event"
+	eventcontract "github.com/kevinyobeth/go-boilerplate/internal/shared/event_contract"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
 	"github.com/ztrue/tracerr"
 )
@@ -16,9 +16,9 @@ func NewRabbitMQAuthenticationPublisher(publisher event.PublisherInterface) Publ
 	return &RabbitMQAuthenticationPublisher{publisher: publisher}
 }
 
-func (p *RabbitMQAuthenticationPublisher) UserRegistered(c context.Context, payload interfaces.UserRegistered) error {
+func (p *RabbitMQAuthenticationPublisher) UserRegistered(c context.Context, payload eventcontract.UserRegistered) error {
 	err := p.publisher.Publish(c, event.Event{
-		Event: interfaces.UserRegisteredEvent,
+		Event: eventcontract.UserRegisteredEvent,
 		Data:  payload,
 	})
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
-	"github.com/kevinyobeth/go-boilerplate/internal/shared/interfaces"
+	"github.com/kevinyobeth/go-boilerplate/internal/shared/contract"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
@@ -24,7 +24,7 @@ type LoginRequest struct {
 
 type loginHandler struct {
 	repository  repository.Repository
-	userService interfaces.UserIntraprocess
+	userService contract.UserIntraprocess
 	logger      *zap.SugaredLogger
 }
 
@@ -72,7 +72,7 @@ func (h loginHandler) Handle(c context.Context, params *LoginRequest) (*token.To
 	}, nil
 }
 
-func NewLoginHandler(repository repository.Repository, userService interfaces.UserIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
+func NewLoginHandler(repository repository.Repository, userService contract.UserIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
 	if repository == nil {
 		panic("repository is required")
 	}

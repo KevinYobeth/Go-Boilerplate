@@ -1,4 +1,4 @@
-package interfaces
+package eventcontract
 
 import "github.com/google/uuid"
 
