@@ -4,6 +4,7 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.1
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/segmentio/golines@latest
 go install github.com/bombsimon/wsl/v4/cmd...@master
+go install github.com/cespare/reflex@latest
 ```
 
 ## Installing Protobuf and gRPC

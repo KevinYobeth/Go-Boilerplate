@@ -30,5 +30,8 @@ proto:
 run:
 	SERVER_TYPE=$(filter-out $@,$(MAKECMDGOALS)) go run .
 
+run-watch:
+	reflex -r '\.go$$' -R '_test\.go$$' -s -- sh -c 'SERVER_TYPE=$(filter-out $@,$(MAKECMDGOALS)) go run .'
+
 docker_build_app:
 	docker build -t $(DOCKER_APP_NAME) -f ./docker/app/Dockerfile .
