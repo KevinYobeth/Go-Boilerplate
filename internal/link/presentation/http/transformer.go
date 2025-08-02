@@ -1,6 +1,9 @@
 package http
 
-import "github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
+import (
+	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
+)
 
 func TransformToHTTPLink(linkObj *link.Link) Link {
 	return Link{
@@ -20,4 +23,11 @@ func TransformToHTTPLinks(linksObj []link.Link) []Link {
 		links = append(links, TransformToHTTPLink(&link))
 	}
 	return links
+}
+
+func TransformToHTTPMetadata(metadata pagination.Metadata) PaginationMetadata {
+	return PaginationMetadata{
+		Next: metadata.Next,
+		Prev: metadata.Prev,
+	}
 }

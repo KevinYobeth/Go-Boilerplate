@@ -74,7 +74,7 @@ func (h HTTPTransport) CreateLink(c echo.Context) error {
 }
 
 // GET /links
-func (h HTTPTransport) GetLinks(c echo.Context) error {
+func (h HTTPTransport) GetLinks(c echo.Context, params GetLinksParams) error {
 	claims, ctx, err := http.AuthenticatedMiddleware(c)
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
@@ -83,8 +83,19 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 		return err
 	}
 
+	next := params.Next
+	prev := params.Prev
+	if next == nil {
+		next = &uuid.Nil
+	}
+	if prev == nil {
+		prev = &uuid.Nil
+	}
+
 	links, err := h.app.Queries.GetLinks.Handle(ctx, &query.GetLinksRequest{
 		UserID: uuid.MustParse(claims.Subject),
+		Next:   *next,
+		Prev:   *prev,
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
@@ -95,8 +106,9 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 
 	response.SendHTTP(c, &types.Response{
 		Body: GetLinksResponse{
-			Data:    TransformToHTTPLinks(links),
-			Message: "success get links",
+			Data:     TransformToHTTPLinks(links.Data),
+			Metadata: TransformToHTTPMetadata(links.Metadata),
+			Message:  "success get links",
 		},
 	})
 	return nil

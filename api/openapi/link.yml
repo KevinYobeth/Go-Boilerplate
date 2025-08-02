@@ -36,6 +36,21 @@ paths:
       tags: [Link]
       operationId: getLinks
       description: get links
+      parameters:
+        - in: query
+          name: next
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: next cursor for pagination
+        - in: query
+          name: prev
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: previous cursor for pagination
       responses:
         "200":
           description: get links success
@@ -134,7 +149,7 @@ components:
 
     GetLinksResponse:
       type: object
-      required: [data, message]
+      required: [data, metadata, message]
       properties:
         message:
           type: string
@@ -142,6 +157,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Link"
+        metadata:
+          $ref: "#/components/schemas/PaginationMetadata"
     GetLinkResponse:
       type: object
       required: [data, message]
@@ -178,3 +195,13 @@ components:
         updated_at:
           type: string
           format: date-time
+    
+    PaginationMetadata:
+      type: object
+      properties:
+        next:
+          type: string
+          format: uuid
+        prev:
+          type: string
+          format: uuid

@@ -16,7 +16,7 @@ import (
 type ServerInterface interface {
 
 	// (GET /links)
-	GetLinks(ctx echo.Context) error
+	GetLinks(ctx echo.Context, params GetLinksParams) error
 
 	// (POST /links)
 	CreateLink(ctx echo.Context) error
@@ -40,8 +40,24 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) GetLinks(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetLinksParams
+	// ------------- Optional query parameter "next" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "next", ctx.QueryParams(), &params.Next)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter next: %s", err))
+	}
+
+	// ------------- Optional query parameter "prev" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "prev", ctx.QueryParams(), &params.Prev)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter prev: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetLinks(ctx)
+	err = w.Handler.GetLinks(ctx, params)
 	return err
 }
 
