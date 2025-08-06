@@ -65,6 +65,9 @@ type GetLinksParams struct {
 
 	// Prev previous cursor for pagination
 	Prev *openapi_types.UUID `form:"prev,omitempty" json:"prev,omitempty"`
+
+	// Limit limit for pagination
+	Limit *uint64 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.

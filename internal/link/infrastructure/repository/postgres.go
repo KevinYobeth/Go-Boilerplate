@@ -188,7 +188,7 @@ func (r *PostgresLinkRepo) GetLinksVisitSnapshot(c context.Context, linkIDs []uu
 }
 
 func (r *PostgresLinkRepo) GetLinksPaginated(c context.Context, userID uuid.UUID, config pagination.Config[link.LinkModel]) (pagination.Collection[link.LinkModel], error) {
-	collection, err := pagination.NewPaginate[link.LinkModel](config, r.db, func(conn database.PostgresDB) sq.SelectBuilder {
+	collection, err := pagination.NewPaginate(c, config, r.db, func(conn database.PostgresDB) sq.SelectBuilder {
 		fields := utils.SelectWithAuditTrail("id", "slug", "url", "description")
 		query := psql.Select(fields...).
 			From("links").
@@ -199,17 +199,6 @@ func (r *PostgresLinkRepo) GetLinksPaginated(c context.Context, userID uuid.UUID
 	if err != nil {
 		return collection, tracerr.Wrap(err)
 	}
-
-	// var linksResult []link.LinkModel
-	// for rows.Next() {
-	// 	var link link.LinkModel
-	// 	err = rows.Scan(&link.ID, &link.Slug, &link.URL, &link.Description, &link.CreatedAt, &link.UpdatedAt, &link.CreatedBy, &link.UpdatedBy)
-	// 	if err != nil {
-	// 		return collection, tracerr.Wrap(err)
-	// 	}
-
-	// 	linksResult = append(linksResult, link)
-	// }
 
 	return collection, nil
 }

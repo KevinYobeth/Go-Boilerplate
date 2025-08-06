@@ -91,11 +91,16 @@ func (h HTTPTransport) GetLinks(c echo.Context, params GetLinksParams) error {
 	if prev == nil {
 		prev = &uuid.Nil
 	}
+	limit := uint64(10)
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
 
 	links, err := h.app.Queries.GetLinks.Handle(ctx, &query.GetLinksRequest{
 		UserID: uuid.MustParse(claims.Subject),
 		Next:   *next,
 		Prev:   *prev,
+		Limit:  limit,
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{

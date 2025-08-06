@@ -51,6 +51,13 @@ paths:
             format: uuid
           required: false
           description: previous cursor for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            format: uint64
+          required: false
+          description: limit for pagination
       responses:
         "200":
           description: get links success

@@ -20,6 +20,7 @@ type GetLinksRequest struct {
 	UserID uuid.UUID
 	Next   uuid.UUID
 	Prev   uuid.UUID
+	Limit  uint64
 }
 
 type getLinksHandler struct {
@@ -35,7 +36,7 @@ func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) (*pa
 	// })
 
 	paginationConfig := pagination.NewCursorPagination(pagination.CursorPaginationRequest[link.LinkModel]{
-		Limit: 3,
+		Limit: params.Limit,
 		Next:  params.Next,
 		Prev:  params.Prev,
 	})

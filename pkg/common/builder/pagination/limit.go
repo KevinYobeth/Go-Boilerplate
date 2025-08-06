@@ -1,6 +1,8 @@
 package pagination
 
 import (
+	"context"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
 )
@@ -35,7 +37,7 @@ func NewLimitPagination[Entity any](request LimitPaginationRequest[Entity]) Conf
 	}
 }
 
-func (l *LimitPaginationRequest[Entity]) Paginate(conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[Entity], error) {
+func (l *LimitPaginationRequest[Entity]) Paginate(ctx context.Context, conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[Entity], error) {
 	// query = query.Offset(l.Page * l.Limit)
 	// query = query.Limit(l.Limit)
 	// query = query.OrderBy(l.OrderBy)

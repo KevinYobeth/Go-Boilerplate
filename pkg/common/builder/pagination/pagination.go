@@ -1,6 +1,8 @@
 package pagination
 
 import (
+	"context"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
@@ -17,9 +19,9 @@ type Collection[Entity any] struct {
 }
 
 type Config[T any] interface {
-	Paginate(conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[T], error)
+	Paginate(ctx context.Context, conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[T], error)
 }
 
-func NewPaginate[Entity any](strategy Config[Entity], conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[Entity], error) {
-	return strategy.Paginate(conn, fn)
+func NewPaginate[Entity any](ctx context.Context, strategy Config[Entity], conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[Entity], error) {
+	return strategy.Paginate(ctx, conn, fn)
 }

@@ -42,42 +42,23 @@ func NewCursorPagination[Entity Uniqueable](request CursorPaginationRequest[Enti
 	}
 }
 
-func (l *CursorPaginationRequest[Entity]) Paginate(conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[Entity], error) {
+func (l *CursorPaginationRequest[Entity]) Paginate(ctx context.Context, conn database.PostgresDB, fn func(conn database.PostgresDB) sq.SelectBuilder) (Collection[Entity], error) {
 	var collection Collection[Entity]
+	var base = fn(conn).
+		Limit(l.Limit + 1).
+		OrderBy(l.Order)
 
 	if l.Next != uuid.Nil && l.Prev != uuid.Nil {
 		// TODO: Check if both Next and Prev are set
 	}
 
-	if l.Next == uuid.Nil && l.Prev == uuid.Nil {
-		query, args, err := fn(conn).
-			Limit(l.Limit + 1).
-			OrderBy(l.Order).
-			ToSql()
+	if l.Prev != uuid.Nil {
+		result, err := l.getCurrentCursor(conn, fn(conn), l.Prev.String())
 		if err != nil {
 			return collection, tracerr.Wrap(err)
 		}
 
-		rows, err := conn.QueryContext(context.Background(), query, args...)
-		if err != nil {
-			return collection, tracerr.Wrap(err)
-		}
-		defer rows.Close()
-
-		var items []Entity
-		err = scan.Rows(&items, rows)
-		if err != nil {
-			return collection, tracerr.Wrap(err)
-		}
-
-		last := items[len(items)-2]
-		collection.Data = items
-
-		if len(items) == int(l.Limit+1) {
-			collection.Data = items[:len(items)-1]
-			collection.Metadata.Next = last.GetID().(*uuid.UUID)
-		}
-		collection.Metadata.Prev = nil
+		base = base.Where("(created_at, id) < (?, ?)", result["created_at"], l.Prev)
 	}
 
 	if l.Next != uuid.Nil {
@@ -86,48 +67,38 @@ func (l *CursorPaginationRequest[Entity]) Paginate(conn database.PostgresDB, fn 
 			return collection, tracerr.Wrap(err)
 		}
 
-		query, args, err := fn(conn).
-			Where("(created_at, id) > (?, ?)", result["created_at"], l.Next).
-			Limit(l.Limit + 1).
-			OrderBy(l.Order).
-			ToSql()
-		if err != nil {
-			return collection, tracerr.Wrap(err)
-		}
-
-		rows, err := conn.QueryContext(context.Background(), query, args...)
-		if err != nil {
-			return collection, tracerr.Wrap(err)
-		}
-		defer rows.Close()
-
-		var items []Entity
-		err = scan.Rows(&items, rows)
-		if err != nil {
-			return collection, tracerr.Wrap(err)
-		}
-
-		last := items[len(items)-2]
-		collection.Data = items
-
-		if len(items) == int(l.Limit+1) {
-			collection.Data = items[:len(items)-1]
-			collection.Metadata.Next = last.GetID().(*uuid.UUID)
-		}
-		collection.Metadata.Prev = nil
-
-		// items, err := l.scanToRows(rows)
-		// if err != nil {
-		// 	return collection, tracerr.Wrap(err)
-		// }
-
-		// entities, err := l.transformItemsToEntities(items)
-		// if err != nil {
-		// 	return collection, tracerr.Wrap(err)
-		// }
-
-		// collection.Data = entities
+		base = base.Where("(created_at, id) > (?, ?)", result["created_at"], l.Next)
 	}
+
+	query, args, err := base.ToSql()
+	if err != nil {
+		return collection, tracerr.Wrap(err)
+	}
+
+	rows, err := conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		return collection, tracerr.Wrap(err)
+	}
+	defer rows.Close()
+
+	var items []Entity
+	err = scan.Rows(&items, rows)
+	if err != nil {
+		return collection, tracerr.Wrap(err)
+	}
+
+	collection.Data = items[:len(items)-1]
+
+	if l.Next != uuid.Nil {
+		collection.Metadata.Next = items[len(items)-2].GetID().(*uuid.UUID)
+
+		return collection, nil
+	}
+
+	if l.Prev != uuid.Nil {
+	}
+
+	collection.Metadata.Next = items[len(items)-2].GetID().(*uuid.UUID)
 
 	return collection, nil
 }
