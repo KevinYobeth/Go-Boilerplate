@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/query"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/middlewares/http"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/response"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/types"
@@ -74,8 +75,16 @@ func (h HTTPTransport) CreateLink(c echo.Context) error {
 }
 
 // GET /links
-func (h HTTPTransport) GetLinks(c echo.Context) error {
+func (h HTTPTransport) GetLinks(c echo.Context, params GetLinksParams) error {
 	claims, ctx, err := http.AuthenticatedMiddleware(c)
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
+	}
+
+	err = pagination.ValidateLimitPaginationParams(params.Page, params.Limit)
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
 			Error: err,
@@ -85,6 +94,8 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 
 	links, err := h.app.Queries.GetLinks.Handle(ctx, &query.GetLinksRequest{
 		UserID: uuid.MustParse(claims.Subject),
+		Limit:  params.Limit,
+		Page:   params.Page,
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
@@ -95,8 +106,9 @@ func (h HTTPTransport) GetLinks(c echo.Context) error {
 
 	response.SendHTTP(c, &types.Response{
 		Body: GetLinksResponse{
-			Data:    TransformToHTTPLinks(links),
-			Message: "success get links",
+			Data:     TransformToHTTPLinks(links.Data),
+			Metadata: TransformToHTTPMetadata(links.Metadata),
+			Message:  "success get links",
 		},
 	})
 	return nil

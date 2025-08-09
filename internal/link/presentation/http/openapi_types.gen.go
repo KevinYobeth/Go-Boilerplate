@@ -24,8 +24,9 @@ type GetLinkResponse struct {
 
 // GetLinksResponse defines model for GetLinksResponse.
 type GetLinksResponse struct {
-	Data    []Link `json:"data"`
-	Message string `json:"message"`
+	Data     []Link             `json:"data"`
+	Message  string             `json:"message"`
+	Metadata PaginationMetadata `json:"metadata"`
 }
 
 // Link defines model for Link.
@@ -44,11 +45,33 @@ type MessageResponse struct {
 	Message string `json:"message"`
 }
 
+// PaginationMetadata defines model for PaginationMetadata.
+type PaginationMetadata struct {
+	Next  *openapi_types.UUID `json:"next,omitempty"`
+	Prev  *openapi_types.UUID `json:"prev,omitempty"`
+	Total *uint64             `json:"total,omitempty"`
+}
+
 // UpdateLinkRequest defines model for UpdateLinkRequest.
 type UpdateLinkRequest struct {
 	Description string `json:"description"`
 	Slug        string `json:"slug"`
 	Url         string `json:"url"`
+}
+
+// Limit defines model for limit.
+type Limit = uint64
+
+// Page defines model for page.
+type Page = uint64
+
+// GetLinksParams defines parameters for GetLinks.
+type GetLinksParams struct {
+	// Page The page number to retrieve
+	Page *Page `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Maximum number of results to return
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.

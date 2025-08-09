@@ -36,6 +36,9 @@ paths:
       tags: [Link]
       operationId: getLinks
       description: get links
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
       responses:
         "200":
           description: get links success
@@ -134,7 +137,7 @@ components:
 
     GetLinksResponse:
       type: object
-      required: [data, message]
+      required: [data, metadata, message]
       properties:
         message:
           type: string
@@ -142,6 +145,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Link"
+        metadata:
+          $ref: "#/components/schemas/PaginationMetadata"
     GetLinkResponse:
       type: object
       required: [data, message]
@@ -178,3 +183,52 @@ components:
         updated_at:
           type: string
           format: date-time
+    
+    PaginationMetadata:
+      type: object
+      properties:
+        next:
+          type: string
+          format: uuid
+        prev:
+          type: string
+          format: uuid
+        total:
+          type: integer
+          format: uint64
+
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of results to return
+      required: false
+      schema:
+        type: integer
+        format: uint64
+        default: 10
+    page:
+      name: page
+      in: query
+      description: The page number to retrieve
+      required: false
+      schema:
+        type: integer
+        format: uint64
+        default: 1
+    next:
+      name: next
+      in: query
+      description: The next cursor for pagination
+      required: false
+      schema:
+        type: string
+        format: uuid
+    prev:
+      name: prev
+      in: query
+      description: The previous cursor for pagination
+      required: false
+      schema:
+        type: string
+        format: uuid

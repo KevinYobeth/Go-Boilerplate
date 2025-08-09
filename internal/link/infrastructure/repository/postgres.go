@@ -8,6 +8,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/utils"
 	"github.com/ztrue/tracerr"
@@ -184,4 +185,20 @@ func (r *PostgresLinkRepo) GetLinksVisitSnapshot(c context.Context, linkIDs []uu
 	}
 
 	return linkVisitSnapshotResult, nil
+}
+
+func (r *PostgresLinkRepo) GetLinksPaginated(c context.Context, userID uuid.UUID, config pagination.Config[link.LinkModel]) (pagination.Collection[link.LinkModel], error) {
+	collection, err := pagination.NewPaginate(c, config, r.db, func(conn database.PostgresDB) sq.SelectBuilder {
+		fields := utils.SelectWithAuditTrail("id", "slug", "url", "description")
+		query := psql.Select(fields...).
+			From("links").
+			Where(sq.Eq{"created_by": userID, "deleted_at": nil})
+
+		return query
+	})
+	if err != nil {
+		return collection, tracerr.Wrap(err)
+	}
+
+	return collection, nil
 }

@@ -8,13 +8,17 @@ import (
 )
 
 type LinkModel struct {
-	ID          uuid.UUID
-	Slug        string
-	URL         string
-	Description string
+	ID          uuid.UUID `db:"id"`
+	Slug        string    `db:"slug"`
+	URL         string    `db:"url"`
+	Description string    `db:"description"`
 
 	valueobjects.AuditAuthor
 	valueobjects.AuditTrail
+}
+
+func (l LinkModel) GetID() any {
+	return &l.ID
 }
 
 type NewVisitCountModel struct {

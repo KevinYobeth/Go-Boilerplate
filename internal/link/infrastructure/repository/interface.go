@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
 )
 
 type Repository interface {
@@ -14,6 +15,7 @@ type Repository interface {
 	GetLinkBySlug(c context.Context, slug string) (*link.RedirectLink, error)
 	DeleteLink(c context.Context, id uuid.UUID) error
 	UpdateLink(c context.Context, id uuid.UUID, request *link.LinkDTO) error
+	GetLinksPaginated(c context.Context, userID uuid.UUID, paginationConfig pagination.Config[link.LinkModel]) (pagination.Collection[link.LinkModel], error)
 
 	GetNewVisitsCount(c context.Context) ([]link.NewVisitCountModel, error)
 	GetLinksVisitSnapshot(c context.Context, linkIDs []uuid.UUID) ([]link.LinkVisitSnapshot, error)

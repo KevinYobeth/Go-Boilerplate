@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/helper"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
@@ -17,21 +18,36 @@ import (
 
 type GetLinksRequest struct {
 	UserID uuid.UUID
+	Next   uuid.UUID
+	Prev   uuid.UUID
+	Page   *uint64
+	Limit  *uint64
 }
 
 type getLinksHandler struct {
 	repository repository.Repository
 }
 
-type GetLinksHandler decorator.QueryHandler[*GetLinksRequest, []link.Link]
+type GetLinksHandler decorator.QueryHandler[*GetLinksRequest, *pagination.Collection[link.Link]]
 
-func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) ([]link.Link, error) {
-	links, err := h.repository.GetLinks(c, params.UserID)
+func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) (*pagination.Collection[link.Link], error) {
+	paginationConfig := pagination.NewLimitPagination(pagination.LimitPaginationRequest[link.LinkModel]{
+		Page:  params.Page,
+		Limit: params.Limit,
+	})
+
+	// paginationConfig := pagination.NewCursorPagination(pagination.CursorPaginationRequest[link.LinkModel]{
+	// 	Limit: params.Limit,
+	// 	Next:  params.Next,
+	// 	Prev:  params.Prev,
+	// })
+
+	collection, err := h.repository.GetLinksPaginated(c, params.UserID, paginationConfig)
 	if err != nil {
 		return nil, errors.NewGenericError(err, "failed to get links")
 	}
 
-	linkIDs := lo.Map(links, func(link link.LinkModel, _ int) uuid.UUID {
+	linkIDs := lo.Map(collection.Data, func(link link.LinkModel, _ int) uuid.UUID {
 		return link.ID
 	})
 	linkSnapshotMap, err := helper.GetLinkVisitSnapshot(c, helper.GetLinkVisitSnapshotOpts{
@@ -44,7 +60,7 @@ func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) ([]l
 		return nil, tracerr.Wrap(err)
 	}
 
-	linksResult := lo.Map(links, func(model link.LinkModel, _ int) link.Link {
+	linksResult := lo.Map(collection.Data, func(model link.LinkModel, _ int) link.Link {
 		total := 0
 		snapshot, ok := linkSnapshotMap[model.ID]
 		if ok {
@@ -62,7 +78,10 @@ func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) ([]l
 		}
 	})
 
-	return linksResult, nil
+	return &pagination.Collection[link.Link]{
+		Data:     linksResult,
+		Metadata: collection.Metadata,
+	}, nil
 }
 
 func NewGetLinksHandler(repository repository.Repository, logger *zap.SugaredLogger, metricsClient metrics.Client) GetLinksHandler {
