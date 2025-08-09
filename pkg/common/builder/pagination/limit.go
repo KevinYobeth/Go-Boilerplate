@@ -2,7 +2,6 @@ package pagination
 
 import (
 	"context"
-	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/blockloop/scan/v2"
@@ -63,7 +62,6 @@ func (l *LimitPaginationRequest[Entity]) Paginate(ctx context.Context, conn data
 	if err != nil {
 		return collection, tracerr.Wrap(err)
 	}
-	fmt.Println("totalnya", total)
 
 	collection.Metadata.Total = total
 
