@@ -27,7 +27,8 @@ func TransformToHTTPLinks(linksObj []link.Link) []Link {
 
 func TransformToHTTPMetadata(metadata pagination.Metadata) PaginationMetadata {
 	return PaginationMetadata{
-		Next: metadata.Next,
-		Prev: metadata.Prev,
+		Next:  metadata.Next,
+		Prev:  metadata.Prev,
+		Total: metadata.Total,
 	}
 }

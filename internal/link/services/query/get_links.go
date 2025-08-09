@@ -20,7 +20,8 @@ type GetLinksRequest struct {
 	UserID uuid.UUID
 	Next   uuid.UUID
 	Prev   uuid.UUID
-	Limit  uint64
+	Page   *uint64
+	Limit  *uint64
 }
 
 type getLinksHandler struct {
@@ -30,16 +31,16 @@ type getLinksHandler struct {
 type GetLinksHandler decorator.QueryHandler[*GetLinksRequest, *pagination.Collection[link.Link]]
 
 func (h getLinksHandler) Handle(c context.Context, params *GetLinksRequest) (*pagination.Collection[link.Link], error) {
-	// paginationConfig := pagination.NewLimitPagination(pagination.LimitPaginationRequest{
-	// 	Page:  3,
-	// 	Limit: 2,
-	// })
-
-	paginationConfig := pagination.NewCursorPagination(pagination.CursorPaginationRequest[link.LinkModel]{
+	paginationConfig := pagination.NewLimitPagination(pagination.LimitPaginationRequest[link.LinkModel]{
+		Page:  params.Page,
 		Limit: params.Limit,
-		Next:  params.Next,
-		Prev:  params.Prev,
 	})
+
+	// paginationConfig := pagination.NewCursorPagination(pagination.CursorPaginationRequest[link.LinkModel]{
+	// 	Limit: params.Limit,
+	// 	Next:  params.Next,
+	// 	Prev:  params.Prev,
+	// })
 
 	collection, err := h.repository.GetLinksPaginated(c, params.UserID, paginationConfig)
 	if err != nil {

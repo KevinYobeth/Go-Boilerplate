@@ -9,8 +9,11 @@ import (
 )
 
 type Metadata struct {
-	Next *uuid.UUID
-	Prev *uuid.UUID
+	Next    *uuid.UUID
+	Prev    *uuid.UUID
+	Total   *uint64
+	HasNext bool
+	HasPrev bool
 }
 
 type Collection[Entity any] struct {

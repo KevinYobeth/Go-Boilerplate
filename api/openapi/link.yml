@@ -37,27 +37,8 @@ paths:
       operationId: getLinks
       description: get links
       parameters:
-        - in: query
-          name: next
-          schema:
-            type: string
-            format: uuid
-          required: false
-          description: next cursor for pagination
-        - in: query
-          name: prev
-          schema:
-            type: string
-            format: uuid
-          required: false
-          description: previous cursor for pagination
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            format: uint64
-          required: false
-          description: limit for pagination
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
       responses:
         "200":
           description: get links success
@@ -212,3 +193,42 @@ components:
         prev:
           type: string
           format: uuid
+        total:
+          type: integer
+          format: uint64
+
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of results to return
+      required: false
+      schema:
+        type: integer
+        format: uint64
+        default: 10
+    page:
+      name: page
+      in: query
+      description: The page number to retrieve
+      required: false
+      schema:
+        type: integer
+        format: uint64
+        default: 1
+    next:
+      name: next
+      in: query
+      description: The next cursor for pagination
+      required: false
+      schema:
+        type: string
+        format: uuid
+    prev:
+      name: prev
+      in: query
+      description: The previous cursor for pagination
+      required: false
+      schema:
+        type: string
+        format: uuid

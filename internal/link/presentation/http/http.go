@@ -7,6 +7,7 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/query"
+	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/middlewares/http"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/response"
 	"github.com/kevinyobeth/go-boilerplate/pkg/common/types"
@@ -83,24 +84,18 @@ func (h HTTPTransport) GetLinks(c echo.Context, params GetLinksParams) error {
 		return err
 	}
 
-	next := params.Next
-	prev := params.Prev
-	if next == nil {
-		next = &uuid.Nil
-	}
-	if prev == nil {
-		prev = &uuid.Nil
-	}
-	limit := uint64(10)
-	if params.Limit != nil {
-		limit = *params.Limit
+	err = pagination.ValidateLimitPaginationParams(params.Page, params.Limit)
+	if err != nil {
+		response.SendHTTP(c, &types.Response{
+			Error: err,
+		})
+		return err
 	}
 
 	links, err := h.app.Queries.GetLinks.Handle(ctx, &query.GetLinksRequest{
 		UserID: uuid.MustParse(claims.Subject),
-		Next:   *next,
-		Prev:   *prev,
-		Limit:  limit,
+		Limit:  params.Limit,
+		Page:   params.Page,
 	})
 	if err != nil {
 		response.SendHTTP(c, &types.Response{
