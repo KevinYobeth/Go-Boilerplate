@@ -7,10 +7,10 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/helper"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/builder/pagination"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 	"github.com/samber/lo"
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
@@ -20,8 +20,8 @@ type GetLinksRequest struct {
 	UserID uuid.UUID
 	Next   uuid.UUID
 	Prev   uuid.UUID
-	Page   *uint64
-	Limit  *uint64
+	Page   int
+	Limit  int
 }
 
 type getLinksHandler struct {

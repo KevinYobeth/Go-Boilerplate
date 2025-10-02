@@ -42,16 +42,16 @@ func (w *ServerInterfaceWrapper) GetLinks(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetLinksParams
-	// ------------- Optional query parameter "page" -------------
+	// ------------- Required query parameter "page" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	err = runtime.BindQueryParameter("form", true, true, "page", ctx.QueryParams(), &params.Page)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
 	}
 
-	// ------------- Optional query parameter "limit" -------------
+	// ------------- Required query parameter "limit" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	err = runtime.BindQueryParameter("form", true, true, "limit", ctx.QueryParams(), &params.Limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}

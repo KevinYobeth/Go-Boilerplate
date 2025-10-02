@@ -4,10 +4,10 @@ import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/command"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/services/query"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/cache"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/cache"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 )
 
 type Application struct {

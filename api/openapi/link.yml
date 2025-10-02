@@ -195,26 +195,26 @@ components:
           format: uuid
         total:
           type: integer
-          format: uint64
+          format: int
 
   parameters:
     limit:
       name: limit
       in: query
       description: Maximum number of results to return
-      required: false
+      required: true
       schema:
         type: integer
-        format: uint64
+        format: int
         default: 10
     page:
       name: page
       in: query
       description: The page number to retrieve
-      required: false
+      required: true
       schema:
         type: integer
-        format: uint64
+        format: int
         default: 1
     next:
       name: next

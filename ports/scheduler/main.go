@@ -8,10 +8,10 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/link/presentation/job"
 	linkService "github.com/kevinyobeth/go-boilerplate/internal/link/services"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/constants"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/graceroutine"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/utils"
+	"github.com/kevinyobeth/go-boilerplate/shared/constants"
+	"github.com/kevinyobeth/go-boilerplate/shared/graceroutine"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 
 	"github.com/go-co-op/gocron/v2"
 )

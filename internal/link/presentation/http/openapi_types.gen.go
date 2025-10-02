@@ -49,7 +49,7 @@ type MessageResponse struct {
 type PaginationMetadata struct {
 	Next  *openapi_types.UUID `json:"next,omitempty"`
 	Prev  *openapi_types.UUID `json:"prev,omitempty"`
-	Total *uint64             `json:"total,omitempty"`
+	Total *int                `json:"total,omitempty"`
 }
 
 // UpdateLinkRequest defines model for UpdateLinkRequest.
@@ -60,18 +60,18 @@ type UpdateLinkRequest struct {
 }
 
 // Limit defines model for limit.
-type Limit = uint64
+type Limit = int
 
 // Page defines model for page.
-type Page = uint64
+type Page = int
 
 // GetLinksParams defines parameters for GetLinks.
 type GetLinksParams struct {
 	// Page The page number to retrieve
-	Page *Page `form:"page,omitempty" json:"page,omitempty"`
+	Page Page `form:"page" json:"page"`
 
 	// Limit Maximum number of results to return
-	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit Limit `form:"limit" json:"limit"`
 }
 
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.

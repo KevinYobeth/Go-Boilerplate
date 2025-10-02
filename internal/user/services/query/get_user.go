@@ -5,9 +5,9 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/user/domain/user"
 	"github.com/kevinyobeth/go-boilerplate/internal/user/infrastructure/repository"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 	"github.com/ztrue/tracerr"
 
 	"github.com/google/uuid"

@@ -3,9 +3,9 @@ package services
 import (
 	"github.com/kevinyobeth/go-boilerplate/internal/user/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/user/services/query"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/log"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/log"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 )
 
 type Application struct {

@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/infrastructure/repository"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/errors"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/telemetry"
+	"github.com/kevinyobeth/go-boilerplate/shared/errors"
+	"github.com/kevinyobeth/go-boilerplate/shared/telemetry"
 	"go.opentelemetry.io/otel/trace"
 )
 

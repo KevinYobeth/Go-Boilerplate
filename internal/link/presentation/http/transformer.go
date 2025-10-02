@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
+	"github.com/kevinyobeth/go-boilerplate/shared/builder/pagination"
 )
 
 func TransformToHTTPLink(linkObj *link.Link) Link {

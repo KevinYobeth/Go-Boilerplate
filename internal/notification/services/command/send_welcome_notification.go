@@ -8,9 +8,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/config"
 	mail_template "github.com/kevinyobeth/go-boilerplate/internal/shared/templates/mail"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/notification"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/decorator"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/metrics"
+	"github.com/kevinyobeth/go-boilerplate/shared/builder/notification"
+	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
+	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
 	"github.com/ztrue/tracerr"
 	"go.uber.org/zap"
 )

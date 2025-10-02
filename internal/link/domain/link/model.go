@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	valueobjects "github.com/kevinyobeth/go-boilerplate/pkg/common/value_objects"
+	valueobjects "github.com/kevinyobeth/go-boilerplate/shared/value_objects"
 )
 
 type LinkModel struct {
@@ -17,8 +17,8 @@ type LinkModel struct {
 	valueobjects.AuditTrail
 }
 
-func (l LinkModel) GetID() any {
-	return &l.ID
+func (l LinkModel) UniqueColumn() string {
+	return "id"
 }
 
 type NewVisitCountModel struct {

@@ -8,9 +8,9 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/kevinyobeth/go-boilerplate/internal/link/domain/link"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/builder/pagination"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/database"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/utils"
+	"github.com/kevinyobeth/go-boilerplate/shared/builder/pagination"
+	"github.com/kevinyobeth/go-boilerplate/shared/database"
+	"github.com/kevinyobeth/go-boilerplate/shared/utils"
 	"github.com/ztrue/tracerr"
 )
 

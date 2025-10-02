@@ -4,7 +4,7 @@ import (
 	"context"
 
 	eventcontract "github.com/kevinyobeth/go-boilerplate/internal/shared/event_contract"
-	"github.com/kevinyobeth/go-boilerplate/pkg/common/event"
+	"github.com/kevinyobeth/go-boilerplate/shared/event"
 	"github.com/ztrue/tracerr"
 )
 
