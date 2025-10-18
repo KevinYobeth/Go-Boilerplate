@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/kevinyobeth/go-boilerplate/config"
+	authenticationUserIntraprocess "github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/intraprocess"
 	authenticationHTTP "github.com/kevinyobeth/go-boilerplate/internal/authentication/presentation/http"
 	authenticationService "github.com/kevinyobeth/go-boilerplate/internal/authentication/services"
 	linkHTTP "github.com/kevinyobeth/go-boilerplate/internal/link/presentation/http"
@@ -132,7 +133,9 @@ func RunHTTPServer() {
 	userServer := userHTTP.NewUserHTTPServer(&userService)
 	userIntraprocess := userIntraprocess.NewUserIntraprocessService(userService)
 
-	authenticationService := authenticationService.NewAuthenticationService(userIntraprocess)
+	authenticationUserIntraprocess := authenticationUserIntraprocess.NewAuthenticationUserIntraprocessService(userIntraprocess)
+
+	authenticationService := authenticationService.NewAuthenticationService(authenticationUserIntraprocess)
 	authenticationServer := authenticationHTTP.NewAuthenticationHTTPServer(&authenticationService)
 
 	linkService := linkService.NewLinkService()

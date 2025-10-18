@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/intraprocess"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/publisher"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	eventcontract "github.com/kevinyobeth/go-boilerplate/internal/shared/event_contract"
-	intraprocesscontract "github.com/kevinyobeth/go-boilerplate/internal/shared/intraprocess_contract"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
@@ -27,7 +27,7 @@ type RegisterRequest struct {
 
 type registerHandler struct {
 	repository  repository.Repository
-	userService intraprocesscontract.UserInterface
+	userService intraprocess.UserIntraprocess
 	publisher   publisher.Publisher
 }
 
@@ -74,7 +74,7 @@ func (h registerHandler) Handle(c context.Context, params *RegisterRequest) erro
 	return nil
 }
 
-func NewRegisterHandler(repository repository.Repository, userService intraprocesscontract.UserInterface, publisher publisher.Publisher, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
+func NewRegisterHandler(repository repository.Repository, userService intraprocess.UserIntraprocess, publisher publisher.Publisher, logger *zap.SugaredLogger, metricsClient metrics.Client) RegisterHandler {
 	if repository == nil {
 		panic("repository is required")
 	}

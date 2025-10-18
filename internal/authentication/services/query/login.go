@@ -5,9 +5,9 @@ import (
 
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/token"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/domain/user"
+	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/intraprocess"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/infrastructure/repository"
 	"github.com/kevinyobeth/go-boilerplate/internal/authentication/services/helper"
-	intraprocesscontract "github.com/kevinyobeth/go-boilerplate/internal/shared/intraprocess_contract"
 	"github.com/kevinyobeth/go-boilerplate/shared/decorator"
 	"github.com/kevinyobeth/go-boilerplate/shared/errors"
 	"github.com/kevinyobeth/go-boilerplate/shared/metrics"
@@ -24,7 +24,7 @@ type LoginRequest struct {
 
 type loginHandler struct {
 	repository  repository.Repository
-	userService intraprocesscontract.UserInterface
+	userService intraprocess.UserIntraprocess
 	logger      *zap.SugaredLogger
 }
 
@@ -72,7 +72,7 @@ func (h loginHandler) Handle(c context.Context, params *LoginRequest) (*token.To
 	}, nil
 }
 
-func NewLoginHandler(repository repository.Repository, userService intraprocesscontract.UserInterface, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
+func NewLoginHandler(repository repository.Repository, userService intraprocess.UserIntraprocess, logger *zap.SugaredLogger, metricsClient metrics.Client) LoginHandler {
 	if repository == nil {
 		panic("repository is required")
 	}
